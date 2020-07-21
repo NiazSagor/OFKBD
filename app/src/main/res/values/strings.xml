@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">OFKbd</string>
+
+    <string name="yourName">তোমার নাম</string>
+    <string name="yourAge">তোমার বয়স</string>
+    <string name="yourAvatar">যেকোনো একটি পছন্দ কর</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
