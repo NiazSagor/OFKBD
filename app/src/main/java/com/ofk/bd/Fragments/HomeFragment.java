@@ -1,22 +1,23 @@
 package com.ofk.bd.Fragments;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.viewpager.widget.ViewPager;
 
 import com.ofk.bd.Adapter.CourseSliderAdapter;
+import com.ofk.bd.Adapter.CourseSliderListAdapter;
 import com.ofk.bd.HelperClass.Course;
-import com.ofk.bd.HelperClass.SixInOne;
+import com.ofk.bd.R;
 import com.ofk.bd.databinding.FragmentHomeBinding;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -38,10 +39,18 @@ public class HomeFragment extends Fragment {
     private String mParam2;
 
     private List<Course> courseList = new ArrayList<>();
+    private List<Course> recommendedCourseList = new ArrayList<>();
 
     private FragmentHomeBinding binding;
 
     private ViewPager.OnPageChangeListener mOnPageChangeListener;
+
+    private int[] indicator = {R.drawable.dot, R.drawable.inactivedot};
+
+    private CourseSliderAdapter adapter;
+    private CourseSliderListAdapter recommendedCourseAdapter;
+
+    private int customPosition = 0;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -80,22 +89,32 @@ public class HomeFragment extends Fragment {
         // Inflate the layout for this fragment
         binding = FragmentHomeBinding.inflate(getLayoutInflater());
 
-        for (int i = 0; i < 8; i++) {
-            courseList.add(new Course("Course " + i));
-        }
+        createDummyCourse();
 
-        binding.courseViewPager.setAdapter(new CourseSliderAdapter(getContext(), courseList));
+        adapter = new CourseSliderAdapter(getContext(), courseList);
+        recommendedCourseAdapter = new CourseSliderListAdapter(recommendedCourseList, "random");
+
+        binding.courseViewPager.setAdapter(adapter);
+
+        binding.randomCourseRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+        binding.randomCourseRecyclerView.setAdapter(recommendedCourseAdapter);
+
+        changeIndicator(0);
 
         if (mOnPageChangeListener == null) {
             mOnPageChangeListener = new ViewPager.OnPageChangeListener() {
                 @Override
                 public void onPageScrolled(int i, float v, int i1) {
-
+                    //changeIndicator(i);
                 }
 
                 @Override
                 public void onPageSelected(int i) {
-                    Toast.makeText(getContext(), "" + i, Toast.LENGTH_SHORT).show();
+                    if (customPosition > adapter.getCount() - 1) {
+                        customPosition = 0;
+                    }
+
+                    changeIndicator(i++);
                 }
 
                 @Override
@@ -107,5 +126,39 @@ public class HomeFragment extends Fragment {
         }
 
         return binding.getRoot();
+    }
+
+    private void changeIndicator(int currentSlidePosition) {
+        if (binding.dotLayout.getChildCount() > 0) {
+            binding.dotLayout.removeAllViews();
+        }
+
+        ImageView[] dots = new ImageView[adapter.getCount()];
+
+        for (int i = 0; i < adapter.getCount(); i++) {
+            dots[i] = new ImageView(getContext());
+
+            if (i == currentSlidePosition) {
+                //dots[i].setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.dot));
+
+                dots[i].setImageResource(indicator[0]);
+            } else {
+                //dots[i].setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.inactivedot));
+                dots[i].setImageResource(indicator[1]);
+            }
+
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT);
+
+            layoutParams.setMargins(4, 0, 4, 0);
+            binding.dotLayout.addView(dots[i], layoutParams);
+        }
+    }
+
+    private void createDummyCourse() {
+        for (int i = 0; i < 8; i++) {
+            courseList.add(new Course("Course " + i));
+            recommendedCourseList.add(new Course("Course " + i, "Subtitle " + i));
+        }
     }
 }

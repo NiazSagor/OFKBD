@@ -3,12 +3,19 @@ package com.ofk.bd.Fragments;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.ofk.bd.Adapter.AvatarListAdapter;
+import com.ofk.bd.Adapter.ProfileListAdapter;
 import com.ofk.bd.R;
+import com.ofk.bd.databinding.FragmentProfileBinding;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -57,10 +64,26 @@ public class ProfileFragment extends Fragment {
         }
     }
 
+    private FragmentProfileBinding binding;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_profile, container, false);
+        binding = FragmentProfileBinding.inflate(getLayoutInflater());
+
+        binding.badgesRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+        binding.badgesRecyclerView.setAdapter(new AvatarListAdapter("view_badge"));
+
+        List<String> profileItemList = new ArrayList<>();
+
+        profileItemList.add("Niaz Sagor");
+        profileItemList.add("+8801799018683");
+        profileItemList.add("niazsagor@gmail.com");
+        profileItemList.add("Sign Out");
+
+        binding.profileRecyclerView.setAdapter(new ProfileListAdapter(profileItemList));
+
+        return binding.getRoot();
     }
 }

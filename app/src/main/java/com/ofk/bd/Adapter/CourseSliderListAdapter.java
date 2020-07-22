@@ -16,28 +16,50 @@ import java.util.List;
 
 public class CourseSliderListAdapter extends RecyclerView.Adapter<CourseSliderListAdapter.CourseSliderListViewHolder> {
 
+    public static final int VIEW_PAGER_COURSE = 1;
+    public static final int RANDOM_COURSE = 2;
+
+    private String mSender;
+
     private static final String TAG = "CourseSliderListAdapter";
 
     private int[] avatars = {R.drawable.dog, R.drawable.duck, R.drawable.fox, R.drawable.lion, R.drawable.lion, R.drawable.lion1, R.drawable.squirrel, R.drawable.duck};
 
     private List<Course> courseList;
 
-    public CourseSliderListAdapter(List<Course> courseList) {
+    public CourseSliderListAdapter(List<Course> courseList, String sender) {
         this.courseList = courseList;
+        this.mSender = sender;
     }
 
     @NonNull
     @Override
     public CourseSliderListAdapter.CourseSliderListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View view = inflater.inflate(R.layout.course_item_layout, parent, false);
-        return new CourseSliderListViewHolder(view);
+
+        switch (viewType) {
+            case 1:
+                View viewPagerCourseLayout = inflater.inflate(R.layout.course_item_layout, parent, false);
+                return new CourseSliderListViewHolder(viewPagerCourseLayout);
+
+            case 2:
+                View randomCourseLayout = inflater.inflate(R.layout.random_course_layout, parent, false);
+                return new CourseSliderListViewHolder(randomCourseLayout);
+
+            default:
+                View view = inflater.inflate(R.layout.age_layout, parent, false);
+                return new CourseSliderListViewHolder(view);
+        }
     }
 
     @Override
     public void onBindViewHolder(@NonNull CourseSliderListAdapter.CourseSliderListViewHolder holder, int position) {
         holder.courseTitleTextView.setText(courseList.get(position).getCourseTitle());
         holder.courseImageView.setImageResource(avatars[position]);
+
+        if (mSender.equals("random")) {
+            holder.courseSubtitle.setText(courseList.get(position).getCourseSubtitle());
+        }
     }
 
     @Override
@@ -50,13 +72,26 @@ public class CourseSliderListAdapter extends RecyclerView.Adapter<CourseSliderLi
         TextView courseTitleTextView;
         ImageView courseImageView;
 
+        TextView courseSubtitle;
+
         public CourseSliderListViewHolder(@NonNull View itemView) {
             super(itemView);
 
             courseTitleTextView = itemView.findViewById(R.id.courseTitle);
             courseImageView = itemView.findViewById(R.id.courseImage);
+            courseSubtitle = itemView.findViewById(R.id.courseSubtitle);
 
             //TODO set on click
         }
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (mSender.equals("viewpager")) {
+            return VIEW_PAGER_COURSE;
+        } else if (mSender.equals("random")) {
+            return RANDOM_COURSE;
+        }
+        return -1;
     }
 }

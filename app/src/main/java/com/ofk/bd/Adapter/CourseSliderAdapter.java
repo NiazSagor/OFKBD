@@ -36,7 +36,7 @@ public class CourseSliderAdapter extends PagerAdapter {
 
     @Override
     public int getCount() {
-        if (courseList.size() % 6 == 0) {
+        if (courseList.size() % 6 == 0 || courseList.size() < 6) {
             return 1;
         } else {
             return (courseList.size() / 6) + 1;
@@ -59,9 +59,9 @@ public class CourseSliderAdapter extends PagerAdapter {
         courseRecyclerView.setLayoutManager(new GridLayoutManager(mContext, 3));
 
         if (courseList.size() >= 7 && courseList.size() <= 12) {
-            courseRecyclerView.setAdapter(new CourseSliderListAdapter(finalList.get(position)));
+            courseRecyclerView.setAdapter(new CourseSliderListAdapter(finalList.get(position), "viewpager"));
         } else if (courseList.size() == 6 || courseList.size() < 6) {
-            courseRecyclerView.setAdapter(new CourseSliderListAdapter(courseList));
+            courseRecyclerView.setAdapter(new CourseSliderListAdapter(courseList, "viewpager"));
         }
 
 

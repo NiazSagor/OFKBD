@@ -25,7 +25,7 @@ public class InfoActivity extends AppCompatActivity {
         binding.ageRecyclerView.setAdapter(new AgeListAdapter());
 
         binding.avatarRecyclerView.setLayoutManager(new GridLayoutManager(this, 4));
-        binding.avatarRecyclerView.setAdapter(new AvatarListAdapter());
+        binding.avatarRecyclerView.setAdapter(new AvatarListAdapter("choose_avatar"));
     }
 
     private void changeFontFace(){
