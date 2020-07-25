@@ -1,9 +1,12 @@
 package com.ofk.bd.Fragments;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -92,9 +95,9 @@ public class HomeFragment extends Fragment {
         createDummyCourse();
 
         adapter = new CourseSliderAdapter(getContext(), courseList);
-        recommendedCourseAdapter = new CourseSliderListAdapter(recommendedCourseList, "random");
-
         binding.courseViewPager.setAdapter(adapter);
+
+        recommendedCourseAdapter = new CourseSliderListAdapter(recommendedCourseList, "random");
 
         binding.randomCourseRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
         binding.randomCourseRecyclerView.setAdapter(recommendedCourseAdapter);
@@ -113,7 +116,6 @@ public class HomeFragment extends Fragment {
                     if (customPosition > adapter.getCount() - 1) {
                         customPosition = 0;
                     }
-
                     changeIndicator(i++);
                 }
 
@@ -124,6 +126,27 @@ public class HomeFragment extends Fragment {
             };
             binding.courseViewPager.addOnPageChangeListener(mOnPageChangeListener);
         }
+
+        final String[] list = {"প্রথম শ্রেণি", "দ্বিতীয় শ্রেণি"};
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, list);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
+        binding.spinnerClass.setAdapter(dataAdapter);
+
+        binding.spinnerClass.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                //binding.spinnerClass.setSelection(i);
+                if (i != 0) {
+                    Log.d(TAG, "onItemSelected: " + i);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
         return binding.getRoot();
     }

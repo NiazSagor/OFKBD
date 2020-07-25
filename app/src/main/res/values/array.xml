@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="spinnerItems">
+        <item>প্রথম শ্রেণি</item>
+        <item>দ্বিতীয় শ্রেণি</item>
+        <item>তৃতীয় শ্রেণি</item>
+        <item>চতুর্থ শ্রেণি</item>
+        <item>পঞ্চম শ্রেণি</item>
+    </string-array>
+</resources>

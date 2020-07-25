@@ -11,38 +11,39 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout
+        <ImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center"
-            android:orientation="vertical">
+            android:scaleType="centerCrop"
+            android:src="@drawable/arts_image" />
 
-            <ImageView
-                android:id="@+id/courseImage"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:layout_gravity="center"
-                android:src="@drawable/dog" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/gradient_drawable" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:orientation="vertical"
+            android:padding="16dp">
 
             <TextView
                 android:id="@+id/courseTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:layout_marginTop="16dp"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp"
-                android:text="Practise"
-                android:textColor="@android:color/black" />
+                android:text="Course title"
+                android:textColor="@android:color/white"
+                android:textStyle="bold" />
+
 
             <TextView
                 android:id="@+id/courseSubtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp"
-                android:text="Linear Algebra" />
+                android:text="Course Subtitle"
+                android:textColor="@android:color/white" />
 
         </LinearLayout>
 

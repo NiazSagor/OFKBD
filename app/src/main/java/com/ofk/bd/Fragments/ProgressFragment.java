@@ -1,14 +1,21 @@
 package com.ofk.bd.Fragments;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.ViewPager;
+
+import com.google.android.material.tabs.TabLayout;
+import com.ofk.bd.Adapter.ProgressListAdapter;
+import com.ofk.bd.HelperClass.Progress;
 import com.ofk.bd.R;
+import com.ofk.bd.databinding.FragmentProgressBinding;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -16,6 +23,9 @@ import com.ofk.bd.R;
  * create an instance of this fragment.
  */
 public class ProgressFragment extends Fragment {
+
+    private int[] avatars = {R.drawable.dog, R.drawable.duck, R.drawable.fox, R.drawable.lion, R.drawable.lion, R.drawable.lion1, R.drawable.squirrel, R.drawable.duck};
+    private String[] names = {"All", "Arts", "Robotics", "English", "Communication"};
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -57,10 +67,32 @@ public class ProgressFragment extends Fragment {
         }
     }
 
+    private FragmentProgressBinding binding;
+
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
+
+    private List<Progress> dummyProgress;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_progress, container, false);
+        binding = FragmentProgressBinding.inflate(getLayoutInflater());
+
+        createDummyProgress();
+
+        binding.subjectProgressRecyclerView.setAdapter(new ProgressListAdapter(dummyProgress));
+
+        return binding.getRoot();
+    }
+
+    private void createDummyProgress() {
+
+        dummyProgress = new ArrayList<>();
+
+        for (int i = 1; i <= 5; i++) {
+            dummyProgress.add(new Progress("Subject " + i, i * 10));
+        }
     }
 }

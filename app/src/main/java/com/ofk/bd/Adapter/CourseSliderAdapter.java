@@ -16,6 +16,7 @@ import com.ofk.bd.HelperClass.Course;
 import com.ofk.bd.R;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class CourseSliderAdapter extends PagerAdapter {
@@ -27,6 +28,8 @@ public class CourseSliderAdapter extends PagerAdapter {
     private List<Course> courseList;
 
     private List<List<Course>> finalList = new ArrayList<>();
+
+    CourseSliderListAdapter adapter;
 
     public CourseSliderAdapter(Context mContext, List<Course> list) {
         this.mContext = mContext;
@@ -59,9 +62,11 @@ public class CourseSliderAdapter extends PagerAdapter {
         courseRecyclerView.setLayoutManager(new GridLayoutManager(mContext, 3));
 
         if (courseList.size() >= 7 && courseList.size() <= 12) {
-            courseRecyclerView.setAdapter(new CourseSliderListAdapter(finalList.get(position), "viewpager"));
+            adapter = new CourseSliderListAdapter(finalList.get(position), "viewpager");
+            courseRecyclerView.setAdapter(adapter);
         } else if (courseList.size() == 6 || courseList.size() < 6) {
-            courseRecyclerView.setAdapter(new CourseSliderListAdapter(courseList, "viewpager"));
+            adapter = new CourseSliderListAdapter(courseList, "viewpager");
+            courseRecyclerView.setAdapter(adapter);
         }
 
 
