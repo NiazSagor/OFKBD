@@ -4,17 +4,11 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.PagerSnapHelper;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.SnapHelper;
 import androidx.viewpager.widget.PagerAdapter;
 
 import com.ofk.bd.HelperClass.Course;
@@ -30,9 +24,12 @@ public class MoreCourseSliderAdapter extends PagerAdapter {
     private List<Course> courseList;
     private Context mContext;
 
-    public MoreCourseSliderAdapter(Context mContext, List<Course> courseList) {
+    private String sender;
+
+    public MoreCourseSliderAdapter(Context mContext, List<Course> courseList, String sender) {
         this.courseList = courseList;
         this.mContext = mContext;
+        this.sender = sender;
     }
 
     @Override
@@ -50,19 +47,16 @@ public class MoreCourseSliderAdapter extends PagerAdapter {
     public Object instantiateItem(@NonNull ViewGroup container, final int position) {
         LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        View view = inflater.inflate(R.layout.more_course_layout, container, false);
+        View view = null;
+
+        if(sender.equals("activity")){
+            view = inflater.inflate(R.layout.activity_layout, container, false);
+        }else if(sender.equals("our_work")){
+            view = inflater.inflate(R.layout.more_course_layout, container, false);
+        }
 
         TextView title = view.findViewById(R.id.courseTitle);
         TextView subtitle = view.findViewById(R.id.courseSubtitle);
-
-        CardView exploreButton = view.findViewById(R.id.exploreCardView);
-
-        exploreButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(mContext, "" + courseList.get(position).getCourseTitle(), Toast.LENGTH_SHORT).show();
-            }
-        });
 
 
         title.setText(courseList.get(position).getCourseTitle());

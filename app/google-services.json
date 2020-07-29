@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "303179626053",
+    "firebase_url": "https://ofkbd-af5f8.firebaseio.com",
+    "project_id": "ofkbd-af5f8",
+    "storage_bucket": "ofkbd-af5f8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:303179626053:android:8cc861ca40d4b70643552c",
+        "android_client_info": {
+          "package_name": "com.ofk.bd"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "303179626053-6c0qm8vs5uc41nhq7dv51leqtcb2v6th.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAoRQki5jl5NbCb8kjL34lURGXYubGXcG4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "303179626053-6c0qm8vs5uc41nhq7dv51leqtcb2v6th.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_video"
+        android:icon="@drawable/ic_youtube"
+        android:title="@string/video" />
+
+    <item
+        android:id="@+id/nav_quiz"
+        android:icon="@drawable/ic_quiz"
+        android:title="@string/quiz" />
+
+    <item
+        android:id="@+id/nav_resources"
+        android:icon="@drawable/ic_paper"
+        android:title="@string/resource" />
+
+</menu>

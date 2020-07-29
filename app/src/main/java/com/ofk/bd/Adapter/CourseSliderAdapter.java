@@ -1,6 +1,8 @@
 package com.ofk.bd.Adapter;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,11 +14,11 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.PagerAdapter;
 
+import com.ofk.bd.CourseActivity;
 import com.ofk.bd.HelperClass.Course;
 import com.ofk.bd.R;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class CourseSliderAdapter extends PagerAdapter {
@@ -24,15 +26,17 @@ public class CourseSliderAdapter extends PagerAdapter {
     private static final String TAG = "CourseSliderAdapter";
 
     private Context mContext;
+    private Activity fragmentHolderActivity;
 
     private List<Course> courseList;
 
     private List<List<Course>> finalList = new ArrayList<>();
 
-    CourseSliderListAdapter adapter;
+    private CourseSliderListAdapter adapter;
 
-    public CourseSliderAdapter(Context mContext, List<Course> list) {
+    public CourseSliderAdapter(Context mContext, Activity activity, List<Course> list) {
         this.mContext = mContext;
+        this.fragmentHolderActivity = activity;
         this.courseList = list;
         calculate();
     }
@@ -68,6 +72,16 @@ public class CourseSliderAdapter extends PagerAdapter {
             adapter = new CourseSliderListAdapter(courseList, "viewpager");
             courseRecyclerView.setAdapter(adapter);
         }
+
+        adapter.setOnItemClickListener(new CourseSliderListAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position, View view) {
+                Intent intent = new Intent(fragmentHolderActivity, CourseActivity.class);
+                intent.putExtra("course_name", courseList.get(position).getCourseTitle());
+                fragmentHolderActivity.startActivity(intent);
+                Log.d(TAG, "onItemClick: " + courseList.get(position).getCourseTitle());
+            }
+        });
 
 
         container.addView(view);

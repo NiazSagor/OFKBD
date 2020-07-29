@@ -94,16 +94,10 @@ public class MoreFragment extends Fragment {
 
         createDummyCourseResources();
 
-        adapter = new MoreCourseSliderAdapter(getActivity(), moreCourses);
+        adapter = new MoreCourseSliderAdapter(getActivity(), moreCourses, "our_work");
         binding.courseViewPager.setClipToPadding(false);
         binding.courseViewPager.setPageMargin(20);
         binding.courseViewPager.setAdapter(adapter);
-
-        binding.resourceRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 4));
-        binding.resourceRecyclerView.setAdapter(new CourseSliderListAdapter(courseResources, "course_resource"));
-
-        binding.tutorialsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-        binding.tutorialsRecyclerView.setAdapter(new CourseSliderListAdapter(tutorials, "tutorial"));
 
         changeIndicator(0);
 

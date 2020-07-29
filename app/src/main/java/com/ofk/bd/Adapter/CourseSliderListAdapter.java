@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.ofk.bd.HelperClass.Course;
 import com.ofk.bd.R;
 
-import java.util.Collections;
 import java.util.List;
 
 public class CourseSliderListAdapter extends RecyclerView.Adapter<CourseSliderListAdapter.CourseSliderListViewHolder> {
@@ -30,6 +29,16 @@ public class CourseSliderListAdapter extends RecyclerView.Adapter<CourseSliderLi
 
     private List<Course> courseList;
 
+    private OnItemClickListener mListener;
+
+    public interface OnItemClickListener {
+        void onItemClick(int position, View view);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        mListener = listener;
+    }
+
     public CourseSliderListAdapter(List<Course> courseList, String sender) {
         this.courseList = courseList;
         this.mSender = sender;
@@ -43,22 +52,22 @@ public class CourseSliderListAdapter extends RecyclerView.Adapter<CourseSliderLi
         switch (viewType) {
             case 1:
                 View viewPagerCourseLayout = inflater.inflate(R.layout.course_item_layout, parent, false);
-                return new CourseSliderListViewHolder(viewPagerCourseLayout);
+                return new CourseSliderListViewHolder(viewPagerCourseLayout, mListener);
 
             case 2:
                 View randomCourseLayout = inflater.inflate(R.layout.random_course_layout, parent, false);
-                return new CourseSliderListViewHolder(randomCourseLayout);
+                return new CourseSliderListViewHolder(randomCourseLayout, mListener);
 
             case 3:
                 View resourceLayout = inflater.inflate(R.layout.resource_layout, parent, false);
-                return new CourseSliderListViewHolder(resourceLayout);
+                return new CourseSliderListViewHolder(resourceLayout, mListener);
             case 4:
                 View moreCourseLayout = inflater.inflate(R.layout.tutorial_layout, parent, false);
-                return new CourseSliderListViewHolder(moreCourseLayout);
+                return new CourseSliderListViewHolder(moreCourseLayout, mListener);
 
             default:
                 View view = inflater.inflate(R.layout.age_layout, parent, false);
-                return new CourseSliderListViewHolder(view);
+                return new CourseSliderListViewHolder(view, mListener);
         }
     }
 
@@ -92,14 +101,26 @@ public class CourseSliderListAdapter extends RecyclerView.Adapter<CourseSliderLi
         ImageView courseImageView;
         TextView courseSubtitle;
 
-        public CourseSliderListViewHolder(@NonNull View itemView) {
+        public CourseSliderListViewHolder(@NonNull View itemView, final OnItemClickListener listener) {
             super(itemView);
 
             courseTitleTextView = itemView.findViewById(R.id.courseTitle);
             courseImageView = itemView.findViewById(R.id.courseImage);
             courseSubtitle = itemView.findViewById(R.id.courseSubtitle);
 
-            //TODO set on click
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    int position = getAdapterPosition();
+
+                    if (listener != null) {
+                        if (position != RecyclerView.NO_POSITION) {
+                            listener.onItemClick(position, view);
+                        }
+                    }
+                }
+            });
         }
     }
 
