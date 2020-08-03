@@ -11,15 +11,33 @@
 
     <string name="home">হোম</string>
     <string name="progress">প্রগ্রেস</string>
+    <string name="subProgress">সাবজেক্ট প্রগ্রেস</string>
     <string name="more">আরো</string>
+    <string name="ourWorks">আমাদের কার্যক্রম</string>
     <string name="profile">প্রোফাইল</string>
+
+    <string name="joinUs">জয়েন করো আমাদের সাথে</string>
+
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="one">1</string>
-    <string name="myBadges">আমার ব্যাজগুলো</string>
-    <string name="mySummary">আমার সামারি</string>
 
     <string name="video">ভিডিও</string>
     <string name="quiz">কুইজ</string>
     <string name="resource">রিসোর্স</string>
+
+    <string name="myBadge">আমার ব্যাজ</string>
+    <string name="summary">সামারি</string>
+
+    <string name="videoFinished">ভিডিও সম্পন্ন</string>
+    <string name="courseFinished">কোর্স সম্পন্ন</string>
+    <string name="quizFinished">কুইজ সম্পন্ন</string>
+
+    <string-array name="section">
+        <item name="প্রথম অধ্যায়ঃ বিভিন্ন ধরণের ফল (পার্ট ১)" />
+        <item name="দ্বিতীয় অধ্যায়ঃ বিভিন্ন ধরণের ফল (পার্ট ২)" />
+        <item name="তৃতীয় অধ্যায়ঃ বিভিন্ন ধরণের ফুল" />
+    </string-array>
+
 </resources>

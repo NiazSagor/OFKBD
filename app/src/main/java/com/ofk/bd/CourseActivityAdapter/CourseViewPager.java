@@ -2,23 +2,22 @@ package com.ofk.bd.CourseActivityAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.fragment.app.FragmentActivity;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.ofk.bd.CourseActivityFragments.QuizFragment;
 import com.ofk.bd.CourseActivityFragments.ResourceFragment;
 import com.ofk.bd.CourseActivityFragments.VideoFragment;
 
-public class CourseViewPager extends FragmentPagerAdapter {
+public class CourseViewPager extends FragmentStateAdapter {
 
-
-    public CourseViewPager(@NonNull FragmentManager fm) {
-        super(fm);
+    public CourseViewPager(@NonNull FragmentActivity fragmentActivity) {
+        super(fragmentActivity);
     }
 
     @NonNull
     @Override
-    public Fragment getItem(int position) {
+    public Fragment createFragment(int position) {
         switch (position) {
             case 0:
                 return new VideoFragment();
@@ -31,7 +30,7 @@ public class CourseViewPager extends FragmentPagerAdapter {
     }
 
     @Override
-    public int getCount() {
+    public int getItemCount() {
         return 3;
     }
 }

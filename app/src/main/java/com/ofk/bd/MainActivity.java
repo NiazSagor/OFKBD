@@ -1,68 +1,88 @@
 package com.ofk.bd;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-
 import android.os.Bundle;
 import android.view.MenuItem;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
+import androidx.viewpager2.widget.ViewPager2;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.ofk.bd.Fragments.HomeFragment;
-import com.ofk.bd.Fragments.MoreFragment;
-import com.ofk.bd.Fragments.ProfileFragment;
-import com.ofk.bd.Fragments.ProgressFragment;
+import com.ofk.bd.Adapter.MainActivityViewPager;
 import com.ofk.bd.databinding.ActivityMainBinding;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends FragmentActivity {
 
-    ActivityMainBinding binding;
+    private ActivityMainBinding binding;
+    private MenuItem prevMenuItem;
+    private MainActivityViewPager adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
+        setupViewPager();
         binding.bottomNavigation.setOnNavigationItemSelectedListener(mNavListener);
-
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                    new HomeFragment()).commit();
-        }
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener mNavListener =
             new BottomNavigationView.OnNavigationItemSelectedListener() {
                 @Override
                 public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                    Fragment selectedFragment = null;
-
                     switch (menuItem.getItemId()) {
                         case R.id.nav_home:
-                            selectedFragment = new HomeFragment();
+                            binding.viewpager.setCurrentItem(0);
                             break;
 
                         case R.id.nav_progress:
-                            selectedFragment = new ProgressFragment();
+                            binding.viewpager.setCurrentItem(1);
                             break;
 
                         case R.id.nav_more:
-                            selectedFragment = new MoreFragment();
+                            binding.viewpager.setCurrentItem(2);
                             break;
 
                         case R.id.nav_profile:
-                            selectedFragment = new ProfileFragment();
+                            binding.viewpager.setCurrentItem(3);
                             break;
                     }
-
-                    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                    transaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right, R.anim.slide_in_right, R.anim.slide_out_left);
-                    transaction.replace(R.id.fragment_container, selectedFragment);
-                    transaction.commit();
-
-                    return true;
+                    return false;
                 }
             };
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    public void setupViewPager() {
+        adapter = new MainActivityViewPager(this);
+
+        binding.viewpager.setUserInputEnabled(false);
+
+        binding.viewpager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                if (prevMenuItem != null) {
+                    prevMenuItem.setChecked(false);
+                } else {
+                    binding.bottomNavigation.getMenu().getItem(0).setChecked(false);
+                }
+                binding.bottomNavigation.getMenu().getItem(position).setChecked(true);
+                prevMenuItem = binding.bottomNavigation.getMenu().getItem(position);
+            }
+        });
+
+        binding.viewpager.setAdapter(adapter);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (binding.viewpager.getCurrentItem() == 0) {
+            super.onBackPressed();
+        } else {
+            binding.viewpager.setCurrentItem(0);
+        }
+    }
 }

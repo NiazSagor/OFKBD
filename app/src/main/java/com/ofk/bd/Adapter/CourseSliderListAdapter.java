@@ -25,7 +25,7 @@ public class CourseSliderListAdapter extends RecyclerView.Adapter<CourseSliderLi
 
     private static final String TAG = "CourseSliderListAdapter";
 
-    private int[] avatars = {R.drawable.dog, R.drawable.duck, R.drawable.fox, R.drawable.lion, R.drawable.lion, R.drawable.lion1, R.drawable.squirrel, R.drawable.duck};
+    private int[] avatars = {R.drawable.art, R.drawable.calligraphy, R.drawable.case_solve, R.drawable.craft, R.drawable.critical, R.drawable.digital, R.drawable.glass_paint, R.drawable.guitar, R.drawable.programming, R.drawable.robotics};
 
     private List<Course> courseList;
 
@@ -62,7 +62,7 @@ public class CourseSliderListAdapter extends RecyclerView.Adapter<CourseSliderLi
                 View resourceLayout = inflater.inflate(R.layout.resource_layout, parent, false);
                 return new CourseSliderListViewHolder(resourceLayout, mListener);
             case 4:
-                View moreCourseLayout = inflater.inflate(R.layout.tutorial_layout, parent, false);
+                View moreCourseLayout = inflater.inflate(R.layout.display_course_layout, parent, false);
                 return new CourseSliderListViewHolder(moreCourseLayout, mListener);
 
             default:

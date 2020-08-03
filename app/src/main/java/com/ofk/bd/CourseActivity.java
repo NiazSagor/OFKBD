@@ -5,10 +5,10 @@ import android.util.Log;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.ofk.bd.CourseActivityAdapter.CourseViewPager;
@@ -19,7 +19,7 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerListener;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView;
 
-public class CourseActivity extends AppCompatActivity {
+public class CourseActivity extends FragmentActivity {
 
     private static final String TAG = "CourseActivity";
 
@@ -73,87 +73,87 @@ public class CourseActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        // after the activity is destroyed we release the youtube player
-        binding.youtubePlayerView.release();
     }
 
     // Get the selected video from the list in fragment and play it in youtube player
     private void getPlayVideoFromList() {
 
-        binding.youtubePlayerView.addYouTubePlayerListener(new YouTubePlayerListener() {
+        YouTubePlayerView youTubePlayerView = binding.youtubePlayerView;
+
+        getLifecycle().addObserver(youTubePlayerView);
+
+        new Thread(new Runnable() {
             @Override
-            public void onReady(YouTubePlayer youTubePlayer) {
-                videoFromListViewModel.getMutableLiveData().observe(CourseActivity.this, new Observer<String>() {
+            public void run() {
+                youTubePlayerView.addYouTubePlayerListener(new YouTubePlayerListener() {
                     @Override
-                    public void onChanged(String s) {
-                        if (s != null) {
-                            Log.d(TAG, "onChanged: " + s);
-                            youTubePlayer.loadVideo(s, 0);
-                        } else {
-                            //TODO get the 1st video from the selected course and play it
-                        }
+                    public void onReady(YouTubePlayer youTubePlayer) {
+                        videoFromListViewModel.getMutableLiveData().observe(CourseActivity.this, new Observer<String>() {
+                            @Override
+                            public void onChanged(String s) {
+                                if (s != null) {
+                                    Log.d(TAG, "onChanged: " + s);
+                                    youTubePlayer.loadVideo(s, 0);
+                                }
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onStateChange(YouTubePlayer youTubePlayer, PlayerConstants.PlayerState playerState) {
+                        //TODO do something if 1 video is finished watching
+                    }
+
+                    @Override
+                    public void onPlaybackQualityChange(YouTubePlayer youTubePlayer, PlayerConstants.PlaybackQuality playbackQuality) {
+
+                    }
+
+                    @Override
+                    public void onPlaybackRateChange(YouTubePlayer youTubePlayer, PlayerConstants.PlaybackRate playbackRate) {
+
+                    }
+
+                    @Override
+                    public void onError(YouTubePlayer youTubePlayer, PlayerConstants.PlayerError playerError) {
+
+                    }
+
+                    @Override
+                    public void onCurrentSecond(YouTubePlayer youTubePlayer, float v) {
+
+                    }
+
+                    @Override
+                    public void onVideoDuration(YouTubePlayer youTubePlayer, float v) {
+
+                    }
+
+                    @Override
+                    public void onVideoLoadedFraction(YouTubePlayer youTubePlayer, float v) {
+
+                    }
+
+                    @Override
+                    public void onVideoId(YouTubePlayer youTubePlayer, String s) {
+
+                    }
+
+                    @Override
+                    public void onApiChange(YouTubePlayer youTubePlayer) {
+
                     }
                 });
             }
-
-            @Override
-            public void onStateChange(YouTubePlayer youTubePlayer, PlayerConstants.PlayerState playerState) {
-                //TODO do something if 1 video is finished watching
-            }
-
-            @Override
-            public void onPlaybackQualityChange(YouTubePlayer youTubePlayer, PlayerConstants.PlaybackQuality playbackQuality) {
-
-            }
-
-            @Override
-            public void onPlaybackRateChange(YouTubePlayer youTubePlayer, PlayerConstants.PlaybackRate playbackRate) {
-
-            }
-
-            @Override
-            public void onError(YouTubePlayer youTubePlayer, PlayerConstants.PlayerError playerError) {
-
-            }
-
-            @Override
-            public void onCurrentSecond(YouTubePlayer youTubePlayer, float v) {
-
-            }
-
-            @Override
-            public void onVideoDuration(YouTubePlayer youTubePlayer, float v) {
-
-            }
-
-            @Override
-            public void onVideoLoadedFraction(YouTubePlayer youTubePlayer, float v) {
-
-            }
-
-            @Override
-            public void onVideoId(YouTubePlayer youTubePlayer, String s) {
-
-            }
-
-            @Override
-            public void onApiChange(YouTubePlayer youTubePlayer) {
-
-            }
-        });
+        }).start();
     }
 
     // this is for the bottom nav
     private void setUpViewPager() {
 
-        CourseViewPager adapter = new CourseViewPager(getSupportFragmentManager());
+        CourseViewPager adapter = new CourseViewPager(this);
 
-        binding.videoRecourseViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-
+        binding.videoRecourseViewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {
                 if (prevMenuItem != null) {
@@ -163,11 +163,6 @@ public class CourseActivity extends AppCompatActivity {
                 }
                 binding.bottomNavigation.getMenu().getItem(position).setChecked(true);
                 prevMenuItem = binding.bottomNavigation.getMenu().getItem(position);
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
             }
         });
 

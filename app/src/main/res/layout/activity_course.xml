@@ -22,7 +22,7 @@
             android:id="@+id/courseName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/purple"
+            android:background="@drawable/orange_gradient"
             android:padding="16dp"
             android:text="Course Name"
             android:textColor="@android:color/white"
@@ -30,7 +30,7 @@
 
     </LinearLayout>
 
-    <androidx.viewpager.widget.ViewPager
+    <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/videoRecourseViewPager"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

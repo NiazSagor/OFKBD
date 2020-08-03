@@ -18,7 +18,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="48dp"
             android:padding="16dp"
-            android:text="Our Works"
+            android:text="@string/ourWorks"
             android:textSize="32sp"
             android:textStyle="bold" />
 
@@ -55,7 +55,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
-            android:text="Join Us"
+            android:text="@string/joinUs"
             android:textSize="16sp"
             android:textStyle="bold" />
 

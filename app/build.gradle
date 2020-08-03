@@ -47,7 +47,12 @@ dependencies {
     //pie chart
     implementation 'com.github.razerdp:AnimatedPieView:1.2.0'
 
+    //picasso
     implementation 'com.squareup.picasso:picasso:2.71828'
+
+    // for picasso caching
+    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
+    implementation 'com.jakewharton.picasso:picasso2-okhttp3-downloader:1.1.0'
 
     //firebase
     implementation 'com.google.firebase:firebase-auth:17.0.0'//this line is required

@@ -5,6 +5,8 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="colorControlHighlight">@color/colorPrimaryRipple</item>
     </style>
 
     <style name="AppTheme.Transparent" parent="Theme.AppCompat.Light.NoActionBar">
@@ -14,6 +16,10 @@
         <item name="android:windowTranslucentStatus">true</item>
         <item name="android:windowTranslucentNavigation">true</item>
         <item name="android:windowContentTransitions">true</item>
+
+        <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item>
+
+        <item name="colorControlHighlight">@color/colorPrimaryRipple</item>
 
         <!--this change the status bar icons to grey!-->
         <item name="android:windowLightStatusBar">true</item>
@@ -28,6 +34,18 @@
         <item name="windowActionBar">false</item>
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowContentOverlay">@null</item>
+
+
+        <item name="colorControlHighlight">@color/colorPrimaryRipple</item>
+
+        <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item>
+    </style>
+
+    <style name="CustomActivityAnimation" parent="@android:style/Animation.Activity">
+        <item name="android:activityOpenEnterAnimation">@anim/slide_in_right</item>
+        <item name="android:activityOpenExitAnimation">@anim/slide_out_left</item>
+        <item name="android:activityCloseEnterAnimation">@anim/slide_in_left</item>
+        <item name="android:activityCloseExitAnimation">@anim/slide_out_right</item>
     </style>
 
 </resources>

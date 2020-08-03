@@ -1,21 +1,16 @@
 package com.ofk.bd.Fragments;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.viewpager.widget.ViewPager;
 
-import com.ofk.bd.Adapter.CourseSliderListAdapter;
-import com.ofk.bd.Adapter.MoreCourseSliderAdapter;
+import com.ofk.bd.Adapter.ActivitySliderAdapter;
 import com.ofk.bd.HelperClass.Course;
 import com.ofk.bd.R;
 import com.ofk.bd.databinding.FragmentMoreBinding;
@@ -84,7 +79,7 @@ public class MoreFragment extends Fragment {
 
     private int[] indicator = {R.drawable.dot, R.drawable.inactivedot};
 
-    private MoreCourseSliderAdapter adapter;
+    private ActivitySliderAdapter adapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -94,12 +89,12 @@ public class MoreFragment extends Fragment {
 
         createDummyCourseResources();
 
-        adapter = new MoreCourseSliderAdapter(getActivity(), moreCourses, "our_work");
+        //adapter = new ActivitySliderAdapter(getActivity(), moreCourses, "our_work");
         binding.courseViewPager.setClipToPadding(false);
         binding.courseViewPager.setPageMargin(20);
-        binding.courseViewPager.setAdapter(adapter);
+        //binding.courseViewPager.setAdapter(adapter);
 
-        changeIndicator(0);
+        //changeIndicator(0);
 
         if (mOnPageChangeListener == null) {
             mOnPageChangeListener = new ViewPager.OnPageChangeListener() {

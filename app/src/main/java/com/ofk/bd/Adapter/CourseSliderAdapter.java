@@ -15,7 +15,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.PagerAdapter;
 
 import com.ofk.bd.CourseActivity;
+import com.ofk.bd.DisplayCourseActivity;
 import com.ofk.bd.HelperClass.Course;
+import com.ofk.bd.HelperClass.DisplayCourse;
 import com.ofk.bd.R;
 
 import java.util.ArrayList;
@@ -76,7 +78,7 @@ public class CourseSliderAdapter extends PagerAdapter {
         adapter.setOnItemClickListener(new CourseSliderListAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position, View view) {
-                Intent intent = new Intent(fragmentHolderActivity, CourseActivity.class);
+                Intent intent = new Intent(fragmentHolderActivity, DisplayCourseActivity.class);
                 intent.putExtra("course_name", courseList.get(position).getCourseTitle());
                 fragmentHolderActivity.startActivity(intent);
                 Log.d(TAG, "onItemClick: " + courseList.get(position).getCourseTitle());

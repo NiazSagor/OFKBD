@@ -67,7 +67,9 @@ public class VideoFragment extends Fragment {
 
     private FragmentVideoBinding binding;
     private List<Section> sectionList;
-    private List<Video> videoList;
+//    private List<Video> videoList;
+
+    private List<List<Video>> sectionWiseVideoList;
 
     private VideoFromListViewModel videoFromListViewModel;
 
@@ -79,7 +81,7 @@ public class VideoFragment extends Fragment {
 
         setUpList();
 
-        binding.sectionListRecyclerView.setAdapter(new CourseSectionAdapter(getActivity(), sectionList, videoList));
+        binding.sectionListRecyclerView.setAdapter(new CourseSectionAdapter(getActivity(), sectionList, sectionWiseVideoList));
 
         return binding.getRoot();
     }
@@ -88,14 +90,31 @@ public class VideoFragment extends Fragment {
 
         sectionList = new ArrayList<>();
 
-        videoList = new ArrayList<>();
+        //videoList = new ArrayList<>();
 
-        for (int i = 0; i < 10; i++) {
-            sectionList.add(new Section("Section Name" + i));
-        }
+        sectionWiseVideoList = new ArrayList<>();
 
-        for (int i = 0; i < 3; i++) {
-            videoList.add(new Video("", "Video Title " + i, ""));
-        }
+        sectionList.add(new Section("প্রথম অধ্যায়ঃ বিভিন্ন ধরণের ফল (পার্ট ১)"));
+        sectionList.add(new Section("দ্বিতীয় অধ্যায়ঃ বিভিন্ন ধরণের ফল (পার্ট ২)"));
+        sectionList.add(new Section("তৃতীয় অধ্যায়ঃ বিভিন্ন ধরণের ফুল"));
+
+
+        List<Video> list1 = new ArrayList<>();
+        list1.add(new Video("", "How To Draw Apple", "Zf6lflubBNA"));
+        list1.add(new Video("", "How to Draw Banana", "Fmcwap9uwLI"));
+        list1.add(new Video("", "How to Draw Mango", "P0ysy7Bwjy0"));
+
+        List<Video> list2 = new ArrayList<>();
+
+        list2.add(new Video("", "How to Draw Papaya", "hnVy59D6vLE"));
+        list2.add(new Video("", "How to Draw Pineapple", "LryXdfWTKX4"));
+
+        List<Video> list3 = new ArrayList<>();
+
+        list3.add(new Video("", "How To Draw China Rose", "G4CCpvW6wJM"));
+
+        sectionWiseVideoList.add(list1);
+        sectionWiseVideoList.add(list2);
+        sectionWiseVideoList.add(list3);
     }
 }

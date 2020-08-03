@@ -23,6 +23,8 @@ public class SectionVideoAdapter extends RecyclerView.Adapter<SectionVideoAdapte
 
     private OnItemClickListener mListener;
 
+    int[] thumb_image = {R.drawable.kumra_thumb, R.drawable.banana_thumb, R.drawable.mango_thumb};
+
     public interface OnItemClickListener {
         void onItemClick(int position, View view);
     }
@@ -47,6 +49,7 @@ public class SectionVideoAdapter extends RecyclerView.Adapter<SectionVideoAdapte
     @Override
     public void onBindViewHolder(@NonNull SectionVideoAdapter.SectionVideoListViewHolder holder, int position) {
         holder.videoTitle.setText(videoList.get(position).getVideoTitle());
+        holder.videoThumbNail.setImageResource(thumb_image[position]);
     }
 
     @Override

@@ -7,4 +7,11 @@
         <item>চতুর্থ শ্রেণি</item>
         <item>পঞ্চম শ্রেণি</item>
     </string-array>
+
+    <array name="artsCourse">
+        <item name="আর্টের হাতেখড়ি" />
+        <item name="সহজে সি প্রোগ্রামিং" />
+        <item name="রোবটিক্সের হাতেখড়ি ( আর্ডুইনো )" />
+        <item name="হাত দিয়ে যায় আঁকা ( Hand Shape Art )" />
+    </array>
 </resources>

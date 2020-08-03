@@ -2,7 +2,6 @@ package com.ofk.bd.Adapter;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +11,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.lifecycle.Lifecycle;
 import androidx.viewpager.widget.PagerAdapter;
 
 import com.ofk.bd.HelperClass.Video;
@@ -20,6 +20,8 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstan
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerListener;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -42,9 +44,12 @@ public class VideoSliderAdapter extends PagerAdapter {
     private List<Video> videoList;
     private Context mContext;
 
-    public VideoSliderAdapter(List<Video> videoList, Context context) {
+    private Lifecycle mLifeCycle;
+
+    public VideoSliderAdapter(List<Video> videoList, Context context, Lifecycle lifecycle) {
         this.videoList = videoList;
         this.mContext = context;
+        this.mLifeCycle = lifecycle;
         doNotifyDataSetChangedOnce = true;
         picasso = Picasso.get();
     }
@@ -79,12 +84,39 @@ public class VideoSliderAdapter extends PagerAdapter {
         gradientView = view.findViewById(R.id.gradientView);
 
         thumbNail = view.findViewById(R.id.videoThumbNail);
-        picasso.load(videoList.get(position).getVideoThumbNail()).into(thumbNail);
+
+        picasso.load(videoList.get(position).getVideoThumbNail())
+                .networkPolicy(NetworkPolicy.OFFLINE)
+                .into(thumbNail, new Callback() {
+                    @Override
+                    public void onSuccess() {
+
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        picasso.load(videoList.get(position).getVideoThumbNail())
+                                .error(R.drawable.ofklogo)
+                                .into(thumbNail, new Callback() {
+                                    @Override
+                                    public void onSuccess() {
+
+                                    }
+
+                                    @Override
+                                    public void onError(Exception e) {
+
+                                    }
+                                });
+                    }
+                });
 
         layout = view.findViewById(R.id.videoPlayLayout);
 
         youTubePlayerView = view.findViewById(R.id.youtube_player_view);
 
+        mLifeCycle.addObserver(youTubePlayerView);
+/*
         //TODO try to do this in background thread
         youTubePlayerView.addYouTubePlayerListener(new YouTubePlayerListener() {
             @Override
@@ -153,6 +185,11 @@ public class VideoSliderAdapter extends PagerAdapter {
             }
         });
 
+
+ */
+
+        new AddListener(youTubePlayerView, position).execute();
+
         container.addView(view);
 
         return view;
@@ -179,8 +216,13 @@ public class VideoSliderAdapter extends PagerAdapter {
             youTubePlayerView.addYouTubePlayerListener(new YouTubePlayerListener() {
                 @Override
                 public void onReady(YouTubePlayer youTubePlayer) {
-                    String id = videoList.get(position).getVideoURL();
-                    youTubePlayer.loadVideo(id, 0);
+                    layout.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            String id = videoList.get(position).getVideoURL();
+                            youTubePlayer.loadVideo(id, 0);
+                        }
+                    });
                 }
 
                 @Override
@@ -228,7 +270,6 @@ public class VideoSliderAdapter extends PagerAdapter {
 
                 @Override
                 public void onVideoId(YouTubePlayer youTubePlayer, String s) {
-                    Log.d(TAG, "onVideoId: " + s);
                 }
 
                 @Override
