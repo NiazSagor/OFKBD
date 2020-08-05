@@ -95,7 +95,7 @@ public class VideoFragment extends Fragment {
         sectionWiseVideoList = new ArrayList<>();
 
         sectionList.add(new Section("প্রথম অধ্যায়ঃ বিভিন্ন ধরণের ফল (পার্ট ১)"));
-        sectionList.add(new Section("দ্বিতীয় অধ্যায়ঃ বিভিন্ন ধরণের ফল (পার্ট ২)"));
+            sectionList.add(new Section("দ্বিতীয় অধ্যায়ঃ বিভিন্ন ধরণের ফল (পার্ট ২)"));
         sectionList.add(new Section("তৃতীয় অধ্যায়ঃ বিভিন্ন ধরণের ফুল"));
 
 

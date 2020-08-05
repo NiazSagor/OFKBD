@@ -1,6 +1,5 @@
 package com.ofk.bd.DisplayCourseActivityAdapter;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,13 +9,20 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.ofk.bd.Adapter.CourseSliderListAdapter;
 import com.ofk.bd.HelperClass.DisplayCourse;
 import com.ofk.bd.R;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
 public class CourseListAdapter extends RecyclerView.Adapter<CourseListAdapter.CourseListViewHolder> {
+
+    public static final int HOME_PAGE = 1;
+    public static final int DISPLAY_COURSE = 2;
+
+    private Picasso mPicasso;
 
     private List<DisplayCourse> courseList;
 
@@ -28,27 +34,67 @@ public class CourseListAdapter extends RecyclerView.Adapter<CourseListAdapter.Co
         void onItemClick(int position, View view);
     }
 
+    private String mSender;
+
     public void setOnItemClickListener(OnItemClickListener listener) {
         mListener = listener;
     }
 
-    public CourseListAdapter(List<DisplayCourse> courseList) {
+    public CourseListAdapter(List<DisplayCourse> courseList, String sender) {
         this.courseList = courseList;
-        Log.d(TAG, "CourseListAdapter: " + courseList.get(0).getCourseTitle());
+        this.mSender = sender;
+        mPicasso = Picasso.get();
     }
 
     @NonNull
     @Override
     public CourseListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View view = inflater.inflate(R.layout.display_course_layout, parent, false);
-        return new CourseListViewHolder(view, mListener);
+
+        switch (viewType) {
+            case 1:
+                View view1 = inflater.inflate(R.layout.recom_course_home_layout, parent, false);
+                return new CourseListViewHolder(view1, mListener);
+            case 2:
+                View view2 = inflater.inflate(R.layout.display_course_layout, parent, false);
+                return new CourseListViewHolder(view2, mListener);
+
+            default:
+                View view3 = inflater.inflate(R.layout.section_video_item_layout, parent, false);
+                return new CourseListViewHolder(view3, mListener);
+        }
     }
 
     @Override
     public void onBindViewHolder(@NonNull CourseListViewHolder holder, int position) {
-        //holder.thumbnail.setImageResource();
+
         holder.title.setText(courseList.get(position).getCourseTitle());
+
+        mPicasso.load(courseList.get(position).getThumbnailURL())
+                .networkPolicy(NetworkPolicy.OFFLINE)
+                .into(holder.thumbnail, new Callback() {
+                    @Override
+                    public void onSuccess() {
+
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        mPicasso.load(courseList.get(position).getThumbnailURL())
+                                .error(R.drawable.ofklogo)
+                                .into(holder.thumbnail, new Callback() {
+                                    @Override
+                                    public void onSuccess() {
+
+                                    }
+
+                                    @Override
+                                    public void onError(Exception e) {
+
+                                    }
+                                });
+                    }
+                });
     }
 
     @Override
@@ -80,5 +126,15 @@ public class CourseListAdapter extends RecyclerView.Adapter<CourseListAdapter.Co
                 }
             });
         }
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (mSender.equals("home_page")) {
+            return HOME_PAGE;
+        } else if (mSender.equals("displayCourse")) {
+            return DISPLAY_COURSE;
+        }
+        return -1;
     }
 }

@@ -5,10 +5,12 @@ import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.ofk.bd.Adapter.MainActivityViewPager;
+import com.ofk.bd.ViewModel.MainActivityViewModel;
 import com.ofk.bd.databinding.ActivityMainBinding;
 
 public class MainActivity extends FragmentActivity {
@@ -16,13 +18,19 @@ public class MainActivity extends FragmentActivity {
     private ActivityMainBinding binding;
     private MenuItem prevMenuItem;
     private MainActivityViewPager adapter;
+    private MainActivityViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        // for every data needed in main activity child fragments
+        viewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
+
         setupViewPager();
+
         binding.bottomNavigation.setOnNavigationItemSelectedListener(mNavListener);
     }
 

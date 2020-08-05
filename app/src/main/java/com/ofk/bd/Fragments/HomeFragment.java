@@ -1,9 +1,8 @@
 package com.ofk.bd.Fragments;
 
-import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Rect;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,28 +10,25 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.viewpager.widget.ViewPager;
 
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.ofk.bd.Adapter.ActivitySliderAdapter;
 import com.ofk.bd.Adapter.CourseSliderAdapter;
-import com.ofk.bd.Adapter.CourseSliderListAdapter;
 import com.ofk.bd.Adapter.VideoSliderAdapter;
+import com.ofk.bd.DisplayCourseActivityAdapter.CourseListAdapter;
 import com.ofk.bd.HelperClass.Activity;
 import com.ofk.bd.HelperClass.Course;
+import com.ofk.bd.HelperClass.DisplayCourse;
 import com.ofk.bd.HelperClass.Video;
-import com.ofk.bd.Interface.ActivityPicLoadCallback;
-import com.ofk.bd.Interface.VideoLoadCallback;
 import com.ofk.bd.R;
+import com.ofk.bd.SearchResultActivity;
+import com.ofk.bd.ViewModel.MainActivityViewModel;
 import com.ofk.bd.databinding.FragmentHomeBinding;
 
 import java.util.ArrayList;
@@ -57,7 +53,6 @@ public class HomeFragment extends Fragment {
     private String mParam2;
 
     private List<Course> courseList = new ArrayList<>();
-    private List<Course> recommendedCourseList = new ArrayList<>();
 
     private FragmentHomeBinding binding;
 
@@ -68,7 +63,10 @@ public class HomeFragment extends Fragment {
     private int[] indicator = {R.drawable.dot, R.drawable.inactivedot};
 
     private CourseSliderAdapter adapter;
-    private CourseSliderListAdapter recommendedCourseAdapter;
+
+    private CourseListAdapter recom_course_1;
+
+    private CourseListAdapter recom_course_2;
 
     private int customPosition = 0;
 
@@ -94,8 +92,6 @@ public class HomeFragment extends Fragment {
         return fragment;
     }
 
-    private DatabaseReference db_activity_pic;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -105,44 +101,81 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    // activity pics adapter
     private ActivitySliderAdapter activityAdapter;
 
-    private List<Course> moreCourses;
-    private List<Video> activityVideos;
+    // activity pics list
+    private List<Activity> activityPics = new ArrayList<>();
+
+    // activity video list
+    private List<Video> videoList = new ArrayList<>();
+
+    // random course 1 display
+    private List<DisplayCourse> randomCourse_1 = new ArrayList<>();
+
+    // random course 2 display
+    private List<DisplayCourse> randomCourse_2 = new ArrayList<>();
+
+    private MainActivityViewModel mainActivityViewModel;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+
         binding = FragmentHomeBinding.inflate(getLayoutInflater());
 
-        createDummyCourse();
-        createDummyActivityForViewPager();
-        //createDummyActivityVideoForViewPager();
+        mainActivityViewModel = ViewModelProviders.of(getActivity()).get(MainActivityViewModel.class);
+        // getting course list from view model
+        mainActivityViewModel.getListMutableLiveData().observe(this, new Observer<List<Course>>() {
+            @Override
+            public void onChanged(List<Course> courses) {
+                courseList = courses;
+                adapter = new CourseSliderAdapter(getContext(), getActivity(), courseList);
+                binding.courseViewPager.setAdapter(adapter);
+                changeIndicator(0);// as indicator depends on the course list, it is inside this method
+            }
+        });
 
         // This is activity view pager where some pictures are loaded
-        //activityAdapter = new ActivitySliderAdapter(getActivity(), moreCourses, "activity");
         binding.activityViewPager.setClipToPadding(false);
         binding.activityViewPager.setPageMargin(30);
-        //binding.activityViewPager.setAdapter(activityAdapter);
-        new GetActivityPics(binding.activityViewPager, getContext()).execute();
 
-        // This is below the my course, where all the categories are displayed
-        adapter = new CourseSliderAdapter(getContext(), getActivity(), courseList);
-        binding.courseViewPager.setAdapter(adapter);
+        mainActivityViewModel.getActivityPicLiveData().observe(this, new Observer<DataSnapshot>() {
+            @Override
+            public void onChanged(DataSnapshot dataSnapshot) {
+                Activity activity = dataSnapshot.getValue(Activity.class);
+                activityPics.add(activity);
+                activityAdapter = new ActivitySliderAdapter(getContext(), activityPics, "activity");
+                binding.activityViewPager.setAdapter(activityAdapter);
+                changeIndicatorOnActivityViewPager(0);
+            }
+        });
 
-        // This is below the activity view pager
-        recommendedCourseAdapter = new CourseSliderListAdapter(recommendedCourseList, "random");
-
+        // random course 1
         binding.randomCourseRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-        binding.randomCourseRecyclerView.setAdapter(recommendedCourseAdapter);
 
-        // This is below recommended view pager
+        mainActivityViewModel.getRandomCourseLiveData_1().observe(this, new Observer<DataSnapshot>() {
+            @Override
+            public void onChanged(DataSnapshot dataSnapshot) {
+                DisplayCourse course = dataSnapshot.getValue(DisplayCourse.class);
+                randomCourse_1.add(course);
+                recom_course_1 = new CourseListAdapter(randomCourse_1, "home_page");
+                binding.randomCourseRecyclerView.setAdapter(recom_course_1);
+            }
+        });
+
+        // random course 2
         binding.randomCourseRecyclerView2.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-        binding.randomCourseRecyclerView2.setAdapter(recommendedCourseAdapter);
 
-        changeIndicator(0);
-        //changeIndicatorOnActivityViewPager(0);
+        mainActivityViewModel.getRandomCourseLiveData_2().observe(this, new Observer<DataSnapshot>() {
+            @Override
+            public void onChanged(DataSnapshot dataSnapshot) {
+                DisplayCourse course = dataSnapshot.getValue(DisplayCourse.class);
+                randomCourse_2.add(course);
+                recom_course_2 = new CourseListAdapter(randomCourse_2,"home_page");
+                binding.randomCourseRecyclerView2.setAdapter(recom_course_2);
+            }
+        });
 
         if (mOnPageChangeListener == null) {
             mOnPageChangeListener = new ViewPager.OnPageChangeListener() {
@@ -194,7 +227,14 @@ public class HomeFragment extends Fragment {
         binding.activityVideoViewPager.setClipToPadding(false);
         binding.activityVideoViewPager.setPageMargin(30);
 
-        new GetVideo(binding.activityVideoViewPager, getContext(), this.getLifecycle()).execute();
+        mainActivityViewModel.getActivityVideoLiveData().observe(this, new Observer<DataSnapshot>() {
+            @Override
+            public void onChanged(DataSnapshot dataSnapshot) {
+                Video video = dataSnapshot.getValue(Video.class);
+                videoList.add(video);
+                binding.activityVideoViewPager.setAdapter(new VideoSliderAdapter(videoList, getContext(), getLifecycle()));
+            }
+        });
 
         if (mOnPageChangeListenerForActivityVideoViewPager == null) {
             mOnPageChangeListenerForActivityVideoViewPager = new ViewPager.OnPageChangeListener() {
@@ -215,6 +255,20 @@ public class HomeFragment extends Fragment {
             };
             binding.activityVideoViewPager.addOnPageChangeListener(mOnPageChangeListenerForActivityVideoViewPager);
         }
+
+        binding.searchButtonCardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!binding.searchEditText.getText().toString().equals("")) {
+                    Intent intent = new Intent(getActivity(), SearchResultActivity.class);
+                    intent.putExtra("searchQuery", binding.searchEditText.getText().toString().trim());
+                    startActivity(intent);
+                } else {
+                    binding.searchEditText.setError("Please enter something");
+                }
+
+            }
+        });
 
         return binding.getRoot();
     }
@@ -275,143 +329,6 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    private void createDummyCourse() {
-        for (int i = 0; i < 10; i++) {
-            courseList.add(new Course("Course " + i));
-            recommendedCourseList.add(new Course("Course " + i, "Subtitle " + i));
-        }
-    }
-
-
-    private void createDummyActivityForViewPager() {
-
-        moreCourses = new ArrayList<>();
-
-        for (int i = 0; i < 8; i++) {
-            moreCourses.add(new Course("Course " + i, "Subtitle " + i));
-        }
-    }
-
-    // get the activity pic from db
-    public class GetActivityPics extends AsyncTask<Void, Void, Void> {
-
-        ViewPager viewPager;
-        Context context;
-
-        List<Activity> activityPics = new ArrayList<>();
-
-        public GetActivityPics(ViewPager viewPager, Context context) {
-            this.viewPager = viewPager;
-            this.context = context;
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            getData(new ActivityPicLoadCallback() {
-                @Override
-                public void onPicLoadCallback(List<Activity> activityPics) {
-                    activityAdapter = new ActivitySliderAdapter(context, activityPics, "activity");
-                    viewPager.setAdapter(activityAdapter);
-                    changeIndicatorOnActivityViewPager(0);// this depends on the adapter, that's why it it inside async task
-                }
-            });
-            return null;
-        }
-
-        public void getData(ActivityPicLoadCallback callback) {
-            db_activity_pic = FirebaseDatabase.getInstance().getReference().child("Activity Pics");
-            db_activity_pic.keepSynced(true);
-            db_activity_pic.addChildEventListener(new ChildEventListener() {
-                @Override
-                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                    Activity one_activity = dataSnapshot.getValue(Activity.class);
-                    activityPics.add(one_activity);
-                    callback.onPicLoadCallback(activityPics);
-                }
-
-                @Override
-                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                }
-
-                @Override
-                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-                }
-
-                @Override
-                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
-        }
-    }
-
-    // get the videos from db
-    public static class GetVideo extends AsyncTask<Void, Void, Void> {
-
-        ViewPager viewPager;
-        Context context;
-        Lifecycle lifecycle;
-
-        List<Video> list = new ArrayList<>();
-
-        public GetVideo(ViewPager viewPager, Context context, Lifecycle mLifeCycle) {
-            this.viewPager = viewPager;
-            this.context = context;
-            this.lifecycle = mLifeCycle;
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            getData(new VideoLoadCallback() {
-                @Override
-                public void onLoadCallback(List<Video> list) {
-                    viewPager.setAdapter(new VideoSliderAdapter(list, context, lifecycle));
-                }
-            });
-            return null;
-        }
-
-        public void getData(VideoLoadCallback callback) {
-            DatabaseReference db = FirebaseDatabase.getInstance().getReference().child("Activity Videos");
-            db.keepSynced(true);
-            db.addChildEventListener(new ChildEventListener() {
-                @Override
-                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                    Video video = dataSnapshot.getValue(Video.class);
-                    list.add(video);
-                    callback.onLoadCallback(list);
-                }
-
-                @Override
-                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                }
-
-                @Override
-                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-                }
-
-                @Override
-                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
-        }
-    }
-
     public static boolean isVisible(final View view) {
         if (view == null) {
             return false;
@@ -423,5 +340,10 @@ public class HomeFragment extends Fragment {
         view.getGlobalVisibleRect(actualPosition);
         final Rect screen = new Rect(0, 0, Resources.getSystem().getDisplayMetrics().widthPixels, Resources.getSystem().getDisplayMetrics().heightPixels);
         return actualPosition.intersect(screen);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
     }
 }

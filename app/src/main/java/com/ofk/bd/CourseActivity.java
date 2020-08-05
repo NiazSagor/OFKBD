@@ -1,8 +1,10 @@
 package com.ofk.bd;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
@@ -12,6 +14,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.ofk.bd.CourseActivityAdapter.CourseViewPager;
+import com.ofk.bd.HelperClass.DisplayCourse;
 import com.ofk.bd.ViewModel.VideoFromListViewModel;
 import com.ofk.bd.databinding.ActivityCourseBinding;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants;
@@ -41,6 +44,15 @@ public class CourseActivity extends FragmentActivity {
 
         // Calling view model to get the selected video from the fragment
         videoFromListViewModel = ViewModelProviders.of(CourseActivity.this).get(VideoFromListViewModel.class);
+
+        binding.backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(CourseActivity.this, DisplayCourseActivity.class)
+                        .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                finish();
+            }
+        });
     }
 
     // Bottom navigation listener

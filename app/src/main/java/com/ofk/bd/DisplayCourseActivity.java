@@ -1,8 +1,6 @@
 package com.ofk.bd;
 
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
 
@@ -57,7 +55,7 @@ public class DisplayCourseActivity extends AppCompatActivity {
         RecyclerView courseRecyclerView = binding.courseRecyclerView;
         courseRecyclerView.setLayoutManager(new GridLayoutManager(DisplayCourseActivity.this, 2));
 
-        CourseListAdapter adapter = new CourseListAdapter(courses);
+        CourseListAdapter adapter = new CourseListAdapter(courses, "displayCourse");
         courseRecyclerView.setAdapter(adapter);
 
         adapter.setOnItemClickListener(new CourseListAdapter.OnItemClickListener() {

@@ -25,7 +25,8 @@ public class CourseSliderListAdapter extends RecyclerView.Adapter<CourseSliderLi
 
     private static final String TAG = "CourseSliderListAdapter";
 
-    private int[] avatars = {R.drawable.art, R.drawable.calligraphy, R.drawable.case_solve, R.drawable.craft, R.drawable.critical, R.drawable.digital, R.drawable.glass_paint, R.drawable.guitar, R.drawable.programming, R.drawable.robotics};
+    private int[] firstSixIcons = {R.drawable.art, R.drawable.calligraphy, R.drawable.case_solve, R.drawable.craft, R.drawable.critical, R.drawable.digital};
+    private int[] secondFiveIcons = {R.drawable.guitar, R.drawable.programming, R.drawable.programming, R.drawable.robotics};
 
     private List<Course> courseList;
 
@@ -77,16 +78,22 @@ public class CourseSliderListAdapter extends RecyclerView.Adapter<CourseSliderLi
         if (mSender.equals("random")) {
             holder.courseTitleTextView.setText(courseList.get(position).getCourseTitle());
             holder.courseSubtitle.setText(courseList.get(position).getCourseSubtitle());
-            holder.courseImageView.setImageResource(avatars[position]);
+            //holder.courseImageView.setImageResource(avatars[position]);
         } else if (mSender.equals("tutorial")) {
             holder.courseTitleTextView.setText(courseList.get(position).getCourseTitle());
             holder.courseSubtitle.setText(courseList.get(position).getCourseSubtitle());
         } else if (mSender.equals("viewpager")) {
             holder.courseTitleTextView.setText(courseList.get(position).getCourseTitle());
-            holder.courseImageView.setImageResource(avatars[position]);
+            holder.courseImageView.setImageResource(firstSixIcons[position]);
         } else if (mSender.equals("course_resource")) {
             holder.courseTitleTextView.setText(courseList.get(position).getCourseTitle());
-            holder.courseImageView.setImageResource(avatars[position]);
+            holder.courseImageView.setImageResource(firstSixIcons[position]);
+        } else if (mSender.equals("viewpager0")) {
+            holder.courseTitleTextView.setText(courseList.get(position).getCourseTitle());
+            holder.courseImageView.setImageResource(firstSixIcons[position]);
+        } else if (mSender.equals("viewpager1")) {
+            holder.courseTitleTextView.setText(courseList.get(position).getCourseTitle());
+            holder.courseImageView.setImageResource(secondFiveIcons[position]);
         }
     }
 
@@ -126,7 +133,7 @@ public class CourseSliderListAdapter extends RecyclerView.Adapter<CourseSliderLi
 
     @Override
     public int getItemViewType(int position) {
-        if (mSender.equals("viewpager")) {
+        if (mSender.equals("viewpager") || mSender.equals("viewpager0") || mSender.equals("viewpager1")) {
             return VIEW_PAGER_COURSE;
         } else if (mSender.equals("random")) {
             return RANDOM_COURSE;

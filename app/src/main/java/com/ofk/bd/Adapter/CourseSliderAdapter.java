@@ -68,7 +68,7 @@ public class CourseSliderAdapter extends PagerAdapter {
         courseRecyclerView.setLayoutManager(new GridLayoutManager(mContext, 3));
 
         if (courseList.size() >= 7 && courseList.size() <= 12) {
-            adapter = new CourseSliderListAdapter(finalList.get(position), "viewpager");
+            adapter = new CourseSliderListAdapter(finalList.get(position), "viewpager" + position);
             courseRecyclerView.setAdapter(adapter);
         } else if (courseList.size() == 6 || courseList.size() < 6) {
             adapter = new CourseSliderListAdapter(courseList, "viewpager");

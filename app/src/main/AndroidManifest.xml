@@ -13,9 +13,19 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".DisplayCourseActivity"
-            android:parentActivityName=".MainActivity"
+            android:name=".SearchResultActivity"
             android:launchMode="singleTop"
+            android:theme="@style/AppTheme.Transparent" />
+        <activity
+            android:name=".SplashActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/AppTheme.Transparent">
+
+        </activity>
+        <activity
+            android:name=".DisplayCourseActivity"
+            android:launchMode="singleTop"
+            android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.Transparent" />
         <activity
             android:name=".CourseActivity"
