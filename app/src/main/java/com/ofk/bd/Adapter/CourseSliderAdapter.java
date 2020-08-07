@@ -79,7 +79,7 @@ public class CourseSliderAdapter extends PagerAdapter {
             @Override
             public void onItemClick(int position, View view) {
                 Intent intent = new Intent(fragmentHolderActivity, DisplayCourseActivity.class);
-                intent.putExtra("course_name", courseList.get(position).getCourseTitle());
+                intent.putExtra("section_name", courseList.get(position).getCourseTitle());
                 fragmentHolderActivity.startActivity(intent);
                 Log.d(TAG, "onItemClick: " + courseList.get(position).getCourseTitle());
             }

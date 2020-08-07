@@ -17,7 +17,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseReference;
 import com.ofk.bd.Adapter.ActivitySliderAdapter;
 import com.ofk.bd.Adapter.CourseSliderAdapter;
 import com.ofk.bd.Adapter.VideoSliderAdapter;
@@ -92,6 +91,20 @@ public class HomeFragment extends Fragment {
         return fragment;
     }
 
+    // activity pics list
+    private List<Activity> activityPics;
+
+    // activity video list
+    private List<Video> videoList;
+
+    // random course 1 display
+    private List<DisplayCourse> randomCourse_1;
+
+    // random course 2 display
+    private List<DisplayCourse> randomCourse_2;
+
+    private MainActivityViewModel mainActivityViewModel;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -99,24 +112,17 @@ public class HomeFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        activityPics = new ArrayList<>();
+        randomCourse_1 = new ArrayList<>();
+        randomCourse_2 = new ArrayList<>();
+        videoList = new ArrayList<>();
+
+        mainActivityViewModel = ViewModelProviders.of(getActivity()).get(MainActivityViewModel.class);
     }
 
     // activity pics adapter
     private ActivitySliderAdapter activityAdapter;
 
-    // activity pics list
-    private List<Activity> activityPics = new ArrayList<>();
-
-    // activity video list
-    private List<Video> videoList = new ArrayList<>();
-
-    // random course 1 display
-    private List<DisplayCourse> randomCourse_1 = new ArrayList<>();
-
-    // random course 2 display
-    private List<DisplayCourse> randomCourse_2 = new ArrayList<>();
-
-    private MainActivityViewModel mainActivityViewModel;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -124,7 +130,6 @@ public class HomeFragment extends Fragment {
 
         binding = FragmentHomeBinding.inflate(getLayoutInflater());
 
-        mainActivityViewModel = ViewModelProviders.of(getActivity()).get(MainActivityViewModel.class);
         // getting course list from view model
         mainActivityViewModel.getListMutableLiveData().observe(this, new Observer<List<Course>>() {
             @Override
@@ -151,6 +156,8 @@ public class HomeFragment extends Fragment {
             }
         });
 
+        LinearLayoutManager manager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
+
         // random course 1
         binding.randomCourseRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
 
@@ -172,7 +179,7 @@ public class HomeFragment extends Fragment {
             public void onChanged(DataSnapshot dataSnapshot) {
                 DisplayCourse course = dataSnapshot.getValue(DisplayCourse.class);
                 randomCourse_2.add(course);
-                recom_course_2 = new CourseListAdapter(randomCourse_2,"home_page");
+                recom_course_2 = new CourseListAdapter(randomCourse_2, "home_page");
                 binding.randomCourseRecyclerView2.setAdapter(recom_course_2);
             }
         });
@@ -345,5 +352,28 @@ public class HomeFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        activityPics.clear();
+        randomCourse_1.clear();
+        randomCourse_2.clear();
+        videoList.clear();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        activityPics.clear();
+        randomCourse_1.clear();
+        randomCourse_2.clear();
+        videoList.clear();
     }
 }

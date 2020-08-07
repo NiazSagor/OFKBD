@@ -40,6 +40,11 @@ public class ActivitySliderAdapter extends PagerAdapter {
     }
 
     @Override
+    public int getItemPosition(@NonNull Object object) {
+        return POSITION_NONE;
+    }
+
+    @Override
     public int getCount() {
         return activityList.size();
     }

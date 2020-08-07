@@ -2,13 +2,15 @@ package com.ofk.bd.HelperClass;
 
 public class DisplayCourse {
     String courseTitle;
+    String courseTitleEnglish;
     String thumbnailURL;
 
     public DisplayCourse() {
     }
 
-    public DisplayCourse(String courseTitle, String thumbnailURL) {
+    public DisplayCourse(String courseTitle, String courseTitleEnglish, String thumbnailURL) {
         this.courseTitle = courseTitle;
+        this.courseTitleEnglish = courseTitleEnglish;
         this.thumbnailURL = thumbnailURL;
     }
 
@@ -18,6 +20,14 @@ public class DisplayCourse {
 
     public void setCourseTitle(String courseTitle) {
         this.courseTitle = courseTitle;
+    }
+
+    public String getCourseTitleEnglish() {
+        return courseTitleEnglish;
+    }
+
+    public void setCourseTitleEnglish(String courseTitleEnglish) {
+        this.courseTitleEnglish = courseTitleEnglish;
     }
 
     public String getThumbnailURL() {

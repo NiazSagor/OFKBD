@@ -1,33 +1,54 @@
 package com.ofk.bd;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.ofk.bd.Adapter.MainActivityViewPager;
+import com.ofk.bd.HelperClass.SectionCourseTuple;
+import com.ofk.bd.HelperClass.ServiceResultReceiver;
 import com.ofk.bd.ViewModel.MainActivityViewModel;
 import com.ofk.bd.databinding.ActivityMainBinding;
 
-public class MainActivity extends FragmentActivity {
+import java.util.List;
+
+public class MainActivity extends FragmentActivity implements ServiceResultReceiver.Receiver {
+
+    // our result receiver from job intent
+    private ServiceResultReceiver mReceiver;
+    // for result receiver
+    private static final int SHOW_RESULT = 123;
+
+    private static final String TAG = "MainActivity";
 
     private ActivityMainBinding binding;
     private MenuItem prevMenuItem;
     private MainActivityViewPager adapter;
     private MainActivityViewModel viewModel;
 
+    private SharedPreferences sharedPreferences;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
         // for every data needed in main activity child fragments
-        viewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
+        viewModel = ViewModelProviders.of(MainActivity.this).get(MainActivityViewModel.class);
+
+        sharedPreferences = getSharedPreferences("intent", MODE_PRIVATE);
+        // initialize receiver
+        mReceiver = new ServiceResultReceiver(new Handler());
+        mReceiver.setReceiver(this);
 
         setupViewPager();
 
@@ -92,5 +113,33 @@ public class MainActivity extends FragmentActivity {
         } else {
             binding.viewpager.setCurrentItem(0);
         }
+    }
+
+    @Override
+    public void onReceiveResult(int resultCode, Bundle resultData) {
+        switch (resultCode) {
+            case SHOW_RESULT:
+                if (resultData != null) {
+                    int count = resultData.getInt("updatedCount");
+                    String course = resultData.getString("courseName");
+                    //viewModel.updateVideoCount(count, course);
+                    //Log.d(TAG, "onReceiveResult: " + resultData.getInt("updatedCount"));
+                }
+        }
+    }
+
+    private void calculateUserProgress(){
+        viewModel.getCombinedList().observe(this, new Observer<List<SectionCourseTuple>>() {
+            @Override
+            public void onChanged(List<SectionCourseTuple> sectionCourseTuples) {
+                for(SectionCourseTuple courseTuple : sectionCourseTuples){
+                    if(courseTuple.getVideoWatched() == courseTuple.getTotalVideos()){
+                        int currentCompletedCourse = viewModel.getCourseCompletedInTotal();
+                        currentCompletedCourse++;
+                        viewModel.updateUserCourseTotal(currentCompletedCourse);
+                    }
+                }
+            }
+        });
     }
 }

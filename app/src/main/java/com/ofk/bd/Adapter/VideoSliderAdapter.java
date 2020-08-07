@@ -66,6 +66,11 @@ public class VideoSliderAdapter extends PagerAdapter {
     }
 
     @Override
+    public int getItemPosition(@NonNull Object object) {
+        return POSITION_NONE;
+    }
+
+    @Override
     public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
         return (view == (CardView) object);
     }

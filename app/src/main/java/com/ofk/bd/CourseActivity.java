@@ -14,7 +14,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.ofk.bd.CourseActivityAdapter.CourseViewPager;
-import com.ofk.bd.HelperClass.DisplayCourse;
+import com.ofk.bd.ViewModel.CourseActivityViewModel;
 import com.ofk.bd.ViewModel.VideoFromListViewModel;
 import com.ofk.bd.databinding.ActivityCourseBinding;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants;
@@ -22,14 +22,20 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerListener;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class CourseActivity extends FragmentActivity {
 
     private static final String TAG = "CourseActivity";
 
     private ActivityCourseBinding binding;
+
     private MenuItem prevMenuItem;
 
     private VideoFromListViewModel videoFromListViewModel;
+
+    private CourseActivityViewModel courseActivityViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,10 +43,16 @@ public class CourseActivity extends FragmentActivity {
         binding = ActivityCourseBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // This is the course we clicked in home fragment
+        // This is the course we clicked in display course activity
         binding.courseName.setText(getIntent().getStringExtra("course_name"));
 
-        binding.bottomNavigation.setOnNavigationItemSelectedListener(mNavListener);
+        courseActivityViewModel = ViewModelProviders.of(CourseActivity.this).get(CourseActivityViewModel.class);
+
+        List<String> list = new ArrayList<>();
+        list.add(getIntent().getStringExtra("section_name"));
+        list.add(getIntent().getStringExtra("course_name_english"));
+
+        courseActivityViewModel.setCombinedList(list);
 
         // Calling view model to get the selected video from the fragment
         videoFromListViewModel = ViewModelProviders.of(CourseActivity.this).get(VideoFromListViewModel.class);
@@ -53,6 +65,8 @@ public class CourseActivity extends FragmentActivity {
                 finish();
             }
         });
+
+        binding.bottomNavigation.setOnNavigationItemSelectedListener(mNavListener);
     }
 
     // Bottom navigation listener
@@ -104,7 +118,6 @@ public class CourseActivity extends FragmentActivity {
                             @Override
                             public void onChanged(String s) {
                                 if (s != null) {
-                                    Log.d(TAG, "onChanged: " + s);
                                     youTubePlayer.loadVideo(s, 0);
                                 }
                             }
@@ -114,6 +127,24 @@ public class CourseActivity extends FragmentActivity {
                     @Override
                     public void onStateChange(YouTubePlayer youTubePlayer, PlayerConstants.PlayerState playerState) {
                         //TODO do something if 1 video is finished watching
+                        if (playerState == PlayerConstants.PlayerState.ENDED) {
+
+                            String courseName = getIntent().getStringExtra("course_name_english");
+
+                            Log.d(TAG, "onStateChange: " + courseName);
+
+                            int i = courseActivityViewModel.getCurrentVideoWatched(courseName);// course wise video watched
+
+                            i++;
+
+                            courseActivityViewModel.updateVideo(i, courseName);// course wise video update
+
+                            int j = courseActivityViewModel.getVideoWatchedInTotal();// in total video watched
+                            Log.d(TAG, "onStateChange: " + j);
+                            j++;
+
+                            courseActivityViewModel.updateUserVideoTotal(j);// in total video watched update
+                        }
                     }
 
                     @Override

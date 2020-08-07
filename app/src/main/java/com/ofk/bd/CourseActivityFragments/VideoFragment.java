@@ -1,16 +1,27 @@
 package com.ofk.bd.CourseActivityFragments;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.ofk.bd.CourseActivityAdapter.CourseSectionAdapter;
 import com.ofk.bd.HelperClass.Section;
 import com.ofk.bd.HelperClass.Video;
-import com.ofk.bd.ViewModel.VideoFromListViewModel;
+import com.ofk.bd.ViewModel.CourseActivityViewModel;
 import com.ofk.bd.databinding.FragmentVideoBinding;
 
 import java.util.ArrayList;
@@ -56,6 +67,12 @@ public class VideoFragment extends Fragment {
         return fragment;
     }
 
+    private CourseActivityViewModel courseActivityViewModel;
+
+
+    private String parentNode;
+    private String childNode;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,15 +80,15 @@ public class VideoFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+        courseActivityViewModel = ViewModelProviders.of(getActivity()).get(CourseActivityViewModel.class);
     }
 
     private FragmentVideoBinding binding;
+
     private List<Section> sectionList;
-//    private List<Video> videoList;
 
     private List<List<Video>> sectionWiseVideoList;
-
-    private VideoFromListViewModel videoFromListViewModel;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -79,10 +96,13 @@ public class VideoFragment extends Fragment {
         // Inflate the layout for this fragment
         binding = FragmentVideoBinding.inflate(getLayoutInflater());
 
-        setUpList();
-
-        binding.sectionListRecyclerView.setAdapter(new CourseSectionAdapter(getActivity(), sectionList, sectionWiseVideoList));
-
+        courseActivityViewModel.getCombinedList().observe(this, new Observer<List<String>>() {
+            @Override
+            public void onChanged(List<String> strings) {
+                Log.d(TAG, "onChanged: " + strings.toString());
+                new GetData(strings).execute();
+            }
+        });
         return binding.getRoot();
     }
 
@@ -90,12 +110,10 @@ public class VideoFragment extends Fragment {
 
         sectionList = new ArrayList<>();
 
-        //videoList = new ArrayList<>();
-
         sectionWiseVideoList = new ArrayList<>();
 
         sectionList.add(new Section("প্রথম অধ্যায়ঃ বিভিন্ন ধরণের ফল (পার্ট ১)"));
-            sectionList.add(new Section("দ্বিতীয় অধ্যায়ঃ বিভিন্ন ধরণের ফল (পার্ট ২)"));
+        sectionList.add(new Section("দ্বিতীয় অধ্যায়ঃ বিভিন্ন ধরণের ফল (পার্ট ২)"));
         sectionList.add(new Section("তৃতীয় অধ্যায়ঃ বিভিন্ন ধরণের ফুল"));
 
 
@@ -116,5 +134,54 @@ public class VideoFragment extends Fragment {
         sectionWiseVideoList.add(list1);
         sectionWiseVideoList.add(list2);
         sectionWiseVideoList.add(list3);
+    }
+
+    public class GetData extends AsyncTask<Void, Void, Void> {
+
+        List<String> myList;
+        String parentNode, childNode;
+
+        public GetData(List<String> list) {
+            this.myList = list;
+            parentNode = myList.get(0) + " Section";
+            childNode = myList.get(1);
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            sectionList = new ArrayList<>();
+            DatabaseReference db = FirebaseDatabase.getInstance().getReference().child("Sub Section");
+            db.child(parentNode).child(childNode).child("Section").addChildEventListener(new ChildEventListener() {
+                @Override
+                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                    Section section = dataSnapshot.getValue(Section.class);
+                    sectionList.add(section);
+                    CourseSectionAdapter adapter = new CourseSectionAdapter(getActivity(), sectionList);
+                    adapter.setNodeList(myList);
+                    binding.sectionListRecyclerView.setAdapter(adapter);
+                }
+
+                @Override
+                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                }
+
+                @Override
+                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                }
+
+                @Override
+                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+            return null;
+        }
     }
 }
