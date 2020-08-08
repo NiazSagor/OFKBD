@@ -131,8 +131,6 @@ public class CourseActivity extends FragmentActivity {
 
                             String courseName = getIntent().getStringExtra("course_name_english");
 
-                            Log.d(TAG, "onStateChange: " + courseName);
-
                             int i = courseActivityViewModel.getCurrentVideoWatched(courseName);// course wise video watched
 
                             i++;
@@ -140,9 +138,10 @@ public class CourseActivity extends FragmentActivity {
                             courseActivityViewModel.updateVideo(i, courseName);// course wise video update
 
                             int j = courseActivityViewModel.getVideoWatchedInTotal();// in total video watched
+
                             Log.d(TAG, "onStateChange: " + j);
                             j++;
-
+                            Log.d(TAG, "onStateChange: " + j);
                             courseActivityViewModel.updateUserVideoTotal(j);// in total video watched update
                         }
                     }

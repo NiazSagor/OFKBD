@@ -10,20 +10,22 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-import com.ofk.bd.Dao.UserProgressDao;
-import com.ofk.bd.HelperClass.UserProgressClass;
+import com.ofk.bd.Dao.UserInfoDao;
+import com.ofk.bd.HelperClass.UserInfo;
 
-@Database(entities = UserProgressClass.class, version = 1, exportSchema = true)
-public abstract class UserProgressDatabase extends RoomDatabase {
-    private static final String TAG = "UserProgressDatabase";
-    private static UserProgressDatabase instance;
+@Database(entities = UserInfo.class, version = 1, exportSchema = true)
 
-    public abstract UserProgressDao userProgressDao();
+public abstract class UserInfoDatabase extends RoomDatabase {
 
-    public static synchronized UserProgressDatabase getInstance(Context context) {
+    private static final String TAG = "UserInfoDatabase";
+    private static UserInfoDatabase instance;
+
+    public abstract UserInfoDao userInfoDao();
+
+    public static synchronized UserInfoDatabase getInstance(Context context) {
         if (instance == null) {
             instance = Room.databaseBuilder(context.getApplicationContext(),
-                    UserProgressDatabase.class, "user_progress")
+                    UserInfoDatabase.class, "user_info")
                     .fallbackToDestructiveMigration()
                     .addCallback(roomCallback)
                     .build();
@@ -41,16 +43,16 @@ public abstract class UserProgressDatabase extends RoomDatabase {
 
     public static class PopulateDatabase extends AsyncTask<Void, Void, Void> {
 
-        private UserProgressDao dao;
+        private UserInfoDao dao;
 
-        public PopulateDatabase(UserProgressDatabase instance) {
-            this.dao = instance.userProgressDao();
+        public PopulateDatabase(UserInfoDatabase instance) {
+            this.dao = instance.userInfoDao();
         }
 
         @Override
         protected Void doInBackground(Void... voids) {
             Log.d(TAG, "doInBackground: ");
-            //dao.insert(new UserProgressClass("dummy", "dummy", "dummy", "", 0, 0));
+            //dao.insert(new UserInfo("niaz sagor", "01799018683", "niazsagor@gmail.com", 0, 1, 1));
             return null;
         }
     }

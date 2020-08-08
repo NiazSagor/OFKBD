@@ -70,6 +70,7 @@ public class CourseListAdapter extends RecyclerView.Adapter<CourseListAdapter.Co
 
         holder.title.setText(courseList.get(position).getCourseTitle());
 
+        mPicasso.setIndicatorsEnabled(false);
         mPicasso.load(courseList.get(position).getThumbnailURL())
                 .networkPolicy(NetworkPolicy.OFFLINE)
                 .into(holder.thumbnail, new Callback() {

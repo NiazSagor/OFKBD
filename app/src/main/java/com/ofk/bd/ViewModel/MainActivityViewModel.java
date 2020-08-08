@@ -13,6 +13,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.ofk.bd.HelperClass.Course;
 import com.ofk.bd.HelperClass.FirebaseQueryLiveData;
 import com.ofk.bd.HelperClass.SectionCourseTuple;
+import com.ofk.bd.HelperClass.UserInfo;
+import com.ofk.bd.Repository.UserInfoRepository;
 import com.ofk.bd.Repository.UserProgressRepository;
 
 import java.util.ArrayList;
@@ -59,6 +61,11 @@ public class MainActivityViewModel extends AndroidViewModel {
      *
      * */
 
+    UserInfoRepository userInfoRepository;
+
+    LiveData<UserInfo> userInfoLiveData;
+
+    MutableLiveData<Integer> currentIndexOnBadge = new MutableLiveData<>();
 
     public MainActivityViewModel(@NonNull Application application) {
         super(application);
@@ -66,6 +73,10 @@ public class MainActivityViewModel extends AndroidViewModel {
         repository = new UserProgressRepository(application);
         enrolledCoursesFromOfflineDb = repository.getCourseEnrolled();
         combinedList = repository.getCombinedSectionCourseList();
+
+        userInfoRepository = new UserInfoRepository(application);
+        userInfoLiveData = userInfoRepository.getUserInfoLiveData();
+
 
         createCourseList();
         getActivityPicFromDatabase();
@@ -184,23 +195,34 @@ public class MainActivityViewModel extends AndroidViewModel {
      * */
 
     public int getVideoWatchedInTotal() {
-        return repository.getVideoWatchedInTotal();
+        return userInfoRepository.getVideoWatchedInTotal();
     }
 
     public int getCourseCompletedInTotal() {
-        return repository.getCourseCompletedInTotal();
+        return userInfoRepository.getCourseCompletedInTotal();
     }
 
     public int getQuizCompletedInTotal() {
-        return repository.getQuizCompletedInTotal();
+        return userInfoRepository.getQuizCompletedInTotal();
     }
 
     public void updateUserVideoTotal(int count) {
-        repository.updateUserVideoTotal(count);
+        userInfoRepository.updateUserVideoTotal(count);
     }
 
     public void updateUserCourseTotal(int count) {
-        repository.updateUserCourseTotal(count);
+        userInfoRepository.updateUserCourseTotal(count);
     }
 
+    public void insert(UserInfo userInfo){
+        userInfoRepository.insert(userInfo);
+    }
+
+    public LiveData<UserInfo> getUserInfoLiveData() {
+        return userInfoLiveData;
+    }
+
+    public MutableLiveData<Integer> getCurrentIndexOnBadge() {
+        return currentIndexOnBadge;
+    }
 }

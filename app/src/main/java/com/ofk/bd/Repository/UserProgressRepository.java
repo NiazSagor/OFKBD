@@ -2,9 +2,11 @@ package com.ofk.bd.Repository;
 
 import android.app.Application;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
+import com.ofk.bd.Dao.UserInfoDao;
 import com.ofk.bd.Dao.UserProgressDao;
 import com.ofk.bd.Database.UserProgressDatabase;
 import com.ofk.bd.HelperClass.SectionCourseTuple;
@@ -34,9 +36,6 @@ public class UserProgressRepository {
      *
      * */
 
-    private int videoWatchedInTotal;// video watched in total
-    private int courseCompletedInTotal;// video watched in total
-    private int quizCompletedInTotal;// quiz completed in total
 
     public UserProgressRepository(Application application) {
         UserProgressDatabase database = UserProgressDatabase.getInstance(application);
@@ -176,133 +175,6 @@ public class UserProgressRepository {
         @Override
         protected Void doInBackground(UserProgressClass... userProgressClasses) {
             dao.update(userProgressClasses[0]);
-            return null;
-        }
-    }
-
-
-    /**************************User info table*********************************/
-
-    public void insert(UserInfo userInfo) {
-        new InsertUserInfoAsyncTask(userProgressDao).execute(userInfo);
-    }
-
-    public void update(UserInfo userInfo) {
-        new UpdateUserInfoAsyncTask(userProgressDao).execute(userInfo);
-    }
-
-    public static class InsertUserInfoAsyncTask extends AsyncTask<UserInfo, Void, Void> {
-
-        UserProgressDao dao;
-
-        public InsertUserInfoAsyncTask(UserProgressDao dao) {
-            this.dao = dao;
-        }
-
-        @Override
-        protected Void doInBackground(UserInfo... userInfos) {
-            dao.insert(userInfos[0]);
-            return null;
-        }
-    }
-
-    public static class UpdateUserInfoAsyncTask extends AsyncTask<UserInfo, Void, Void> {
-
-        UserProgressDao dao;
-
-        public UpdateUserInfoAsyncTask(UserProgressDao dao) {
-            this.dao = dao;
-        }
-
-        @Override
-        protected Void doInBackground(UserInfo... userInfos) {
-            dao.update(userInfos[0]);
-            return null;
-        }
-    }
-
-    // total video watched in total
-    public int getVideoWatchedInTotal() {
-        new GetVideoWatchedInTotal().execute();
-        return videoWatchedInTotal;
-    }
-
-    private class GetVideoWatchedInTotal extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            videoWatchedInTotal = userProgressDao.getCurrentCompletedVideoCount();
-            return null;
-        }
-    }
-
-    // total course completed
-    public int getCourseCompletedInTotal() {
-        new GetCourseCompletedInTotal().execute();
-        return courseCompletedInTotal;
-    }
-
-    private class GetCourseCompletedInTotal extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            courseCompletedInTotal = userProgressDao.getCurrentCompletedCourseCount();
-            return null;
-        }
-    }
-
-    public void updateUserVideoTotal(int count) {
-        new UpdateUserVideoTotal(userProgressDao, count).execute();
-    }
-
-    private static class UpdateUserVideoTotal extends AsyncTask<Void, Void, Void> {
-
-        UserProgressDao dao;
-        int count;
-
-        public UpdateUserVideoTotal(UserProgressDao dao, int count) {
-            this.dao = dao;
-            this.count = count;
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            dao.updateUserVideoTotal(count);
-            return null;
-        }
-    }
-
-    public void updateUserCourseTotal(int count) {
-        new UpdateUserCourseTotal(userProgressDao, count).execute();
-    }
-
-    private class UpdateUserCourseTotal extends AsyncTask<Void, Void, Void> {
-
-        UserProgressDao dao;
-        int count;
-
-        public UpdateUserCourseTotal(UserProgressDao dao, int count) {
-            this.dao = dao;
-            this.count = count;
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            dao.updateUserCourseTotal(count);
-            return null;
-        }
-    }
-
-    public int getQuizCompletedInTotal(){
-        new GetQuizCompletedInTotal().execute();
-        return quizCompletedInTotal;
-    }
-
-    private class GetQuizCompletedInTotal extends AsyncTask<Void, Void, Void>{
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            quizCompletedInTotal = userProgressDao.getCurrentCompletedQuizCount();
             return null;
         }
     }

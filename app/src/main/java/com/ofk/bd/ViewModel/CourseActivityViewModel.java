@@ -1,18 +1,23 @@
 package com.ofk.bd.ViewModel;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
+import com.ofk.bd.Repository.UserInfoRepository;
 import com.ofk.bd.Repository.UserProgressRepository;
 
 import java.util.List;
 
 public class CourseActivityViewModel extends AndroidViewModel {
+    private static final String TAG = "CourseActivityViewModel";
 
     UserProgressRepository repository;
+
+    UserInfoRepository userInfoRepository;
 
     MutableLiveData<String> sectionName = new MutableLiveData<>();
     MutableLiveData<String> courseName = new MutableLiveData<>();
@@ -22,6 +27,7 @@ public class CourseActivityViewModel extends AndroidViewModel {
     public CourseActivityViewModel(@NonNull Application application) {
         super(application);
         repository = new UserProgressRepository(application);
+        userInfoRepository = new UserInfoRepository(application);
     }
 
     public void setCombinedList(List<String> list) {
@@ -64,11 +70,12 @@ public class CourseActivityViewModel extends AndroidViewModel {
      *
      * */
 
-    public int getVideoWatchedInTotal(){
-        return repository.getVideoWatchedInTotal();
+    public int getVideoWatchedInTotal() {
+        return userInfoRepository.getVideoWatchedInTotal();
     }
 
-    public void updateUserVideoTotal(int count){
-        repository.updateUserVideoTotal(count);
+    public void updateUserVideoTotal(int count) {
+        Log.d(TAG, "updateUserVideoTotal: " + count);
+        userInfoRepository.updateUserVideoTotal(count);
     }
 }

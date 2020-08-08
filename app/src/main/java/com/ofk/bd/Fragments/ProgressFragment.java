@@ -22,6 +22,7 @@ import com.ofk.bd.HelperClass.BadgeUtilityClass;
 import com.ofk.bd.HelperClass.EnrolledCourse;
 import com.ofk.bd.HelperClass.Progress;
 import com.ofk.bd.HelperClass.SectionCourseTuple;
+import com.ofk.bd.HelperClass.UserInfo;
 import com.ofk.bd.R;
 import com.ofk.bd.ViewModel.MainActivityViewModel;
 import com.ofk.bd.databinding.FragmentProgressBinding;
@@ -100,7 +101,6 @@ public class ProgressFragment extends Fragment {
     }
 
     private FragmentProgressBinding binding;
-    private List<Progress> dummyProgress;
     long total = 0;
 
     List<String> stringList;
@@ -119,6 +119,7 @@ public class ProgressFragment extends Fragment {
             @Override
             public void onChanged(List<SectionCourseTuple> sectionCourseTuples) {
                 if (sectionCourseTuples.size() != 0) {
+                    binding.courseProgressTextView.setVisibility(View.VISIBLE);
                     binding.subjectProgressRecyclerView.setAdapter(new ProgressListAdapter(sectionCourseTuples));
                 } else {
                     binding.courseProgressTextView.setVisibility(View.GONE);
@@ -135,75 +136,72 @@ public class ProgressFragment extends Fragment {
 
     private void getLevel() {
 
-        int current = mainActivityViewModel.getCourseCompletedInTotal();
+        mainActivityViewModel.getUserInfoLiveData().observe(this, new Observer<UserInfo>() {
+            @Override
+            public void onChanged(UserInfo userInfo) {
+                int current = userInfo.getCourseCompleted();
+                Log.d(TAG, "getLevel: " + current);
 
-        Log.d(TAG, "getLevel: " + current);
+                if (current < 38) {
+                    BadgeUtilityClass badge = new BadgeUtilityClass(current);
 
-        if (current < 38) {
-            BadgeUtilityClass badge = new BadgeUtilityClass(current);
+                    int currentBadgeIconIndex = badge.getCurrentBadgeIconIndex();
+                    int nextBadgeIconIndex = currentBadgeIconIndex + 1;
 
-            int currentBadgeIconIndex = badge.getCurrentBadgeIconIndex();
-            int nextBadgeIconIndex = currentBadgeIconIndex + 1;
+                    mainActivityViewModel.getCurrentIndexOnBadge().setValue(currentBadgeIconIndex);
 
-            String currentLevelExtended = "Current Level : " + level_names[currentBadgeIconIndex];
+                    String currentLevelExtended = "Current Level : " + level_names[currentBadgeIconIndex];
 
-            String currentLevelOnly = level_names[currentBadgeIconIndex];
+                    String currentLevelOnly = level_names[currentBadgeIconIndex];
 
-            binding.currentLevelTextViewTop.setText(currentLevelExtended);
-            binding.currentBadgeImageViewTop.setImageResource(badge_icons[currentBadgeIconIndex]);
+                    binding.currentLevelTextViewTop.setText(currentLevelExtended);
+                    binding.currentBadgeImageViewTop.setImageResource(badge_icons[currentBadgeIconIndex]);
 
-            binding.currentLevelTextViewBelow.setText(currentLevelOnly);
-            binding.currentBadgeImageViewBelow.setImageResource(badge_icons[currentBadgeIconIndex]);
+                    binding.currentLevelTextViewBelow.setText(currentLevelOnly);
+                    binding.currentBadgeImageViewBelow.setImageResource(badge_icons[currentBadgeIconIndex]);
 
-            binding.nextLevelTextView.setText(level_names[nextBadgeIconIndex]);
-            binding.nextBadgeImageView.setImageResource(badge_icons[nextBadgeIconIndex]);
+                    binding.nextLevelTextView.setText(level_names[nextBadgeIconIndex]);
+                    binding.nextBadgeImageView.setImageResource(badge_icons[nextBadgeIconIndex]);
 
-            int maxProgressPossible = min_require_next_level[nextBadgeIconIndex] - min_require_next_level[currentBadgeIconIndex];
+                    int maxProgressPossible = min_require_next_level[nextBadgeIconIndex] - min_require_next_level[currentBadgeIconIndex];
 
-            binding.progressBar.setMax(maxProgressPossible);
+                    binding.progressBar.setMax(maxProgressPossible);
 
-            int currentProgress = min_require_next_level[nextBadgeIconIndex] - current;
+                    int currentProgress = min_require_next_level[nextBadgeIconIndex] - current;
 
-            Log.d(TAG, "getLevel: " + currentProgress);
+                    Log.d(TAG, "getLevel: " + currentProgress);
 
-            if (maxProgressPossible - currentProgress == 0) {
-                binding.progressBar.setProgress(0);
+                    if (maxProgressPossible - currentProgress == 0) {
+                        binding.progressBar.setProgress(0);
 
-                String progressText = currentProgress + "/" + maxProgressPossible;
+                        String progressText = currentProgress + "/" + maxProgressPossible;
 
-                binding.progressTextView.setText(progressText);
-            } else {
-                int diff = min_require_next_level[nextBadgeIconIndex] - current;
-                int progress = maxProgressPossible - diff;
+                        binding.progressTextView.setText(progressText);
+                    } else {
+                        int diff = min_require_next_level[nextBadgeIconIndex] - current;
+                        int progress = maxProgressPossible - diff;
 
-                String progressText = progress + "/" + maxProgressPossible;
+                        String progressText = progress + "/" + maxProgressPossible;
 
-                binding.progressTextView.setText(progressText);
-                binding.progressBar.setProgress(progress);
+                        binding.progressTextView.setText(progressText);
+                        binding.progressBar.setProgress(progress);
+                    }
+                } else if (current == 38) {
+                    String currentLevel = "Current Level : Super Kids 3";
+                    String currentLevelShort = "Super Kids 3";
+
+                    binding.currentLevelTextViewTop.setText(currentLevel);
+                    binding.currentLevelTextViewBelow.setText(currentLevelShort);
+                    binding.currentBadgeImageViewTop.setImageResource(badge_icons[14]);
+                    binding.currentBadgeImageViewBelow.setImageResource(badge_icons[14]);
+                    binding.nextBadgeImageView.setImageResource(badge_icons[14]);
+                    binding.nextLevelTextView.setText(level_names[14]);
+                    binding.progressTextView.setVisibility(View.GONE);
+                } else if (current == 0) {
+
+                }
             }
-        } else if (current == 38) {
-            String currentLevel = "Current Level : Super Kids 3";
-            String currentLevelShort = "Super Kids 3";
-
-            binding.currentLevelTextViewTop.setText(currentLevel);
-            binding.currentLevelTextViewBelow.setText(currentLevelShort);
-            binding.currentBadgeImageViewTop.setImageResource(badge_icons[14]);
-            binding.currentBadgeImageViewBelow.setImageResource(badge_icons[14]);
-            binding.nextBadgeImageView.setImageResource(badge_icons[14]);
-            binding.nextLevelTextView.setText(level_names[14]);
-            binding.progressTextView.setVisibility(View.GONE);
-        }else if(current == 0){
-
-        }
-    }
-
-    private void createDummyProgress() {
-
-        dummyProgress = new ArrayList<>();
-
-        for (int i = 1; i <= 5; i++) {
-            dummyProgress.add(new Progress("Subject " + i, i * 10));
-        }
+        });
     }
 
     public class TestClass extends AsyncTask<Void, Void, Void> {

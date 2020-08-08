@@ -90,6 +90,7 @@ public class VideoSliderAdapter extends PagerAdapter {
 
         thumbNail = view.findViewById(R.id.videoThumbNail);
 
+        picasso.setIndicatorsEnabled(false);
         picasso.load(videoList.get(position).getVideoThumbNail())
                 .networkPolicy(NetworkPolicy.OFFLINE)
                 .into(thumbNail, new Callback() {
@@ -121,77 +122,6 @@ public class VideoSliderAdapter extends PagerAdapter {
         youTubePlayerView = view.findViewById(R.id.youtube_player_view);
 
         mLifeCycle.addObserver(youTubePlayerView);
-/*
-        //TODO try to do this in background thread
-        youTubePlayerView.addYouTubePlayerListener(new YouTubePlayerListener() {
-            @Override
-            public void onReady(YouTubePlayer youTubePlayer) {
-                Log.d(TAG, "onReady: ");
-                layout.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        String id = videoList.get(position).getVideoURL();
-                        youTubePlayer.loadVideo(id, 0);
-                    }
-                });
-            }
-
-            @Override
-            public void onStateChange(YouTubePlayer youTubePlayer, PlayerConstants.PlayerState playerState) {
-                if (playerState == PlayerConstants.PlayerState.PLAYING) {
-                    layout.setVisibility(GONE);
-                    gradientView.setVisibility(GONE);
-                    thumbNail.setVisibility(GONE);
-                } else if (playerState == PlayerConstants.PlayerState.ENDED) {
-                    layout.setVisibility(View.VISIBLE);
-                    gradientView.setVisibility(View.VISIBLE);
-                    thumbNail.setVisibility(View.VISIBLE);
-                }
-            }
-
-            @Override
-            public void onPlaybackQualityChange(YouTubePlayer youTubePlayer, PlayerConstants.PlaybackQuality playbackQuality) {
-
-            }
-
-            @Override
-            public void onPlaybackRateChange(YouTubePlayer youTubePlayer, PlayerConstants.PlaybackRate playbackRate) {
-
-            }
-
-            @Override
-            public void onError(YouTubePlayer youTubePlayer, PlayerConstants.PlayerError playerError) {
-
-            }
-
-            @Override
-            public void onCurrentSecond(YouTubePlayer youTubePlayer, float v) {
-
-            }
-
-            @Override
-            public void onVideoDuration(YouTubePlayer youTubePlayer, float v) {
-
-            }
-
-            @Override
-            public void onVideoLoadedFraction(YouTubePlayer youTubePlayer, float v) {
-
-            }
-
-            @Override
-            public void onVideoId(YouTubePlayer youTubePlayer, String s) {
-
-            }
-
-            @Override
-            public void onApiChange(YouTubePlayer youTubePlayer) {
-
-            }
-        });
-
-
- */
 
         new AddListener(youTubePlayerView, position).execute();
 

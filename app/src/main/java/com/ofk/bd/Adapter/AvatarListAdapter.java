@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.ofk.bd.R;
 
+import java.util.List;
+
 public class AvatarListAdapter extends RecyclerView.Adapter<AvatarListAdapter.AvatarListViewHolder> {
 
     public static final int CHOOSE_AVATAR = 1;
@@ -20,10 +22,22 @@ public class AvatarListAdapter extends RecyclerView.Adapter<AvatarListAdapter.Av
 
     private OnItemClickListener mListener;
 
+    private List<Integer> acquiredBadgeIndexes;
+
     private int[] avatars = {R.drawable.dog, R.drawable.duck, R.drawable.fox, R.drawable.lion, R.drawable.lion, R.drawable.lion1, R.drawable.squirrel, R.drawable.duck};
+
+    private static int badge_icons[] = {R.drawable.apprentice_1, R.drawable.apprentice_2, R.drawable.apprentice_3,
+            R.drawable.journeyman_1, R.drawable.journeyman_2, R.drawable.journeyman_3,
+            R.drawable.master_1, R.drawable.master_2, R.drawable.master_3,
+            R.drawable.grand_master_1, R.drawable.grand_master_2, R.drawable.grand_master_3,
+            R.drawable.super_kids_1, R.drawable.super_kids_2, R.drawable.super_kids_3};
 
     public AvatarListAdapter(String mSender) {
         this.mSender = mSender;
+    }
+
+    public void setAcquiredBadgeIndexes(List<Integer> acquiredBadgeIndexes) {
+        this.acquiredBadgeIndexes = acquiredBadgeIndexes;
     }
 
     @NonNull
@@ -34,30 +48,33 @@ public class AvatarListAdapter extends RecyclerView.Adapter<AvatarListAdapter.Av
         switch (viewType) {
             case 1:
                 View view = inflater.inflate(R.layout.avatar_layout, parent, false);
-                return new AvatarListViewHolder(view, mListener);
+                return new AvatarListViewHolder(view, mListener, mSender);
 
             case 2:
                 View view2 = inflater.inflate(R.layout.mybadge_layout, parent, false);
-                return new AvatarListViewHolder(view2, mListener);
+                return new AvatarListViewHolder(view2, mListener, mSender);
 
             default:
                 View view3 = inflater.inflate(R.layout.age_layout, parent, false);
-                return new AvatarListViewHolder(view3, mListener);
+                return new AvatarListViewHolder(view3, mListener, mSender);
         }
     }
 
     @Override
     public void onBindViewHolder(@NonNull AvatarListAdapter.AvatarListViewHolder holder, int position) {
 
-        if(mSender.equals("view_badge")){
-            holder.myBadgeImageView.setImageResource(avatars[position]);
-        }else{
+        if (mSender.equals("view_badge")) {
+            holder.myBadgeImageView.setImageResource(badge_icons[acquiredBadgeIndexes.get(position)]);
+        } else {
             holder.avatarImageView.setImageResource(avatars[position]);
         }
     }
 
     @Override
     public int getItemCount() {
+        if (mSender.equals("view_badge")) {
+            return acquiredBadgeIndexes.size();
+        }
         return avatars.length;
     }
 
@@ -77,7 +94,7 @@ public class AvatarListAdapter extends RecyclerView.Adapter<AvatarListAdapter.Av
 
         ImageView myBadgeImageView;
 
-        public AvatarListViewHolder(@NonNull final View itemView, final OnItemClickListener listener) {
+        public AvatarListViewHolder(@NonNull final View itemView, final OnItemClickListener listener, String sender) {
             super(itemView);
 
             flipper = itemView.findViewById(R.id.viewFlipper);
@@ -90,10 +107,11 @@ public class AvatarListAdapter extends RecyclerView.Adapter<AvatarListAdapter.Av
                 @Override
                 public void onClick(View view) {
 
-                    flipper.showNext();
-
                     int position = getAdapterPosition();
 
+                    if (!sender.equals("view_badge")) {
+                        flipper.showNext();
+                    }
                     if (listener != null) {
                         if (position != RecyclerView.NO_POSITION) {
                             listener.onItemClick(position, view);
