@@ -1,6 +1,7 @@
 package com.ofk.bd.ViewModel;
 
 import android.app.Application;
+import android.icu.number.IntegerWidth;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -11,6 +12,9 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.ofk.bd.HelperClass.FirebaseQueryLiveData;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class FirebaseSearchViewModel extends AndroidViewModel {
 
@@ -33,6 +37,8 @@ public class FirebaseSearchViewModel extends AndroidViewModel {
 
     // how many videos are found
     MutableLiveData<Integer> foundVideoCount = new MutableLiveData<>();
+
+    MutableLiveData<List<Integer>> count = new MutableLiveData<>();
 
     public FirebaseSearchViewModel(@NonNull Application application) {
         super(application);
@@ -72,5 +78,9 @@ public class FirebaseSearchViewModel extends AndroidViewModel {
     // get how any videos were matched
     public MutableLiveData<Integer> getFoundVideoCount() {
         return foundVideoCount;
+    }
+
+    public MutableLiveData<List<Integer>> getCount() {
+        return count;
     }
 }

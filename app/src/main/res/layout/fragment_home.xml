@@ -2,6 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/parentScrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Fragments.HomeFragment">
@@ -27,16 +28,14 @@
             android:id="@+id/linearLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
             android:layout_marginTop="56dp"
             android:gravity="center"
             android:orientation="horizontal">
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
-                android:layout_weight="1"
                 android:orientation="vertical">
 
                 <TextView
@@ -61,7 +60,8 @@
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:src="@drawable/dog" />
+                        android:padding="2dp"
+                        android:src="@drawable/ic_letter_p" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -72,27 +72,43 @@
 
                 </LinearLayout>
 
-            </LinearLayout>
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardView"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                app:cardCornerRadius="30dp">
-
-                <ImageView
-
-                    android:id="@+id/avatarImageView"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center_vertical"
+                <androidx.cardview.widget.CardView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:padding="8dp"
-                    android:src="@drawable/dog" />
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="8dp">
 
-            </androidx.cardview.widget.CardView>
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/orange_gradient"
+                        android:orientation="horizontal">
 
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginStart="8dp"
+                            android:src="@drawable/ic_idea" />
+
+                        <TextView
+                            android:id="@+id/introTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/solaimanlipi"
+                            android:maxLines="2"
+                            android:padding="8dp"
+                            android:text="@string/intro"
+                            android:textAlignment="center"
+                            android:textColor="@android:color/white"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+            </LinearLayout>
 
         </LinearLayout>
 
@@ -107,11 +123,12 @@
             <EditText
                 android:id="@+id/searchEditText"
                 android:layout_width="0dp"
-                android:layout_height="50dp"
+                android:layout_height="40dp"
                 android:layout_marginStart="16dp"
                 android:layout_weight="1"
                 android:background="@drawable/rounded_edittext"
                 android:drawableStart="@drawable/ic_baseline_search_24"
+                android:fontFamily="@font/solaimanlipi"
                 android:hint="@string/search"
                 android:inputType="text"
                 android:paddingStart="16dp"
@@ -121,19 +138,19 @@
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/searchButtonCardView"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:clickable="true"
                 android:focusable="true"
                 app:cardBackgroundColor="@color/colorPrimary"
-                app:cardCornerRadius="25dp">
+                app:cardCornerRadius="20dp">
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="16dp"
+                    android:padding="12dp"
                     android:src="@drawable/ic_search" />
 
             </androidx.cardview.widget.CardView>
@@ -141,11 +158,21 @@
         </LinearLayout>
 
 
+        <View
+            android:id="@+id/line1"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@id/yourNameEditText"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:background="@color/lightgrey" />
+
+
         <RelativeLayout
             android:id="@+id/courseCardView"
             android:layout_width="match_parent"
             android:layout_height="250dp"
-            android:layout_below="@id/yourNameEditText"
+            android:layout_below="@id/line1"
             android:layout_marginTop="16dp">
 
             <androidx.viewpager.widget.ViewPager
@@ -170,11 +197,21 @@
 
         </RelativeLayout>
 
+        <View
+            android:id="@+id/line2"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@id/courseCardView"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:background="@color/lightgrey" />
+
         <RelativeLayout
             android:id="@+id/activityLayout"
             android:layout_width="match_parent"
             android:layout_height="200dp"
-            android:layout_below="@id/courseCardView"
+            android:layout_below="@id/line2"
             android:layout_marginTop="16dp">
 
             <androidx.viewpager.widget.ViewPager
@@ -200,15 +237,26 @@
 
         </RelativeLayout>
 
+        <View
+            android:id="@+id/line3"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@id/activityLayout"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:background="@color/lightgrey" />
+
         <TextView
             android:id="@+id/recommendedCourseTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/activityLayout"
+            android:layout_below="@id/line3"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="8dp"
-            android:text="@string/otherCourse"
+            android:fontFamily="@font/solaimanlipi"
+            android:text="@string/otherCourse1"
             android:textSize="16sp"
             android:textStyle="bold" />
 
@@ -223,14 +271,26 @@
             android:paddingEnd="8dp"
             android:paddingBottom="16dp" />
 
+        <View
+            android:id="@+id/line4"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@id/randomCourseRecyclerView"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:background="@color/lightgrey" />
+
         <TextView
             android:id="@+id/recommendedCourseTextView_2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/randomCourseRecyclerView"
+            android:layout_below="@id/line4"
             android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
             android:layout_marginBottom="8dp"
-            android:text="@string/otherCourse"
+            android:fontFamily="@font/solaimanlipi"
+            android:text="@string/otherCourse2"
             android:textSize="16sp"
             android:textStyle="bold" />
 
@@ -245,25 +305,108 @@
             android:paddingEnd="8dp"
             android:paddingBottom="16dp" />
 
-        <TextView
-            android:id="@+id/videoTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/randomCourseRecyclerView_2"
-            android:padding="16dp"
-            android:text="Videos"
-            android:textSize="16sp"
-            android:textStyle="bold" />
-
-        <androidx.viewpager.widget.ViewPager
-            android:id="@+id/activityVideoViewPager"
+        <View
+            android:id="@+id/line5"
             android:layout_width="match_parent"
-            android:layout_height="220dp"
-            android:layout_below="@id/videoTextView"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:paddingBottom="16dp" />
+            android:layout_height="1dp"
+            android:layout_below="@id/randomCourseRecyclerView_2"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:background="@color/lightgrey" />
 
+        <View
+            android:id="@+id/line6"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@id/randomCourseRecyclerView_2"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:background="@color/lightgrey" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/line6"
+            android:layout_marginTop="16dp"
+            android:orientation="vertical"
+            android:paddingBottom="16dp">
+
+            <TextView
+                android:id="@+id/rateAppTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/solaimanlipi"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="@string/rate"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <View
+                android:id="@+id/rateOFKView"
+                android:layout_width="250dp"
+                android:layout_height="110dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/ic_rate_ofk" />
+
+            <View
+                android:id="@+id/line8"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:background="@color/lightgrey" />
+
+            <androidx.viewpager.widget.ViewPager
+                android:id="@+id/activityVideoViewPager"
+                android:layout_width="match_parent"
+                android:layout_height="220dp"
+                android:layout_marginTop="16dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="16dp" />
+
+            <View
+                android:id="@+id/line7"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:background="@color/lightgrey" />
+
+            <TextView
+                android:id="@+id/shareAppTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/solaimanlipi"
+                android:paddingStart="16dp"
+                android:paddingTop="16dp"
+                android:paddingEnd="16dp"
+                android:text="@string/share"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <View
+                android:id="@+id/shareOKFView"
+                android:layout_width="250dp"
+                android:layout_height="110dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/ic_share_ofk" />
+
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/goUpFloatingButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="16dp"
+                android:src="@drawable/ic_baseline_arrow_upward_24" />
+
+        </LinearLayout>
 
     </RelativeLayout>
 

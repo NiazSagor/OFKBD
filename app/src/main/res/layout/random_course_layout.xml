@@ -27,6 +27,7 @@
                 android:src="@drawable/art_thumb" />
 
             <TextView
+                android:fontFamily="@font/solaimanlipi"
                 android:id="@+id/courseTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -34,7 +35,7 @@
                 android:layout_marginTop="16dp"
                 android:paddingStart="8dp"
                 android:paddingEnd="8dp"
-                android:text="Practise"
+                android:text="@string/member"
                 android:textColor="@android:color/black" />
 
             <TextView

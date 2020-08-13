@@ -43,6 +43,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/imageCardView"
         android:layout_centerHorizontal="true"
+        android:fontFamily="@font/solaimanlipi"
         android:padding="8dp"
-        android:text="Audiobook" />
+        android:text="@string/member" />
 </RelativeLayout>

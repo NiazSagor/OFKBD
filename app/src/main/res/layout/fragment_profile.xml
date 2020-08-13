@@ -10,12 +10,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <View
-            android:layout_width="160dp"
-            android:layout_height="130dp"
-            android:layout_alignParentEnd="true"
-            android:background="@drawable/ic_inter_1" />
-
         <LinearLayout
             android:id="@+id/linearLayout"
             android:layout_width="wrap_content"
@@ -95,6 +89,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:fontFamily="@font/solaimanlipi"
                         android:padding="8dp"
                         android:text="@string/myBadge"
                         android:textAlignment="center"
@@ -142,6 +137,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:fontFamily="@font/solaimanlipi"
                     android:padding="8dp"
                     android:text="@string/summary"
                     android:textAlignment="center"
@@ -173,6 +169,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:fontFamily="@font/solaimanlipi"
                             android:text="@string/videoFinished" />
 
                     </LinearLayout>
@@ -195,6 +192,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:fontFamily="@font/solaimanlipi"
                             android:text="@string/courseFinished" />
 
                     </LinearLayout>
@@ -217,6 +215,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:fontFamily="@font/solaimanlipi"
                             android:text="@string/quizFinished" />
 
                     </LinearLayout>
@@ -255,6 +254,7 @@
                     android:layout_gravity="center"
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="16dp"
+                    android:fontFamily="@font/solaimanlipi"
                     android:padding="8dp"
                     android:text="@string/profile"
                     android:textColor="@android:color/black" />

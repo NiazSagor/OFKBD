@@ -18,14 +18,17 @@ public interface UserInfoDao {
     @Update
     void update(UserInfo userInfo);
 
-    @Query("UPDATE user_info SET videoCompleted = :count WHERE id = 1")
-    void updateUserVideoTotal(int count);
+    // update user video total count
+    @Query("UPDATE user_info SET videoCompleted = videoCompleted + 1 WHERE id = 1")
+    int updateUserVideoTotal();
 
-    @Query("UPDATE user_info SET courseCompleted = :count WHERE id = 1")
-    void updateUserCourseTotal(int count);
+    // update user course total count
+    @Query("UPDATE user_info SET courseCompleted = courseCompleted + 1 WHERE id = 1")
+    int updateUserCourseTotal();
 
-    @Query("UPDATE user_info SET quizCompleted = :count WHERE id = 1")
-    void updateUserQuizTotal(int count);
+    // update user quiz total count
+    @Query("UPDATE user_info SET quizCompleted = quizCompleted + 1 WHERE id = 1")
+    int updateUserQuizTotal();
 
     @Query("SELECT courseCompleted FROM user_info WHERE id = 1")
     int getCurrentCompletedCourseCount();

@@ -99,7 +99,7 @@ public class CourseSectionAdapter extends RecyclerView.Adapter<CourseSectionAdap
                     Video video = dataSnapshot.getValue(Video.class);
                     videoList.add(video);
 
-                    adapter = new SectionVideoAdapter(videoList);
+                    adapter = new SectionVideoAdapter(videoList, "sectionVideo");
 
                     holder.sectionVideoListRecyclerView.setAdapter(adapter);
                     adapter.setOnItemClickListener(new SectionVideoAdapter.OnItemClickListener() {

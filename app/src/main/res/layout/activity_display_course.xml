@@ -56,15 +56,4 @@
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
         android:paddingBottom="16dp" />
-
-
-    <Button
-        android:id="@+id/startCourseButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:background="@color/colorPrimary"
-        android:text="start first course"
-        android:textColor="@android:color/white"
-        android:textStyle="bold" />
 </RelativeLayout>

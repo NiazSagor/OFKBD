@@ -2,7 +2,6 @@ package com.ofk.bd;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -60,9 +59,18 @@ public class CourseActivity extends FragmentActivity {
         binding.backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(CourseActivity.this, DisplayCourseActivity.class)
-                        .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP));
-                finish();
+
+                if (getIntent().getStringExtra("from").equals("home")) {
+                    startActivity(new Intent(CourseActivity.this, MainActivity.class)
+                            .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                    finish();
+                } else if (getIntent().getStringExtra("from").equals("display")) {
+
+                    startActivity(new Intent(CourseActivity.this, DisplayCourseActivity.class)
+                            .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                    finish();
+                }
+
             }
         });
 
@@ -106,6 +114,8 @@ public class CourseActivity extends FragmentActivity {
 
         YouTubePlayerView youTubePlayerView = binding.youtubePlayerView;
 
+        youTubePlayerView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+
         getLifecycle().addObserver(youTubePlayerView);
 
         new Thread(new Runnable() {
@@ -131,18 +141,9 @@ public class CourseActivity extends FragmentActivity {
 
                             String courseName = getIntent().getStringExtra("course_name_english");
 
-                            int i = courseActivityViewModel.getCurrentVideoWatched(courseName);// course wise video watched
+                            courseActivityViewModel.updateVideo(courseName);// course wise video update
 
-                            i++;
-
-                            courseActivityViewModel.updateVideo(i, courseName);// course wise video update
-
-                            int j = courseActivityViewModel.getVideoWatchedInTotal();// in total video watched
-
-                            Log.d(TAG, "onStateChange: " + j);
-                            j++;
-                            Log.d(TAG, "onStateChange: " + j);
-                            courseActivityViewModel.updateUserVideoTotal(j);// in total video watched update
+                            courseActivityViewModel.updateUserVideoTotal();
                         }
                     }
 

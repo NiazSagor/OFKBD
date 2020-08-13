@@ -8,12 +8,20 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.viewpager.widget.ViewPager;
 
+import com.google.firebase.database.DataSnapshot;
 import com.ofk.bd.Adapter.ActivitySliderAdapter;
+import com.ofk.bd.Adapter.CourseSliderListAdapter;
+import com.ofk.bd.HelperClass.Activity;
 import com.ofk.bd.HelperClass.Course;
 import com.ofk.bd.R;
+import com.ofk.bd.ViewModel.MainActivityViewModel;
 import com.ofk.bd.databinding.FragmentMoreBinding;
+import com.thefinestartist.finestwebview.FinestWebView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,6 +66,10 @@ public class MoreFragment extends Fragment {
         return fragment;
     }
 
+    private MainActivityViewModel mainActivityViewModel;
+    // activity pics list
+    private List<Activity> activityPics;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,6 +77,8 @@ public class MoreFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        activityPics = new ArrayList<>();
+        mainActivityViewModel = ViewModelProviders.of(getActivity()).get(MainActivityViewModel.class);
     }
 
     private FragmentMoreBinding binding;
@@ -79,7 +93,11 @@ public class MoreFragment extends Fragment {
 
     private int[] indicator = {R.drawable.dot, R.drawable.inactivedot};
 
-    private ActivitySliderAdapter adapter;
+    // activity pics adapter
+    private ActivitySliderAdapter activityAdapter;
+
+    private CourseSliderListAdapter adapter;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -87,14 +105,20 @@ public class MoreFragment extends Fragment {
         // Inflate the layout for this fragment
         binding = FragmentMoreBinding.inflate(getLayoutInflater());
 
-        createDummyCourseResources();
-
         //adapter = new ActivitySliderAdapter(getActivity(), moreCourses, "our_work");
-        binding.courseViewPager.setClipToPadding(false);
-        binding.courseViewPager.setPageMargin(20);
-        //binding.courseViewPager.setAdapter(adapter);
+        binding.activityViewPager.setClipToPadding(false);
+        binding.activityViewPager.setPageMargin(20);
 
-        //changeIndicator(0);
+        mainActivityViewModel.getFieldWorkPicLiveData().observe(this, new Observer<DataSnapshot>() {
+            @Override
+            public void onChanged(DataSnapshot dataSnapshot) {
+                Activity activity = dataSnapshot.getValue(Activity.class);
+                activityPics.add(activity);
+                activityAdapter = new ActivitySliderAdapter(getContext(), activityPics, "activity");
+                binding.activityViewPager.setAdapter(activityAdapter);
+                changeIndicator(0);
+            }
+        });
 
         if (mOnPageChangeListener == null) {
             mOnPageChangeListener = new ViewPager.OnPageChangeListener() {
@@ -105,7 +129,7 @@ public class MoreFragment extends Fragment {
 
                 @Override
                 public void onPageSelected(int i) {
-                    if (customPosition > adapter.getCount() - 1) {
+                    if (customPosition > activityAdapter.getCount() - 1) {
                         customPosition = 0;
                     }
 
@@ -117,8 +141,35 @@ public class MoreFragment extends Fragment {
 
                 }
             };
-            binding.courseViewPager.addOnPageChangeListener(mOnPageChangeListener);
+            binding.activityViewPager.addOnPageChangeListener(mOnPageChangeListener);
         }
+
+        binding.blogRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
+        mainActivityViewModel.getBlogListMutableLiveData().observe(this, new Observer<List<Course>>() {
+            @Override
+            public void onChanged(List<Course> courses) {
+                adapter = new CourseSliderListAdapter(courses, "blog");
+                binding.blogRecyclerView.setAdapter(adapter);
+                adapter.setOnItemClickListener(new CourseSliderListAdapter.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(int position, View view) {
+                        if (position == 0) {
+                            new FinestWebView.Builder(getActivity()).show("https://ofkbd.com/inspirational/");
+                        } else if (position == 1) {
+                            new FinestWebView.Builder(getActivity()).show("https://ofkbd.com/story/");
+                        } else if (position == 2) {
+                            new FinestWebView.Builder(getActivity()).show("https://ofkbd.com/tips-and-tricks/");
+                        } else if (position == 3) {
+                            new FinestWebView.Builder(getActivity()).show("https://ofkbd.com/skill-development/");
+                        } else if (position == 4) {
+                            new FinestWebView.Builder(getActivity()).show("https://ofkbd.com/awarness/");
+                        } else if (position == 5) {
+                            new FinestWebView.Builder(getActivity()).show("https://ofkbd.com/english-article/");
+                        }
+                    }
+                });
+            }
+        });
 
         return binding.getRoot();
     }
@@ -128,9 +179,9 @@ public class MoreFragment extends Fragment {
             binding.dotLayout.removeAllViews();
         }
 
-        ImageView[] dots = new ImageView[adapter.getCount()];
+        ImageView[] dots = new ImageView[activityAdapter.getCount()];
 
-        for (int i = 0; i < adapter.getCount(); i++) {
+        for (int i = 0; i < activityAdapter.getCount(); i++) {
             dots[i] = new ImageView(getContext());
 
             if (i == currentSlidePosition) {
@@ -150,18 +201,15 @@ public class MoreFragment extends Fragment {
         }
     }
 
-    private void createDummyCourseResources() {
+    @Override
+    public void onStop() {
+        super.onStop();
+        activityPics.clear();
+    }
 
-        courseResources = new ArrayList<>();
-
-        moreCourses = new ArrayList<>();
-
-        tutorials = new ArrayList<>();
-
-        for (int i = 0; i < 8; i++) {
-            courseResources.add(new Course("Resource " + i));
-            moreCourses.add(new Course("Course " + i, "Subtitle " + i));
-            tutorials.add(new Course("Tutorial " + i, "Subtitle " + i));
-        }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        activityPics.clear();
     }
 }

@@ -1,6 +1,5 @@
 package com.ofk.bd.SearchActivityFragment;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -81,7 +80,7 @@ public class CourseFragment extends Fragment {
     private RecyclerView courseRecyclerView;
     private CourseListAdapter adapter;
     private DatabaseReference db_ref_all_courses;
-    private List<DisplayCourse> courses = new ArrayList<>();
+    private List<DisplayCourse> courses;
     private String searchQuery;
 
     @Override
@@ -111,6 +110,7 @@ public class CourseFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        courses = new ArrayList<>();
         db_ref_all_courses.addChildEventListener(mListener);
     }
 
@@ -126,11 +126,21 @@ public class CourseFragment extends Fragment {
 
             DisplayCourse course = dataSnapshot.getValue(DisplayCourse.class);
 
-            if (course.getCourseTitle().toLowerCase().contains(searchQuery.toLowerCase())) {
+            if (course.getCourseTitleEnglish().toLowerCase().contains(searchQuery.toLowerCase())) {
                 Log.d(TAG, "onChildAdded: ");
                 courses.add(course);
                 adapter = new CourseListAdapter(courses, "displayCourse");
                 courseRecyclerView.setAdapter(adapter);
+
+                if (adapter.getItemCount() != 0) {
+                    binding.notMatchTextView.setVisibility(View.GONE);
+                    viewModel.getFoundCourseCount().setValue(adapter.getItemCount());
+                    Log.d(TAG, "onChildAdded: " + adapter.getItemCount());
+                } else {
+                    Log.d(TAG, "onChildAdded: 0");
+                    binding.notMatchTextView.setVisibility(View.VISIBLE);
+                    viewModel.getFoundCourseCount().setValue(0);
+                }
             }
         }
 

@@ -11,16 +11,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.ofk.bd.HelperClass.Video;
 import com.ofk.bd.R;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
 public class SectionVideoAdapter extends RecyclerView.Adapter<SectionVideoAdapter.SectionVideoListViewHolder> {
 
-    private List<Video> videoList;
+    public static final int SECTION = 1;
+    public static final int SEARCH = 2;
 
+    private List<Video> videoList;
+    private String mSender;
     private Picasso mPicasso;
 
     private OnItemClickListener mListener;
@@ -31,8 +32,9 @@ public class SectionVideoAdapter extends RecyclerView.Adapter<SectionVideoAdapte
         void onItemClick(int position, View view);
     }
 
-    public SectionVideoAdapter(List<Video> videoList) {
+    public SectionVideoAdapter(List<Video> videoList, String sender) {
         this.videoList = videoList;
+        this.mSender = sender;
         mPicasso = Picasso.get();
     }
 
@@ -44,8 +46,20 @@ public class SectionVideoAdapter extends RecyclerView.Adapter<SectionVideoAdapte
     @Override
     public SectionVideoAdapter.SectionVideoListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View view = inflater.inflate(R.layout.section_video_item_layout, parent, false);
-        return new SectionVideoListViewHolder(view, mListener);
+
+        switch (viewType) {
+            case 1:
+                View sectionVideoView = inflater.inflate(R.layout.section_video_item_layout, parent, false);
+                return new SectionVideoListViewHolder(sectionVideoView, mListener);
+
+            case 2:
+                View searchVideoView = inflater.inflate(R.layout.search_video_layout, parent, false);
+                return new SectionVideoListViewHolder(searchVideoView, mListener);
+
+            default:
+                View view = inflater.inflate(R.layout.recom_course_home_layout, parent, false);
+                return new SectionVideoListViewHolder(view, mListener);
+        }
     }
 
     @Override
@@ -114,5 +128,15 @@ public class SectionVideoAdapter extends RecyclerView.Adapter<SectionVideoAdapte
                 }
             });
         }
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (mSender.equals("sectionVideo")) {
+            return SECTION;
+        } else if (mSender.equals("videoSearch")) {
+            return SEARCH;
+        }
+        return -1;
     }
 }

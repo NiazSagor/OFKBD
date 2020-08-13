@@ -54,12 +54,8 @@ public class CourseActivityViewModel extends AndroidViewModel {
         return courseName;
     }
 
-    public void updateVideo(int count, String courseName) {
-        repository.updateVideoWatched(count, courseName);
-    }
-
-    public int getCurrentVideoWatched(String courseName) {
-        return repository.getVideoWatched(courseName);
+    public void updateVideo(String courseName) {
+        repository.updateVideoWatched(courseName);
     }
 
     /*
@@ -70,12 +66,7 @@ public class CourseActivityViewModel extends AndroidViewModel {
      *
      * */
 
-    public int getVideoWatchedInTotal() {
-        return userInfoRepository.getVideoWatchedInTotal();
-    }
-
-    public void updateUserVideoTotal(int count) {
-        Log.d(TAG, "updateUserVideoTotal: " + count);
-        userInfoRepository.updateUserVideoTotal(count);
+    public void updateUserVideoTotal() {
+        userInfoRepository.updateUserVideoTotal();
     }
 }

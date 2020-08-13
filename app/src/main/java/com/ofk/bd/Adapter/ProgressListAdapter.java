@@ -41,16 +41,18 @@ public class ProgressListAdapter extends RecyclerView.Adapter<ProgressListAdapte
     public void onBindViewHolder(@NonNull ProgressListViewHolder holder, int position) {
 
         //String progressPercentage = progressList.get(position).getSubjectProgress() + " %";
-        //holder.totalVideosTextView.setText("Total Videos " + progressList.get(position).getTotalVideos());
 
-        String heading = "কোর্স" + " : " + progressList.get(position).getCourseEnrolled();
-        String video = "ভিডিও সম্পন্ন" + " : " + progressList.get(position).getVideoWatched();
+        String heading = "" + progressList.get(position).getCourseEnrolled();
+        String video = "" + progressList.get(position).getVideoWatched();
+        String totalVideo = "" + progressList.get(position).getTotalVideos();
 
-        holder.progressBar.setMax(progressList.get(position).getTotalVideos());
-        holder.progressBar.setProgress(progressList.get(position).getVideoWatched());
+        holder.sectionName.setText(progressList.get(position).getSectionName());
         holder.subjectTitle.setText(heading);
         holder.videosWatchedTextView.setText(video);
-
+        holder.totalVideosTextView.setText(totalVideo);
+        holder.progressBar.setMax(progressList.get(position).getTotalVideos());
+        holder.progressBar.setProgress(progressList.get(position).getVideoWatched());
+/*
         if (progressList.get(position).getCourseThumbnailURL() != null) {
             picasso.load(progressList.get(position).getCourseThumbnailURL())
                     .networkPolicy(NetworkPolicy.OFFLINE)
@@ -79,6 +81,8 @@ public class ProgressListAdapter extends RecyclerView.Adapter<ProgressListAdapte
                     });
         }
 
+ */
+
 
     }
 
@@ -88,19 +92,21 @@ public class ProgressListAdapter extends RecyclerView.Adapter<ProgressListAdapte
     }
 
     public static class ProgressListViewHolder extends RecyclerView.ViewHolder {
-        ImageView courseThumbnailImageView;
+        //ImageView courseThumbnailImageView;
         TextView subjectTitle;
+        TextView sectionName;
         TextView totalVideosTextView;
         TextView videosWatchedTextView;
         ProgressBar progressBar;
 
         public ProgressListViewHolder(@NonNull View itemView) {
             super(itemView);
-            courseThumbnailImageView = itemView.findViewById(R.id.courseThumbNailImageView);
+            //courseThumbnailImageView = itemView.findViewById(R.id.courseThumbNailImageView);
             subjectTitle = itemView.findViewById(R.id.subjectTitle);
             totalVideosTextView = itemView.findViewById(R.id.totalVideos);
             videosWatchedTextView = itemView.findViewById(R.id.videoWatched);
             progressBar = itemView.findViewById(R.id.progressBar);
+            sectionName = itemView.findViewById(R.id.sectionName);
 
 
             itemView.setOnClickListener(new View.OnClickListener() {

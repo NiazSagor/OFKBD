@@ -18,15 +18,20 @@ public class CourseSliderListAdapter extends RecyclerView.Adapter<CourseSliderLi
 
     public static final int VIEW_PAGER_COURSE = 1;
     public static final int RANDOM_COURSE = 2;
-    public static final int MORE_RESOURCE = 3;
+    public static final int BLOG_ITEM = 3;
     private static final int TUTORIAL = 4;
 
     private String mSender;
 
     private static final String TAG = "CourseSliderListAdapter";
 
-    private int[] firstSixIcons = {R.drawable.art, R.drawable.calligraphy, R.drawable.case_solve, R.drawable.craft, R.drawable.critical, R.drawable.digital};
-    private int[] secondFiveIcons = {R.drawable.guitar, R.drawable.programming, R.drawable.programming, R.drawable.robotics};
+    private static int[] firstSixIcons = {R.drawable.art, R.drawable.calligraphy, R.drawable.case_solve, R.drawable.craft, R.drawable.critical, R.drawable.digital};
+    private static int[] secondFiveIcons = {R.drawable.guitar, R.drawable.programming, R.drawable.robotics};
+    private static int[] secondThreeGradients = {R.drawable.gradient_purple, R.drawable.gradient_purple_pink, R.drawable.orange_gradient};
+    private static int[] firstSixGradients = {R.drawable.gradient_blue, R.drawable.gradient_cyan, R.drawable.gradient_green,
+            R.drawable.gradient_lemon, R.drawable.gradient_pink, R.drawable.gradient_pink_yellow};
+
+    private static int[] blogThumbs = {R.drawable.mental, R.drawable.story, R.drawable.video, R.drawable.skill, R.drawable.awarness, R.drawable.fiction};
 
     private List<Course> courseList;
 
@@ -60,7 +65,7 @@ public class CourseSliderListAdapter extends RecyclerView.Adapter<CourseSliderLi
                 return new CourseSliderListViewHolder(randomCourseLayout, mListener);
 
             case 3:
-                View resourceLayout = inflater.inflate(R.layout.resource_layout, parent, false);
+                View resourceLayout = inflater.inflate(R.layout.blog_item_layout, parent, false);
                 return new CourseSliderListViewHolder(resourceLayout, mListener);
             case 4:
                 View moreCourseLayout = inflater.inflate(R.layout.display_course_layout, parent, false);
@@ -79,9 +84,9 @@ public class CourseSliderListAdapter extends RecyclerView.Adapter<CourseSliderLi
             holder.courseTitleTextView.setText(courseList.get(position).getCourseTitle());
             holder.courseSubtitle.setText(courseList.get(position).getCourseSubtitle());
             //holder.courseImageView.setImageResource(avatars[position]);
-        } else if (mSender.equals("tutorial")) {
+        } else if (mSender.equals("blog")) {
             holder.courseTitleTextView.setText(courseList.get(position).getCourseTitle());
-            holder.courseSubtitle.setText(courseList.get(position).getCourseSubtitle());
+            holder.courseImageView.setBackgroundResource(blogThumbs[position]);
         } else if (mSender.equals("viewpager")) {
             holder.courseTitleTextView.setText(courseList.get(position).getCourseTitle());
             holder.courseImageView.setImageResource(firstSixIcons[position]);
@@ -89,11 +94,13 @@ public class CourseSliderListAdapter extends RecyclerView.Adapter<CourseSliderLi
             holder.courseTitleTextView.setText(courseList.get(position).getCourseTitle());
             holder.courseImageView.setImageResource(firstSixIcons[position]);
         } else if (mSender.equals("viewpager0")) {
-            holder.courseTitleTextView.setText(courseList.get(position).getCourseTitle());
+            holder.courseTitleTextView.setText(courseList.get(position).getCourseSubtitle());
             holder.courseImageView.setImageResource(firstSixIcons[position]);
+            holder.gradientView.setBackgroundResource(firstSixGradients[position]);
         } else if (mSender.equals("viewpager1")) {
-            holder.courseTitleTextView.setText(courseList.get(position).getCourseTitle());
+            holder.courseTitleTextView.setText(courseList.get(position).getCourseSubtitle());
             holder.courseImageView.setImageResource(secondFiveIcons[position]);
+            holder.gradientView.setBackgroundResource(secondThreeGradients[position]);
         }
     }
 
@@ -104,6 +111,7 @@ public class CourseSliderListAdapter extends RecyclerView.Adapter<CourseSliderLi
 
     public static class CourseSliderListViewHolder extends RecyclerView.ViewHolder {
 
+        View gradientView;
         TextView courseTitleTextView;
         ImageView courseImageView;
         TextView courseSubtitle;
@@ -111,6 +119,7 @@ public class CourseSliderListAdapter extends RecyclerView.Adapter<CourseSliderLi
         public CourseSliderListViewHolder(@NonNull View itemView, final OnItemClickListener listener) {
             super(itemView);
 
+            gradientView = itemView.findViewById(R.id.gradientView);
             courseTitleTextView = itemView.findViewById(R.id.courseTitle);
             courseImageView = itemView.findViewById(R.id.courseImage);
             courseSubtitle = itemView.findViewById(R.id.courseSubtitle);
@@ -137,8 +146,8 @@ public class CourseSliderListAdapter extends RecyclerView.Adapter<CourseSliderLi
             return VIEW_PAGER_COURSE;
         } else if (mSender.equals("random")) {
             return RANDOM_COURSE;
-        } else if (mSender.equals("course_resource")) {
-            return MORE_RESOURCE;
+        } else if (mSender.equals("blog")) {
+            return BLOG_ITEM;
         } else if (mSender.equals("tutorial")) {
             return TUTORIAL;
         }

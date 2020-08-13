@@ -34,7 +34,16 @@
         <activity
             android:name=".InfoActivity"
             android:fitsSystemWindows="true"
-            android:theme="@style/AppTheme.Transparent" />
+            android:theme="@style/AppTheme.Transparent">
+
+        </activity>
+
+        <activity
+            android:name="com.thefinestartist.finestwebview.FinestWebViewActivity"
+            android:configChanges="keyboardHidden|screenSize"
+            android:screenOrientation="sensor"
+            android:theme="@style/FinestWebViewTheme.Light" />
+
         <activity
             android:name=".MainActivity"
             android:fitsSystemWindows="true"

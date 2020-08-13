@@ -7,10 +7,41 @@
 
     <color name="colorPrimaryRipple">#42ff9700</color>
 
-    <color name="darkOrange">#fd8022</color>
-    <color name="lightOrange">#febe2b</color>
-
     <color name="purple">#531295</color>
     <color name="red">#D72428</color>
     <color name="lightgrey">#DCDCDC</color>
+
+    <!-- Gradients for the topics  !-->
+
+    <color name="darkOrange">#fd8022</color>
+    <color name="lightOrange">#febe2b</color>
+
+    <color name="lightPink">#fbc4ff</color>
+    <color name="darkPink">#fc979b</color>
+
+    <color name="lightCyan">#33eeaf</color>
+    <color name="darkCyan">#52cae3</color>
+
+
+    <color name="lightPurple">#a3ccfa</color>
+    <color name="darkPurple">#94a3ff</color>
+
+
+    <color name="lightBlue">#aaf9fd</color>
+    <color name="darkBlue">#6fadf8</color>
+
+
+    <color name="lightPurplePink">#fda9ca</color>
+    <color name="darkPurplePink">#c48bf2</color>
+
+    <color name="lightPinkYellow">#fad47f</color>
+    <color name="darkPinkYellow">#fd86ac</color>
+
+
+    <color name="lightGreen">#bdfe2b</color>
+    <color name="darkGreen">#61fd22</color>
+
+    <color name="lightLemon">#2bfece</color>
+    <color name="darkLemon">#229cfd</color>
+
 </resources>

@@ -5,7 +5,6 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-
         <item name="colorControlHighlight">@color/colorPrimaryRipple</item>
     </style>
 
@@ -40,6 +39,7 @@
 
         <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item>
     </style>
+
 
     <style name="CustomActivityAnimation" parent="@android:style/Animation.Activity">
         <item name="android:activityOpenEnterAnimation">@anim/slide_in_right</item>

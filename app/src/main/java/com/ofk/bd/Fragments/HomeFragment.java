@@ -1,15 +1,20 @@
 package com.ofk.bd.Fragments;
 
+import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -20,6 +25,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.ofk.bd.Adapter.ActivitySliderAdapter;
 import com.ofk.bd.Adapter.CourseSliderAdapter;
 import com.ofk.bd.Adapter.VideoSliderAdapter;
+import com.ofk.bd.CourseActivity;
 import com.ofk.bd.DisplayCourseActivityAdapter.CourseListAdapter;
 import com.ofk.bd.HelperClass.Activity;
 import com.ofk.bd.HelperClass.Course;
@@ -59,7 +65,7 @@ public class HomeFragment extends Fragment {
     private ViewPager.OnPageChangeListener mOnPageChangeListenerForActivityViewPager;
     private ViewPager.OnPageChangeListener mOnPageChangeListenerForActivityVideoViewPager;
 
-    private int[] indicator = {R.drawable.dot, R.drawable.inactivedot};
+    private static int[] indicator = {R.drawable.dot, R.drawable.inactivedot};
 
     private CourseSliderAdapter adapter;
 
@@ -106,17 +112,23 @@ public class HomeFragment extends Fragment {
     private MainActivityViewModel mainActivityViewModel;
 
     @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        Log.d(TAG, "onAttach: ");
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        Log.d(TAG, "onCreate: ");
         activityPics = new ArrayList<>();
         randomCourse_1 = new ArrayList<>();
         randomCourse_2 = new ArrayList<>();
         videoList = new ArrayList<>();
-
         mainActivityViewModel = ViewModelProviders.of(getActivity()).get(MainActivityViewModel.class);
     }
 
@@ -127,7 +139,7 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
+        Log.d(TAG, "onCreateView: ");
         binding = FragmentHomeBinding.inflate(getLayoutInflater());
 
         // getting course list from view model
@@ -160,7 +172,7 @@ public class HomeFragment extends Fragment {
 
         // random course 1
         binding.randomCourseRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-
+/*
         mainActivityViewModel.getRandomCourseLiveData_1().observe(this, new Observer<DataSnapshot>() {
             @Override
             public void onChanged(DataSnapshot dataSnapshot) {
@@ -168,8 +180,25 @@ public class HomeFragment extends Fragment {
                 randomCourse_1.add(course);
                 recom_course_1 = new CourseListAdapter(randomCourse_1, "home_page");
                 binding.randomCourseRecyclerView.setAdapter(recom_course_1);
+
+                recom_course_1.setOnItemClickListener(new CourseListAdapter.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(int position, View view) {
+                        Intent intent = new Intent(getActivity(), CourseActivity.class);
+                        intent.putExtra("section_name", "Robotics");
+                        intent.putExtra("course_name", randomCourse_1.get(position).getCourseTitle());
+                        intent.putExtra("course_name_english", randomCourse_1.get(position).getCourseTitleEnglish());
+                        intent.putExtra("from", "home");
+                        startActivity(intent);
+
+                        Log.d(TAG, "onItemClick: " + randomCourse_1.get(position).getCourseTitle());
+                        Log.d(TAG, "onItemClick: " + randomCourse_1.get(position).getCourseTitleEnglish());
+                    }
+                });
             }
         });
+
+ */
 
         // random course 2
         binding.randomCourseRecyclerView2.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
@@ -181,6 +210,20 @@ public class HomeFragment extends Fragment {
                 randomCourse_2.add(course);
                 recom_course_2 = new CourseListAdapter(randomCourse_2, "home_page");
                 binding.randomCourseRecyclerView2.setAdapter(recom_course_2);
+
+                recom_course_2.setOnItemClickListener(new CourseListAdapter.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(int position, View view) {
+                        Intent intent = new Intent(getActivity(), CourseActivity.class);
+                        intent.putExtra("section_name", "Arts");
+                        intent.putExtra("course_name", randomCourse_2.get(position).getCourseTitle());
+                        intent.putExtra("course_name_english", randomCourse_2.get(position).getCourseTitleEnglish());
+                        intent.putExtra("from", "home");
+                        startActivity(intent);
+                        Log.d(TAG, "onItemClick: " + randomCourse_2.get(position).getCourseTitle());
+                        Log.d(TAG, "onItemClick: " + randomCourse_2.get(position).getCourseTitleEnglish());
+                    }
+                });
             }
         });
 
@@ -270,12 +313,50 @@ public class HomeFragment extends Fragment {
                     Intent intent = new Intent(getActivity(), SearchResultActivity.class);
                     intent.putExtra("searchQuery", binding.searchEditText.getText().toString().trim());
                     startActivity(intent);
+                    binding.searchEditText.setText("");
                 } else {
                     binding.searchEditText.setError("Please enter something");
                 }
-
             }
         });
+
+        binding.rateOFKView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Uri uri = Uri.parse("market://details?id=com.angik.duodevloopers.food");
+                Intent goToMarket = new Intent(Intent.ACTION_VIEW, uri);
+                goToMarket.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT)
+                        .addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+                try {
+                    startActivity(goToMarket);
+                } catch (ActivityNotFoundException e) {
+                    startActivity(new Intent(Intent.ACTION_VIEW,
+                            Uri.parse("http://play.google.com/store/apps/details?id=com.angik.duodevloopers.food")));
+                }
+            }
+        });
+
+        binding.shareOKFView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(Intent.ACTION_SEND);
+                i.setType("text/plain");
+                i.putExtra(Intent.EXTRA_SUBJECT, "Share OFK");
+                i.putExtra(Intent.EXTRA_TEXT, "http://www.google.com");
+                startActivity(Intent.createChooser(i, "Share URL"));
+            }
+        });
+
+        binding.goUpFloatingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                binding.parentScrollView.smoothScrollTo(0, 0);
+            }
+        });
+
+        //changeFont();
+
 
         return binding.getRoot();
     }
@@ -352,28 +433,77 @@ public class HomeFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        Log.d(TAG, "onStart: ");
+
+        if (!mainActivityViewModel.getRandomCourseLiveData_1().hasObservers()) {
+            Log.d(TAG, "onStart: does not have observers");
+            mainActivityViewModel.getRandomCourseLiveData_1().observe(this, randomCourseObserver);
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        Log.d(TAG, "onResume: ");
     }
 
     @Override
     public void onStop() {
         super.onStop();
+        Log.d(TAG, "onStop: ");
+       // mainActivityViewModel.getRandomCourseLiveData_1().removeObservers(this);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Log.d(TAG, "onDestroyView: ");
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        Log.d(TAG, "onDetach: ");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause: ");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy: ");
         activityPics.clear();
         randomCourse_1.clear();
         randomCourse_2.clear();
         videoList.clear();
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        activityPics.clear();
-        randomCourse_1.clear();
-        randomCourse_2.clear();
-        videoList.clear();
-    }
+    private final Observer<DataSnapshot> randomCourseObserver = new Observer<DataSnapshot>() {
+        @Override
+        public void onChanged(DataSnapshot dataSnapshot) {
+            DisplayCourse course = dataSnapshot.getValue(DisplayCourse.class);
+            randomCourse_1.add(course);
+            recom_course_1 = new CourseListAdapter(randomCourse_1, "home_page");
+            binding.randomCourseRecyclerView.setAdapter(recom_course_1);
+
+            recom_course_1.setOnItemClickListener(new CourseListAdapter.OnItemClickListener() {
+                @Override
+                public void onItemClick(int position, View view) {
+                    Intent intent = new Intent(getActivity(), CourseActivity.class);
+                    intent.putExtra("section_name", "Robotics");
+                    intent.putExtra("course_name", randomCourse_1.get(position).getCourseTitle());
+                    intent.putExtra("course_name_english", randomCourse_1.get(position).getCourseTitleEnglish());
+                    intent.putExtra("from", "home");
+                    startActivity(intent);
+
+                    Log.d(TAG, "onItemClick: " + randomCourse_1.get(position).getCourseTitle());
+                    Log.d(TAG, "onItemClick: " + randomCourse_1.get(position).getCourseTitleEnglish());
+                }
+            });
+        }
+    };
 }

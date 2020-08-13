@@ -148,6 +148,7 @@ public class VideoSliderAdapter extends PagerAdapter {
 
         @Override
         protected Void doInBackground(Void... voids) {
+            youTubePlayerView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
             youTubePlayerView.addYouTubePlayerListener(new YouTubePlayerListener() {
                 @Override
                 public void onReady(YouTubePlayer youTubePlayer) {

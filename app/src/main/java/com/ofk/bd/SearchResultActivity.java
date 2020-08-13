@@ -2,8 +2,10 @@ package com.ofk.bd;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -31,12 +33,30 @@ public class SearchResultActivity extends FragmentActivity {
         viewModel = ViewModelProviders.of(this).get(FirebaseSearchViewModel.class);
         viewModel.getMutableLiveData().setValue(intent.getStringExtra("searchQuery"));
 
-        setUpTabLayoutWithViewpager();
-
         setSearchResult();
+
+        setUpTabLayoutWithViewpager();
     }
 
     private void setSearchResult() {
+
+        viewModel.getFoundVideoCount().observe(this, new Observer<Integer>() {
+            @Override
+            public void onChanged(Integer integer) {
+                Log.d(TAG, "onChanged: " + integer);
+                String searchResultVideo = integer + " ভিডিও";
+                binding.videoCountTextView.setText(searchResultVideo);
+            }
+        });
+
+        viewModel.getFoundCourseCount().observe(this, new Observer<Integer>() {
+            @Override
+            public void onChanged(Integer integer) {
+                Log.d(TAG, "onChanged: " + integer);
+                String searchResultCourse = integer + " কোর্স";
+                binding.courseCountTextView.setText(searchResultCourse);
+            }
+        });
     }
 
     private void setUpTabLayoutWithViewpager() {
@@ -46,7 +66,7 @@ public class SearchResultActivity extends FragmentActivity {
         TabLayout tabLayout = binding.tabLayout;
 
         tabLayout.addTab(tabLayout.newTab().setText("Course"));
-        tabLayout.addTab(tabLayout.newTab().setText("Videos"));
+        tabLayout.addTab(tabLayout.newTab().setText("Video"));
 
         SearchAdapter adapter = new SearchAdapter(SearchResultActivity.this);
 

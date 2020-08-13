@@ -5,8 +5,16 @@
     <string name="yourAge" translatable="false">তোমার বয়স</string>
     <string name="yourAvatar" translatable="false">যেকোনো একটি পছন্দ কর</string>
     <string name="yourCourse" translatable="false">আমার কোর্স সমূহ</string>
-    <string name="otherCourse" translatable="false">অন্যান্য কোর্স সমূহ</string>
-    <string name="search" translatable="false">খোঁজো</string>
+
+    <string name="search" translatable="false">কোন কোর্সটি করতে চাও</string>
+
+    <string name="searchResult" translatable="false">সার্চ</string>
+
+    <string name="otherCourse1" translatable="false">রোবোটিক্সের কোর্সসমুহ</string>
+    <string name="otherCourse" translatable="false">রোবোটিক্সের কোর্সসমুহ</string>
+    <string name="otherCourse2" translatable="false">আর্টের কোর্সসমুহ</string>
+    <string name="rate" translatable="false">আমাদের এপটি তোমাদের কেমন লাগলো</string>
+    <string name="share" translatable="false">OFK এপ বন্ধুদের সাথে শেয়ার করো</string>
 
 
     <string name="home" translatable="false">হোম</string>
@@ -16,7 +24,13 @@
     <string name="ourWorks" translatable="false">আমাদের কার্যক্রম</string>
     <string name="profile" translatable="false">প্রোফাইল</string>
 
+
+    <string name="trainer" translatable="false">ট্রেইনার</string>
+    <string name="member" translatable="false">টিম মেম্বার</string>
+    <string name="contributor" translatable="false">কন্ট্রিবিউটর</string>
+
     <string name="joinUs" translatable="false">জয়েন করো আমাদের সাথে</string>
+    <string name="blog" translatable="false">ঘুরে আসো আমাদের ব্লগ থেকে</string>
 
 
     <!-- TODO: Remove or change this placeholder text -->
@@ -27,6 +41,16 @@
     <string name="quiz" translatable="false">কুইজ</string>
     <string name="resource" translatable="false">রিসোর্স</string>
 
+
+    <string name="video0result" translatable="false">0 ভিডিও</string>
+    <string name="course0result" translatable="false">0 কোর্স</string>
+
+    <string name="notFoundCourse" translatable="false">কোর্স খুঁজে পাওয়া যায় নি</string>
+    <string name="notFoundVideo" translatable="false">ভিডিও খুঁজে পাওয়া যায় নি</string>
+
+    <string name="progressButton" translatable="false">চলো</string>
+    <string name="yourEmail" translatable="false">তোমার ইমেইল এড্রেস</string>
+
     <string name="myBadge" translatable="false">আমার ব্যাজ</string>
     <string name="summary" translatable="false">সামারি</string>
 
@@ -34,10 +58,6 @@
     <string name="courseFinished" translatable="false">কোর্স সম্পন্ন</string>
     <string name="quizFinished" translatable="false">কুইজ সম্পন্ন</string>
 
-    <string-array name="section">
-        <item name="প্রথম অধ্যায়ঃ বিভিন্ন ধরণের ফল (পার্ট ১)" />
-        <item name="দ্বিতীয় অধ্যায়ঃ বিভিন্ন ধরণের ফল (পার্ট ২)" />
-        <item name="তৃতীয় অধ্যায়ঃ বিভিন্ন ধরণের ফুল" />
-    </string-array>
+    <string name="intro" translatable="false">শিখো, শেখাও, \nদেখাও তোমার প্রতিভা বিশ্বকে</string>
 
 </resources>

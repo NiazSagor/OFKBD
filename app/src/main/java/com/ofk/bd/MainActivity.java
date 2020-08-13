@@ -127,19 +127,4 @@ public class MainActivity extends FragmentActivity implements ServiceResultRecei
                 }
         }
     }
-
-    private void calculateUserProgress(){
-        viewModel.getCombinedList().observe(this, new Observer<List<SectionCourseTuple>>() {
-            @Override
-            public void onChanged(List<SectionCourseTuple> sectionCourseTuples) {
-                for(SectionCourseTuple courseTuple : sectionCourseTuples){
-                    if(courseTuple.getVideoWatched() == courseTuple.getTotalVideos()){
-                        int currentCompletedCourse = viewModel.getCourseCompletedInTotal();
-                        currentCompletedCourse++;
-                        viewModel.updateUserCourseTotal(currentCompletedCourse);
-                    }
-                }
-            }
-        });
-    }
 }

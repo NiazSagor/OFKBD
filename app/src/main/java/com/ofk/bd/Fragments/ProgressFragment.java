@@ -11,6 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -120,6 +122,7 @@ public class ProgressFragment extends Fragment {
             public void onChanged(List<SectionCourseTuple> sectionCourseTuples) {
                 if (sectionCourseTuples.size() != 0) {
                     binding.courseProgressTextView.setVisibility(View.VISIBLE);
+                    binding.subjectProgressRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
                     binding.subjectProgressRecyclerView.setAdapter(new ProgressListAdapter(sectionCourseTuples));
                 } else {
                     binding.courseProgressTextView.setVisibility(View.GONE);

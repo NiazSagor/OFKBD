@@ -1,6 +1,7 @@
 package com.ofk.bd.ViewModel;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -21,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivityViewModel extends AndroidViewModel {
-
+    private static final String TAG = "MainActivityViewModel";
     /*
      *
      * User progress table
@@ -39,8 +40,14 @@ public class MainActivityViewModel extends AndroidViewModel {
     // course list
     MutableLiveData<List<Course>> listMutableLiveData = new MutableLiveData<>();
 
+    //blogList
+    MutableLiveData<List<Course>> blogListMutableLiveData = new MutableLiveData<>();
+
     // activity pic
     LiveData<DataSnapshot> activityPicLiveData;
+
+    // field work pic
+    LiveData<DataSnapshot> fieldWorkPicLiveData;
 
     // activity videos
     LiveData<DataSnapshot> activityVideoLiveData;
@@ -77,9 +84,13 @@ public class MainActivityViewModel extends AndroidViewModel {
         userInfoRepository = new UserInfoRepository(application);
         userInfoLiveData = userInfoRepository.getUserInfoLiveData();
 
+        Log.d(TAG, "MainActivityViewModel: ");
+        
 
         createCourseList();
+        createBlogList();
         getActivityPicFromDatabase();
+        getFieldWorkPicFromDatabase();
         getActivityVideoFromDatabase();
         getRandomCourseToDisplay_1();
         getRandomCourseToDisplay_2();
@@ -103,7 +114,7 @@ public class MainActivityViewModel extends AndroidViewModel {
 
     // from server
     private void getRandomCourseToDisplay_2() {
-        DatabaseReference db = FirebaseDatabase.getInstance().getReference().child("Section").child("Programming Section");
+        DatabaseReference db = FirebaseDatabase.getInstance().getReference().child("Section").child("Arts Section");
         db.keepSynced(true);
         randomCourseLiveData_2 = new FirebaseQueryLiveData(db);
     }
@@ -122,22 +133,45 @@ public class MainActivityViewModel extends AndroidViewModel {
         activityPicLiveData = new FirebaseQueryLiveData(db_activity_pic);
     }
 
+    // from server
+    private void getFieldWorkPicFromDatabase() {
+        Log.d(TAG, "getFieldWorkPicFromDatabase: ");
+        DatabaseReference db_activity_pic = FirebaseDatabase.getInstance().getReference().child("Field Work Pics");
+        db_activity_pic.keepSynced(true);
+        fieldWorkPicLiveData = new FirebaseQueryLiveData(db_activity_pic);
+    }
+
+
     // not from server
     private void createCourseList() {
         List<Course> list = new ArrayList<>();
 
-        list.add(new Course("Arts"));
-        list.add(new Course("Calligraphy"));
-        list.add(new Course("Case Solving"));
-        list.add(new Course("Craft"));
-        list.add(new Course("Critical Thinking"));
-        list.add(new Course("Digital Painting"));
-        list.add(new Course("Guitar"));
-        list.add(new Course("Programming"));
-        list.add(new Course("Robotics"));
+        list.add(new Course("Arts", "আর্টস"));
+        list.add(new Course("Calligraphy", "ক্যালিগ্রাফি"));
+        list.add(new Course("Case Solving", "কেইস সল্ভিং"));
+        list.add(new Course("Craft", "ক্রাফট"));
+        list.add(new Course("Critical Thinking", "ক্রিটিকাল থিংকিং"));
+        list.add(new Course("Digital Painting", "ডিজিটাল পেইন্টিং"));
+        list.add(new Course("Guitar", "গিটার"));
+        list.add(new Course("Programming", "প্রোগ্রামিং"));
+        list.add(new Course("Robotics", "রোবোটিক্স"));
 
         listMutableLiveData.setValue(list);
     }
+
+    private void createBlogList() {
+        List<Course> blogList = new ArrayList<>();
+
+        blogList.add(new Course("অনুপ্রেরণামূলক"));
+        blogList.add(new Course("গল্প"));
+        blogList.add(new Course("টিপস এন্ড ট্রিকস"));
+        blogList.add(new Course("দক্ষতা উন্নয়নমূলক"));
+        blogList.add(new Course("সচেতনতামূলক"));
+        blogList.add(new Course("ইংরেজি"));
+
+        blogListMutableLiveData.setValue(blogList);
+    }
+
 
     // from server
     public LiveData<DataSnapshot> getActivityPicLiveData() {
@@ -164,6 +198,13 @@ public class MainActivityViewModel extends AndroidViewModel {
         return enrolledCourses;
     }
 
+    public LiveData<DataSnapshot> getFieldWorkPicLiveData() {
+        return fieldWorkPicLiveData;
+    }
+
+    public MutableLiveData<List<Course>> getBlogListMutableLiveData() {
+        return blogListMutableLiveData;
+    }
 
     /*******************OFFLINE QUERY**********************/
 
@@ -182,10 +223,6 @@ public class MainActivityViewModel extends AndroidViewModel {
         return combinedList;
     }
 
-    public void updateVideoWatched(int count, String courseName) {
-        repository.updateVideoWatched(count, courseName);
-    }
-
     /*
      *
      *
@@ -194,25 +231,6 @@ public class MainActivityViewModel extends AndroidViewModel {
      *
      * */
 
-    public int getVideoWatchedInTotal() {
-        return userInfoRepository.getVideoWatchedInTotal();
-    }
-
-    public int getCourseCompletedInTotal() {
-        return userInfoRepository.getCourseCompletedInTotal();
-    }
-
-    public int getQuizCompletedInTotal() {
-        return userInfoRepository.getQuizCompletedInTotal();
-    }
-
-    public void updateUserVideoTotal(int count) {
-        userInfoRepository.updateUserVideoTotal(count);
-    }
-
-    public void updateUserCourseTotal(int count) {
-        userInfoRepository.updateUserCourseTotal(count);
-    }
 
     public void insert(UserInfo userInfo){
         userInfoRepository.insert(userInfo);
