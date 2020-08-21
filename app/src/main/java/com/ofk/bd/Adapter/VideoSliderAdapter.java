@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -38,6 +39,7 @@ public class VideoSliderAdapter extends PagerAdapter {
     private View gradientView;
     private ImageView thumbNail;
     private LinearLayout layout;
+    private ProgressBar progressBar;
 
     private Picasso picasso;
 
@@ -86,6 +88,8 @@ public class VideoSliderAdapter extends PagerAdapter {
         TextView title = view.findViewById(R.id.videoTitle);
         title.setText(videoList.get(position).getVideoTitle());
 
+        progressBar = view.findViewById(R.id.progressBar);
+
         gradientView = view.findViewById(R.id.gradientView);
 
         thumbNail = view.findViewById(R.id.videoThumbNail);
@@ -123,7 +127,14 @@ public class VideoSliderAdapter extends PagerAdapter {
 
         mLifeCycle.addObserver(youTubePlayerView);
 
-        new AddListener(youTubePlayerView, position).execute();
+        layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                progressBar.setVisibility(View.VISIBLE);
+                String id = videoList.get(position).getVideoURL();
+                new AddListener(youTubePlayerView, id).execute();
+            }
+        });
 
         container.addView(view);
 
@@ -139,31 +150,27 @@ public class VideoSliderAdapter extends PagerAdapter {
     private class AddListener extends AsyncTask<Void, Void, Void> {
 
         YouTubePlayerView youTubePlayerView;
+        String mUrl;
         int position;
 
-        public AddListener(YouTubePlayerView youTubePlayerView, int position) {
+        public AddListener(YouTubePlayerView youTubePlayerView, String url) {
             this.youTubePlayerView = youTubePlayerView;
+            mUrl = url;
             this.position = position;
         }
 
         @Override
         protected Void doInBackground(Void... voids) {
-            youTubePlayerView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
             youTubePlayerView.addYouTubePlayerListener(new YouTubePlayerListener() {
                 @Override
                 public void onReady(YouTubePlayer youTubePlayer) {
-                    layout.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            String id = videoList.get(position).getVideoURL();
-                            youTubePlayer.loadVideo(id, 0);
-                        }
-                    });
+                    youTubePlayer.loadVideo(mUrl, 0);
                 }
 
                 @Override
                 public void onStateChange(YouTubePlayer youTubePlayer, PlayerConstants.PlayerState playerState) {
                     if (playerState == PlayerConstants.PlayerState.PLAYING) {
+                        progressBar.setVisibility(GONE);
                         layout.setVisibility(GONE);
                         gradientView.setVisibility(GONE);
                         thumbNail.setVisibility(GONE);

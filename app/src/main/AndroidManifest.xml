@@ -29,6 +29,7 @@
             android:theme="@style/AppTheme.Transparent" />
         <activity
             android:name=".CourseActivity"
+            android:hardwareAccelerated="true"
             android:launchMode="standard"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
@@ -47,6 +48,7 @@
         <activity
             android:name=".MainActivity"
             android:fitsSystemWindows="true"
+            android:hardwareAccelerated="true"
             android:launchMode="standard"
             android:theme="@style/AppTheme.Transparent">
             <intent-filter>

@@ -20,6 +20,7 @@
             android:fontFamily="@font/solaimanlipi"
             android:padding="16dp"
             android:text="@string/ourWorks"
+            android:textColor="@color/textColorGrey"
             android:textSize="32sp"
             android:textStyle="bold" />
 
@@ -30,7 +31,7 @@
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp">
 
-            <androidx.viewpager.widget.ViewPager
+            <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/activityViewPager"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
@@ -67,6 +68,7 @@
             android:layout_marginEnd="16dp"
             android:fontFamily="@font/solaimanlipi"
             android:text="@string/blog"
+            android:textColor="@color/textColorGrey"
             android:textSize="16sp"
             android:textStyle="bold" />
 
@@ -94,6 +96,7 @@
             android:layout_marginEnd="16dp"
             android:fontFamily="@font/solaimanlipi"
             android:text="@string/joinUs"
+            android:textColor="@color/textColorGrey"
             android:textSize="16sp"
             android:textStyle="bold" />
 
@@ -138,7 +141,8 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/solaimanlipi"
                         android:padding="8dp"
-                        android:text="@string/trainer" />
+                        android:text="@string/trainer"
+                        android:textColor="@android:color/black" />
 
                 </LinearLayout>
 
@@ -171,7 +175,8 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/solaimanlipi"
                         android:padding="8dp"
-                        android:text="@string/member" />
+                        android:text="@string/member"
+                        android:textColor="@android:color/black" />
 
                 </LinearLayout>
 
@@ -204,7 +209,8 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/solaimanlipi"
                         android:padding="8dp"
-                        android:text="@string/contributor" />
+                        android:text="@string/contributor"
+                        android:textColor="@android:color/black" />
 
                 </LinearLayout>
 

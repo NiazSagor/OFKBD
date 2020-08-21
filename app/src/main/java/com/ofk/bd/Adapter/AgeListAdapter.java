@@ -74,4 +74,8 @@ public class AgeListAdapter extends RecyclerView.Adapter<AgeListAdapter.AgeListV
     public int getItemCount() {
         return age.length;
     }
+
+    public String getSelectedAge(int position){
+        return age[position];
+    }
 }

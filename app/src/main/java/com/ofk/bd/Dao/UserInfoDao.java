@@ -19,6 +19,10 @@ public interface UserInfoDao {
     void update(UserInfo userInfo);
 
     // update user video total count
+    @Query("UPDATE user_info SET userName = :userName, userEmail = :userEmail, userPhoneNumber = :userPhoneNumber WHERE id = 1")
+    int updateUser(String userName, String userEmail, String userPhoneNumber);
+
+    // update user video total count
     @Query("UPDATE user_info SET videoCompleted = videoCompleted + 1 WHERE id = 1")
     int updateUserVideoTotal();
 
@@ -31,7 +35,7 @@ public interface UserInfoDao {
     int updateUserQuizTotal();
 
     @Query("SELECT courseCompleted FROM user_info WHERE id = 1")
-    int getCurrentCompletedCourseCount();
+    LiveData<Integer> getCurrentCompletedCourseCount();
 
     @Query("SELECT videoCompleted FROM user_info WHERE id = 1")
     int getCurrentCompletedVideoCount();

@@ -47,7 +47,7 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
-    implementation 'com.google.android.material:material:1.1.0'
+    implementation 'com.google.android.material:material:1.2.0'
 
     //picasso
     implementation 'com.squareup.picasso:picasso:2.71828'
@@ -80,4 +80,10 @@ dependencies {
 
     // web view
     implementation 'com.thefinestartist:finestwebview:1.2.7'
+
+    // otp view
+    implementation 'com.github.mukeshsolanki:android-otpview-pinview:2.1.1'
+
+    // state progress bar
+    implementation 'com.kofigyan.stateprogressbar:stateprogressbar:1.0.0'
 }

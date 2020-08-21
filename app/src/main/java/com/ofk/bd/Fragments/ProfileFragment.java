@@ -59,6 +59,11 @@ public class ProfileFragment extends Fragment {
 
     private MainActivityViewModel mainActivityViewModel;
     private List<String> profileItemList;
+    private FragmentProfileBinding binding;
+
+    private List<Integer> acquiredBadgeIndexes;
+
+    private AvatarListAdapter adapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -67,15 +72,17 @@ public class ProfileFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-        mainActivityViewModel = ViewModelProviders.of(getActivity()).get(MainActivityViewModel.class);
-        profileItemList = new ArrayList<>();
+
+        if (acquiredBadgeIndexes == null) {
+            acquiredBadgeIndexes = new ArrayList<>();
+        }
+        if (profileItemList == null) {
+            profileItemList = new ArrayList<>();
+        }
+        if (mainActivityViewModel == null) {
+            mainActivityViewModel = ViewModelProviders.of(getActivity()).get(MainActivityViewModel.class);
+        }
     }
-
-    private FragmentProfileBinding binding;
-
-    private List<Integer> acquiredBadgeIndexes;
-
-    private AvatarListAdapter adapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -85,39 +92,54 @@ public class ProfileFragment extends Fragment {
 
         binding.badgesRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
 
-        mainActivityViewModel.getUserInfoLiveData().observe(this, new Observer<UserInfo>() {
-            @Override
-            public void onChanged(UserInfo userInfo) {
-                binding.totalCourseCompleted.setText("" + userInfo.getCourseCompleted());
-                binding.totalVideoCompleted.setText("" + userInfo.getVideoCompleted());
-                binding.totalQuizCompleted.setText("" + userInfo.getQuizCompleted());
-
-                profileItemList.add("" + userInfo.getUserName());
-                profileItemList.add("" + userInfo.getUserPhoneNumber());
-                profileItemList.add("" + userInfo.getUserEmail());
-
-                binding.profileRecyclerView.setAdapter(new ProfileListAdapter(profileItemList));
-            }
-        });
-
-        mainActivityViewModel.getCurrentIndexOnBadge().observe(this, new Observer<Integer>() {
-            @Override
-            public void onChanged(Integer integer) {
-
-                acquiredBadgeIndexes = new ArrayList<>();
-
-                for(int i = 0 ; i <= integer ; i++){
-                    acquiredBadgeIndexes.add(i);
-                }
-
-                adapter = new AvatarListAdapter("view_badge");
-
-                adapter.setAcquiredBadgeIndexes(acquiredBadgeIndexes);
-
-                binding.badgesRecyclerView.setAdapter(adapter);
-            }
-        });
-
         return binding.getRoot();
     }
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        if (!mainActivityViewModel.getUserInfoLiveData().hasObservers()) {
+            mainActivityViewModel.getUserInfoLiveData().observe(this, userInfoObserver);
+        }
+
+        if (!mainActivityViewModel.getCurrentIndexOnBadge().hasObservers()) {
+            mainActivityViewModel.getCurrentIndexOnBadge().observe(this, indexObserver);
+        }
+    }
+
+    private final Observer<UserInfo> userInfoObserver = new Observer<UserInfo>() {
+        @Override
+        public void onChanged(UserInfo userInfo) {
+            binding.totalCourseCompleted.setText("" + userInfo.getCourseCompleted());
+            binding.totalVideoCompleted.setText("" + userInfo.getVideoCompleted());
+            binding.totalQuizCompleted.setText("" + userInfo.getQuizCompleted());
+
+            profileItemList.add("" + userInfo.getUserName());
+            profileItemList.add("" + userInfo.getUserPhoneNumber());
+
+            if (!userInfo.getUserEmail().equals("")) {
+                profileItemList.add("" + userInfo.getUserEmail());
+            }
+
+            binding.profileRecyclerView.setAdapter(new ProfileListAdapter(profileItemList));
+        }
+    };
+
+    private final Observer<Integer> indexObserver = new Observer<Integer>() {
+        @Override
+        public void onChanged(Integer integer) {
+
+            for (int i = 0; i <= integer; i++) {
+                acquiredBadgeIndexes.add(i);
+            }
+
+            adapter = new AvatarListAdapter("view_badge");
+
+            adapter.setAcquiredBadgeIndexes(acquiredBadgeIndexes);
+
+            binding.badgesRecyclerView.setAdapter(adapter);
+        }
+    };
 }

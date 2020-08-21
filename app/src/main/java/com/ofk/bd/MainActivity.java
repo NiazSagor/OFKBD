@@ -7,18 +7,14 @@ import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.ofk.bd.Adapter.MainActivityViewPager;
-import com.ofk.bd.HelperClass.SectionCourseTuple;
 import com.ofk.bd.HelperClass.ServiceResultReceiver;
 import com.ofk.bd.ViewModel.MainActivityViewModel;
 import com.ofk.bd.databinding.ActivityMainBinding;
-
-import java.util.List;
 
 public class MainActivity extends FragmentActivity implements ServiceResultReceiver.Receiver {
 
@@ -43,7 +39,10 @@ public class MainActivity extends FragmentActivity implements ServiceResultRecei
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         // for every data needed in main activity child fragments
-        viewModel = ViewModelProviders.of(MainActivity.this).get(MainActivityViewModel.class);
+
+        if (viewModel == null) {
+            viewModel = ViewModelProviders.of(MainActivity.this).get(MainActivityViewModel.class);
+        }
 
         sharedPreferences = getSharedPreferences("intent", MODE_PRIVATE);
         // initialize receiver
@@ -61,19 +60,19 @@ public class MainActivity extends FragmentActivity implements ServiceResultRecei
                 public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                     switch (menuItem.getItemId()) {
                         case R.id.nav_home:
-                            binding.viewpager.setCurrentItem(0);
+                            binding.viewpager.setCurrentItem(0, true);
                             break;
 
                         case R.id.nav_progress:
-                            binding.viewpager.setCurrentItem(1);
+                            binding.viewpager.setCurrentItem(1, true);
                             break;
 
                         case R.id.nav_more:
-                            binding.viewpager.setCurrentItem(2);
+                            binding.viewpager.setCurrentItem(2, true);
                             break;
 
                         case R.id.nav_profile:
-                            binding.viewpager.setCurrentItem(3);
+                            binding.viewpager.setCurrentItem(3, true);
                             break;
                     }
                     return false;
@@ -89,6 +88,8 @@ public class MainActivity extends FragmentActivity implements ServiceResultRecei
         adapter = new MainActivityViewPager(this);
 
         binding.viewpager.setUserInputEnabled(false);
+
+        binding.viewpager.setOffscreenPageLimit(3);
 
         binding.viewpager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override

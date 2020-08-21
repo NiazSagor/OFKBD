@@ -20,6 +20,8 @@
 
         <item name="colorControlHighlight">@color/colorPrimaryRipple</item>
 
+        <item name="otpViewStyle">@style/OtpWidget.OtpView</item>
+
         <!--this change the status bar icons to grey!-->
         <item name="android:windowLightStatusBar">true</item>
     </style>

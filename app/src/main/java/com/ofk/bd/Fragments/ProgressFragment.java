@@ -12,19 +12,17 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.kofigyan.stateprogressbar.StateProgressBar;
 import com.ofk.bd.Adapter.ProgressListAdapter;
 import com.ofk.bd.HelperClass.BadgeUtilityClass;
 import com.ofk.bd.HelperClass.EnrolledCourse;
-import com.ofk.bd.HelperClass.Progress;
 import com.ofk.bd.HelperClass.SectionCourseTuple;
-import com.ofk.bd.HelperClass.UserInfo;
 import com.ofk.bd.R;
 import com.ofk.bd.ViewModel.MainActivityViewModel;
 import com.ofk.bd.databinding.FragmentProgressBinding;
@@ -40,6 +38,8 @@ import java.util.List;
 public class ProgressFragment extends Fragment {
 
     private static final String TAG = "ProgressFragment";
+
+    private static  String[] descriptionData = {"Level 1\n\nApprentice", "Level 2\n\nJourneyman", "Level 3\n\nMaster", "Level 4\n\nGrand Master", "Level 5\n\nSuper Kids"};
 
     private static int badge_icons[] = {R.drawable.apprentice_1, R.drawable.apprentice_2, R.drawable.apprentice_3,
             R.drawable.journeyman_1, R.drawable.journeyman_2, R.drawable.journeyman_3,
@@ -96,115 +96,29 @@ public class ProgressFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-
-        enrolledCourses = new ArrayList<>();
-
-        mainActivityViewModel = ViewModelProviders.of(getActivity()).get(MainActivityViewModel.class);
+        if (enrolledCourses == null) {
+            enrolledCourses = new ArrayList<>();
+        }
+        if (mainActivityViewModel == null) {
+            mainActivityViewModel = ViewModelProviders.of(getActivity()).get(MainActivityViewModel.class);
+        }
     }
 
     private FragmentProgressBinding binding;
     long total = 0;
-
-    List<String> stringList;
+    private StateProgressBar stateProgressBar;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = FragmentProgressBinding.inflate(getLayoutInflater());
-
-        //createDummyProgress();
-
-        stringList = new ArrayList<>();
-
-        mainActivityViewModel.getCombinedList().observe(this, new Observer<List<SectionCourseTuple>>() {
-            @Override
-            public void onChanged(List<SectionCourseTuple> sectionCourseTuples) {
-                if (sectionCourseTuples.size() != 0) {
-                    binding.courseProgressTextView.setVisibility(View.VISIBLE);
-                    binding.subjectProgressRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-                    binding.subjectProgressRecyclerView.setAdapter(new ProgressListAdapter(sectionCourseTuples));
-                } else {
-                    binding.courseProgressTextView.setVisibility(View.GONE);
-                }
-            }
-        });
-
         //new TestClass().execute();
 
-        getLevel();
+        stateProgressBar = binding.yourStateProgressBarId;
+        stateProgressBar.setStateDescriptionData(descriptionData);
 
         return binding.getRoot();
-    }
-
-    private void getLevel() {
-
-        mainActivityViewModel.getUserInfoLiveData().observe(this, new Observer<UserInfo>() {
-            @Override
-            public void onChanged(UserInfo userInfo) {
-                int current = userInfo.getCourseCompleted();
-                Log.d(TAG, "getLevel: " + current);
-
-                if (current < 38) {
-                    BadgeUtilityClass badge = new BadgeUtilityClass(current);
-
-                    int currentBadgeIconIndex = badge.getCurrentBadgeIconIndex();
-                    int nextBadgeIconIndex = currentBadgeIconIndex + 1;
-
-                    mainActivityViewModel.getCurrentIndexOnBadge().setValue(currentBadgeIconIndex);
-
-                    String currentLevelExtended = "Current Level : " + level_names[currentBadgeIconIndex];
-
-                    String currentLevelOnly = level_names[currentBadgeIconIndex];
-
-                    binding.currentLevelTextViewTop.setText(currentLevelExtended);
-                    binding.currentBadgeImageViewTop.setImageResource(badge_icons[currentBadgeIconIndex]);
-
-                    binding.currentLevelTextViewBelow.setText(currentLevelOnly);
-                    binding.currentBadgeImageViewBelow.setImageResource(badge_icons[currentBadgeIconIndex]);
-
-                    binding.nextLevelTextView.setText(level_names[nextBadgeIconIndex]);
-                    binding.nextBadgeImageView.setImageResource(badge_icons[nextBadgeIconIndex]);
-
-                    int maxProgressPossible = min_require_next_level[nextBadgeIconIndex] - min_require_next_level[currentBadgeIconIndex];
-
-                    binding.progressBar.setMax(maxProgressPossible);
-
-                    int currentProgress = min_require_next_level[nextBadgeIconIndex] - current;
-
-                    Log.d(TAG, "getLevel: " + currentProgress);
-
-                    if (maxProgressPossible - currentProgress == 0) {
-                        binding.progressBar.setProgress(0);
-
-                        String progressText = currentProgress + "/" + maxProgressPossible;
-
-                        binding.progressTextView.setText(progressText);
-                    } else {
-                        int diff = min_require_next_level[nextBadgeIconIndex] - current;
-                        int progress = maxProgressPossible - diff;
-
-                        String progressText = progress + "/" + maxProgressPossible;
-
-                        binding.progressTextView.setText(progressText);
-                        binding.progressBar.setProgress(progress);
-                    }
-                } else if (current == 38) {
-                    String currentLevel = "Current Level : Super Kids 3";
-                    String currentLevelShort = "Super Kids 3";
-
-                    binding.currentLevelTextViewTop.setText(currentLevel);
-                    binding.currentLevelTextViewBelow.setText(currentLevelShort);
-                    binding.currentBadgeImageViewTop.setImageResource(badge_icons[14]);
-                    binding.currentBadgeImageViewBelow.setImageResource(badge_icons[14]);
-                    binding.nextBadgeImageView.setImageResource(badge_icons[14]);
-                    binding.nextLevelTextView.setText(level_names[14]);
-                    binding.progressTextView.setVisibility(View.GONE);
-                } else if (current == 0) {
-
-                }
-            }
-        });
     }
 
     public class TestClass extends AsyncTask<Void, Void, Void> {
@@ -232,4 +146,83 @@ public class ProgressFragment extends Fragment {
             return null;
         }
     }
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        if (!mainActivityViewModel.getUserCourseCompleted().hasObservers()) {
+            mainActivityViewModel.getUserCourseCompleted().observe(this, userCourseCompletedObserver);
+        }
+
+        if (!mainActivityViewModel.getCombinedList().hasObservers()) {
+            mainActivityViewModel.getCombinedList().observe(this, listObserver);
+        }
+    }
+
+    private final Observer<Integer> userCourseCompletedObserver = new Observer<Integer>() {
+        @Override
+        public void onChanged(Integer integer) {
+            int current;
+            if (integer == null) {
+                current = 0;
+            } else {
+                current = integer;
+            }
+            Log.d(TAG, "getLevel: " + current);
+
+            if (current < 38) {
+                BadgeUtilityClass badge = new BadgeUtilityClass(current);
+
+                int currentBadgeIconIndex = badge.getCurrentBadgeIconIndex();
+                int nextBadgeIconIndex = currentBadgeIconIndex + 1;
+
+                mainActivityViewModel.getCurrentIndexOnBadge().setValue(currentBadgeIconIndex);
+
+                String currentLevelExtended = " " + level_names[currentBadgeIconIndex];
+
+                String currentLevelOnly = level_names[currentBadgeIconIndex];
+
+                binding.currentLevelTextViewTop.setText(currentLevelExtended);
+                binding.currentBadgeImageViewTop.setImageResource(badge_icons[currentBadgeIconIndex]);
+
+                if (level_names[currentBadgeIconIndex].contains("Apprentice")) {
+                    stateProgressBar.setCurrentStateNumber(StateProgressBar.StateNumber.ONE);
+                } else if (level_names[currentBadgeIconIndex].contains("Journeyman")) {
+                    stateProgressBar.setCurrentStateNumber(StateProgressBar.StateNumber.TWO);
+                } else if (level_names[currentBadgeIconIndex].contains("Master")) {
+                    stateProgressBar.setCurrentStateNumber(StateProgressBar.StateNumber.THREE);
+                } else if (level_names[currentBadgeIconIndex].contains("Grandmaster")) {
+                    stateProgressBar.setCurrentStateNumber(StateProgressBar.StateNumber.FOUR);
+                } else if (level_names[currentBadgeIconIndex].contains("Super Kids")) {
+                    stateProgressBar.setCurrentStateNumber(StateProgressBar.StateNumber.FIVE);
+                }
+
+            } else if (current == 38) {
+                String currentLevel = " Super Kids 3";
+
+                binding.currentLevelTextViewTop.setText(currentLevel);
+
+                binding.currentBadgeImageViewTop.setImageResource(badge_icons[14]);
+
+                stateProgressBar.setCurrentStateNumber(StateProgressBar.StateNumber.FIVE);
+            } else if (current == 0) {
+                stateProgressBar.setCurrentStateNumber(StateProgressBar.StateNumber.ONE);
+            }
+        }
+    };
+
+    private final Observer<List<SectionCourseTuple>> listObserver = new Observer<List<SectionCourseTuple>>() {
+        @Override
+        public void onChanged(List<SectionCourseTuple> sectionCourseTuples) {
+            if (sectionCourseTuples.size() != 0) {
+                binding.courseProgressTextView.setVisibility(View.VISIBLE);
+                binding.subjectProgressRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+                binding.subjectProgressRecyclerView.setAdapter(new ProgressListAdapter(sectionCourseTuples));
+            } else {
+                binding.courseProgressTextView.setVisibility(View.GONE);
+            }
+        }
+    };
 }

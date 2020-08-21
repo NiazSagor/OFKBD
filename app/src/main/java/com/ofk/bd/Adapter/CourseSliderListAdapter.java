@@ -25,11 +25,12 @@ public class CourseSliderListAdapter extends RecyclerView.Adapter<CourseSliderLi
 
     private static final String TAG = "CourseSliderListAdapter";
 
-    private static int[] firstSixIcons = {R.drawable.art, R.drawable.calligraphy, R.drawable.case_solve, R.drawable.craft, R.drawable.critical, R.drawable.digital};
+    private static int[] firstSixIcons = {R.drawable.art, R.drawable.calligraphy, R.drawable.case_solve, R.drawable.craft, R.drawable.critical, R.drawable.digital,
+            R.drawable.guitar, R.drawable.programming, R.drawable.robotics};
     private static int[] secondFiveIcons = {R.drawable.guitar, R.drawable.programming, R.drawable.robotics};
-    private static int[] secondThreeGradients = {R.drawable.gradient_purple, R.drawable.gradient_purple_pink, R.drawable.orange_gradient};
-    private static int[] firstSixGradients = {R.drawable.gradient_blue, R.drawable.gradient_cyan, R.drawable.gradient_green,
-            R.drawable.gradient_lemon, R.drawable.gradient_pink, R.drawable.gradient_pink_yellow};
+    private static int[] firstSixGradients = {R.drawable.gradient_pink, R.drawable.gradient_cyan, R.drawable.gradient_purple,
+            R.drawable.gradient_blue, R.drawable.gradient_purple_pink, R.drawable.gradient_pink_yellow,
+            R.drawable.gradient_pink, R.drawable.gradient_cyan, R.drawable.gradient_purple};
 
     private static int[] blogThumbs = {R.drawable.mental, R.drawable.story, R.drawable.video, R.drawable.skill, R.drawable.awarness, R.drawable.fiction};
 
@@ -49,6 +50,7 @@ public class CourseSliderListAdapter extends RecyclerView.Adapter<CourseSliderLi
         this.courseList = courseList;
         this.mSender = sender;
     }
+
 
     @NonNull
     @Override
@@ -100,7 +102,7 @@ public class CourseSliderListAdapter extends RecyclerView.Adapter<CourseSliderLi
         } else if (mSender.equals("viewpager1")) {
             holder.courseTitleTextView.setText(courseList.get(position).getCourseSubtitle());
             holder.courseImageView.setImageResource(secondFiveIcons[position]);
-            holder.gradientView.setBackgroundResource(secondThreeGradients[position]);
+            holder.gradientView.setBackgroundResource(firstSixGradients[position]);
         }
     }
 

@@ -12,6 +12,8 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.widget.MarginPageTransformer;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.firebase.database.DataSnapshot;
 import com.ofk.bd.Adapter.ActivitySliderAdapter;
@@ -105,83 +107,99 @@ public class MoreFragment extends Fragment {
         // Inflate the layout for this fragment
         binding = FragmentMoreBinding.inflate(getLayoutInflater());
 
-        //adapter = new ActivitySliderAdapter(getActivity(), moreCourses, "our_work");
         binding.activityViewPager.setClipToPadding(false);
-        binding.activityViewPager.setPageMargin(20);
-
-        mainActivityViewModel.getFieldWorkPicLiveData().observe(this, new Observer<DataSnapshot>() {
-            @Override
-            public void onChanged(DataSnapshot dataSnapshot) {
-                Activity activity = dataSnapshot.getValue(Activity.class);
-                activityPics.add(activity);
-                activityAdapter = new ActivitySliderAdapter(getContext(), activityPics, "activity");
-                binding.activityViewPager.setAdapter(activityAdapter);
-                changeIndicator(0);
-            }
-        });
-
-        if (mOnPageChangeListener == null) {
-            mOnPageChangeListener = new ViewPager.OnPageChangeListener() {
-                @Override
-                public void onPageScrolled(int i, float v, int i1) {
-                    //changeIndicator(i);
-                }
-
-                @Override
-                public void onPageSelected(int i) {
-                    if (customPosition > activityAdapter.getCount() - 1) {
-                        customPosition = 0;
-                    }
-
-                    changeIndicator(i++);
-                }
-
-                @Override
-                public void onPageScrollStateChanged(int i) {
-
-                }
-            };
-            binding.activityViewPager.addOnPageChangeListener(mOnPageChangeListener);
-        }
+        binding.activityViewPager.setPageTransformer(new MarginPageTransformer(40));
 
         binding.blogRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
-        mainActivityViewModel.getBlogListMutableLiveData().observe(this, new Observer<List<Course>>() {
-            @Override
-            public void onChanged(List<Course> courses) {
-                adapter = new CourseSliderListAdapter(courses, "blog");
-                binding.blogRecyclerView.setAdapter(adapter);
-                adapter.setOnItemClickListener(new CourseSliderListAdapter.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(int position, View view) {
-                        if (position == 0) {
-                            new FinestWebView.Builder(getActivity()).show("https://ofkbd.com/inspirational/");
-                        } else if (position == 1) {
-                            new FinestWebView.Builder(getActivity()).show("https://ofkbd.com/story/");
-                        } else if (position == 2) {
-                            new FinestWebView.Builder(getActivity()).show("https://ofkbd.com/tips-and-tricks/");
-                        } else if (position == 3) {
-                            new FinestWebView.Builder(getActivity()).show("https://ofkbd.com/skill-development/");
-                        } else if (position == 4) {
-                            new FinestWebView.Builder(getActivity()).show("https://ofkbd.com/awarness/");
-                        } else if (position == 5) {
-                            new FinestWebView.Builder(getActivity()).show("https://ofkbd.com/english-article/");
-                        }
-                    }
-                });
-            }
-        });
 
         return binding.getRoot();
     }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        activityPics.clear();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        if (!mainActivityViewModel.getFieldWorkPicLiveData().hasObservers()) {
+            mainActivityViewModel.getFieldWorkPicLiveData().observe(this, fieldWorkObserver);
+        }
+
+        if(!mainActivityViewModel.getBlogListMutableLiveData().hasObservers()){
+            mainActivityViewModel.getBlogListMutableLiveData().observe(this, blogListObserver);
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        binding.activityViewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                if (customPosition > activityAdapter.getItemCount() - 1) {
+                    customPosition = 0;
+                }
+                changeIndicator(position++);
+            }
+        });
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        activityPics.clear();
+    }
+
+    private final Observer<DataSnapshot> fieldWorkObserver = new Observer<DataSnapshot>() {
+        @Override
+        public void onChanged(DataSnapshot dataSnapshot) {
+            Activity activity = dataSnapshot.getValue(Activity.class);
+            activityPics.add(activity);
+            activityAdapter = new ActivitySliderAdapter(activityPics);
+            binding.activityViewPager.setAdapter(activityAdapter);
+            changeIndicator(0);
+        }
+    };
+
+    private final Observer<List<Course>> blogListObserver = new Observer<List<Course>>() {
+        @Override
+        public void onChanged(List<Course> courses) {
+            adapter = new CourseSliderListAdapter(courses, "blog");
+            binding.blogRecyclerView.setAdapter(adapter);
+            adapter.setOnItemClickListener(new CourseSliderListAdapter.OnItemClickListener() {
+                @Override
+                public void onItemClick(int position, View view) {
+                    if (position == 0) {
+                        new FinestWebView.Builder(getActivity()).show("https://ofkbd.com/inspirational/");
+                    } else if (position == 1) {
+                        new FinestWebView.Builder(getActivity()).show("https://ofkbd.com/story/");
+                    } else if (position == 2) {
+                        new FinestWebView.Builder(getActivity()).show("https://ofkbd.com/tips-and-tricks/");
+                    } else if (position == 3) {
+                        new FinestWebView.Builder(getActivity()).show("https://ofkbd.com/skill-development/");
+                    } else if (position == 4) {
+                        new FinestWebView.Builder(getActivity()).show("https://ofkbd.com/awarness/");
+                    } else if (position == 5) {
+                        new FinestWebView.Builder(getActivity()).show("https://ofkbd.com/english-article/");
+                    }
+                }
+            });
+        }
+    };
 
     private void changeIndicator(int currentSlidePosition) {
         if (binding.dotLayout.getChildCount() > 0) {
             binding.dotLayout.removeAllViews();
         }
 
-        ImageView[] dots = new ImageView[activityAdapter.getCount()];
+        ImageView[] dots = new ImageView[activityAdapter.getItemCount()];
 
-        for (int i = 0; i < activityAdapter.getCount(); i++) {
+        for (int i = 0; i < activityAdapter.getItemCount(); i++) {
             dots[i] = new ImageView(getContext());
 
             if (i == currentSlidePosition) {
@@ -199,17 +217,5 @@ public class MoreFragment extends Fragment {
             layoutParams.setMargins(4, 0, 4, 0);
             binding.dotLayout.addView(dots[i], layoutParams);
         }
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        activityPics.clear();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        activityPics.clear();
     }
 }

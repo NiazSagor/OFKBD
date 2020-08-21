@@ -20,14 +20,21 @@ public class UserInfoRepository {
 
     private LiveData<UserInfo> userInfoLiveData;
 
+    private LiveData<Integer> userCurrentCourseCompleted;
+
     public UserInfoRepository(Application application) {
         UserInfoDatabase database = UserInfoDatabase.getInstance(application);
         userInfoDao = database.userInfoDao();
         userInfoLiveData = userInfoDao.getUser();
+        userCurrentCourseCompleted = userInfoDao.getCurrentCompletedCourseCount();
     }
 
     public LiveData<UserInfo> getUserInfoLiveData() {
         return userInfoLiveData;
+    }
+
+    public LiveData<Integer> getUserCurrentCourseCompleted() {
+        return userCurrentCourseCompleted;
     }
 
     public void insert(UserInfo userInfo) {
@@ -125,6 +132,29 @@ public class UserInfoRepository {
         @Override
         protected Void doInBackground(Void... voids) {
             dao.updateUserQuizTotal();
+            return null;
+        }
+    }
+
+    public void updateUser(String userName, String userEmail, String userPhoneNumber) {
+        new UpdateUser(userInfoDao, userName, userEmail, userPhoneNumber).execute();
+    }
+
+    private static class UpdateUser extends AsyncTask<Void, Void, Void> {
+
+        UserInfoDao dao;
+        String userName, userEmail, userPhoneNumber;
+
+        public UpdateUser(UserInfoDao dao, String userName, String userEmail, String userPhoneNumber) {
+            this.dao = dao;
+            this.userName = userName;
+            this.userEmail = userEmail;
+            this.userPhoneNumber = userPhoneNumber;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            dao.updateUser(userName, userEmail, userPhoneNumber);
             return null;
         }
     }

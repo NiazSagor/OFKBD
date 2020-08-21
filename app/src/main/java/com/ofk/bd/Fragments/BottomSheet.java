@@ -35,40 +35,21 @@ public class BottomSheet extends BottomSheetDialogFragment {
 
         TextInputEditText editText = view.findViewById(R.id.emailEditText);
 
-        editText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (charSequence.length() == 0) {
-                    editText.setError("Please input a valid email address");
-                } else {
-                    if (!charSequence.toString().matches(emailPattern)) {
-                        Log.d(TAG, "onTextChanged: not valid");
-                        editText.setError("Please input a valid email address");
-                    } else {
-                        addButton.setEnabled(true);
-                        Log.d(TAG, "onTextChanged: valid email");
-                        listener.onButtonClick(charSequence.toString());
-                        // dismiss();
-                    }
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
-
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                listener.onButtonClick(editText.getText().toString());
-                dismiss();
+
+                if (editText.getText().toString().isEmpty()) {
+                    editText.setError("ইমেইল এড্রেস দেয়া হয় নি");
+                } else {
+                    String email = editText.getText().toString().trim();
+                    if (email.matches(emailPattern)) {
+                        listener.onButtonClick(email);
+                        dismiss();
+                    } else {
+                        editText.setError("ইমেইল এড্রেসটি সঠিক হয় নি");
+                    }
+                }
             }
         });
 
@@ -77,7 +58,7 @@ public class BottomSheet extends BottomSheetDialogFragment {
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                listener.onButtonClick("");
+                listener.onButtonClick(null);
                 dismiss();
             }
         });

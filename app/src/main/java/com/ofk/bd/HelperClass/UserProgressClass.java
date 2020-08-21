@@ -9,14 +9,16 @@ public class UserProgressClass {
     private int id;
 
     private String sectionName;
+    private String sectionNameBangla;
     private String courseEnrolled;
     private String courseNameEnglish;
     private String courseThumbnailURL;
     private int totalVideos;
     private int videoWatched;
 
-    public UserProgressClass(String sectionName, String courseEnrolled, String courseNameEnglish, String courseThumbnailURL, int totalVideos, int videoWatched) {
+    public UserProgressClass(String sectionName, String sectionNameBangla, String courseEnrolled, String courseNameEnglish, String courseThumbnailURL, int totalVideos, int videoWatched) {
         this.sectionName = sectionName;
+        this.sectionNameBangla = sectionNameBangla;
         this.courseEnrolled = courseEnrolled;
         this.courseNameEnglish = courseNameEnglish;
         this.courseThumbnailURL = courseThumbnailURL;
@@ -38,6 +40,14 @@ public class UserProgressClass {
 
     public void setSectionName(String sectionName) {
         this.sectionName = sectionName;
+    }
+
+    public String getSectionNameBangla() {
+        return sectionNameBangla;
+    }
+
+    public void setSectionNameBangla(String sectionNameBangla) {
+        this.sectionNameBangla = sectionNameBangla;
     }
 
     public String getCourseEnrolled() {

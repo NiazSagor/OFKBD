@@ -63,7 +63,7 @@ public class DisplayCourseActivity extends AppCompatActivity {
         viewModel.getCoursesFromDB(getIntent().getStringExtra("section_name"));
 
 
-        String headline = getIntent().getStringExtra("section_name") + " Courses";
+        String headline = getIntent().getStringExtra("section_name_bangla") + " কোর্স";
         binding.sectionHeadline.setText(headline);
 
         setupCourseRecyclerView();
@@ -102,7 +102,7 @@ public class DisplayCourseActivity extends AppCompatActivity {
                     CourseListAdapter adapter = new CourseListAdapter(courses, "displayCourse");
                     courseRecyclerView.setAdapter(adapter);
 
-                    String count = adapter.getItemCount() + " Courses";
+                    String count = adapter.getItemCount() + " টি কোর্স";
 
                     binding.courseCount.setText(count);
 
@@ -111,6 +111,7 @@ public class DisplayCourseActivity extends AppCompatActivity {
                         public void onItemClick(int position, View view) {
 
                             String sectionName = getIntent().getStringExtra("section_name");
+                            String sectionNameBangla = getIntent().getStringExtra("section_name_bangla");
                             String courseName = courses.get(position).getCourseTitle();
                             String courseNameEnglish = courses.get(position).getCourseTitleEnglish();
                             String thumbNailURL = courses.get(position).getThumbnailURL();
@@ -125,7 +126,7 @@ public class DisplayCourseActivity extends AppCompatActivity {
                                             // if not in db from before
                                             Log.d(TAG, "onChanged: course is not in db");
                                             enrolledCourseLiveData.removeObservers(DisplayCourseActivity.this);
-                                            showAlertDialog(sectionName, courseName, courseNameEnglish, thumbNailURL);
+                                            showAlertDialog(sectionName, sectionNameBangla, courseName, courseNameEnglish, thumbNailURL);
                                         } else {
                                             // if is in db from before
                                             Log.d(TAG, "onChanged: course is in db");
@@ -142,14 +143,14 @@ public class DisplayCourseActivity extends AppCompatActivity {
         }
     }
 
-    private void showAlertDialog(String sectionName, String courseName, String courseNameEnglish, String thumbnailURL) {
+    private void showAlertDialog(String sectionName, String sectionNameBangla, String courseName, String courseNameEnglish, String thumbnailURL) {
 
         AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
         builder1.setMessage("কোর্সটি শুরু করতে চাও?");
         builder1.setCancelable(true);
 
         builder1.setPositiveButton(
-                "Yes",
+                "হ্যা",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
 
@@ -159,7 +160,7 @@ public class DisplayCourseActivity extends AppCompatActivity {
                         intent.putExtra("course_name_english", courseNameEnglish);
                         intent.putExtra("from", "display");
 
-                        viewModel.insert(new UserProgressClass(sectionName, courseName, courseNameEnglish, thumbnailURL, 9, 0));
+                        viewModel.insert(new UserProgressClass(sectionName, sectionNameBangla, courseName, courseNameEnglish, thumbnailURL, 9, 0));
 
                         startActivity(intent);
 
@@ -168,7 +169,7 @@ public class DisplayCourseActivity extends AppCompatActivity {
                 });
 
         builder1.setNegativeButton(
-                "No",
+                "না",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         startActivity(new Intent(DisplayCourseActivity.this, DisplayCourseActivity.class)

@@ -2,6 +2,7 @@
     <string name="app_name">OFKbd</string>
 
     <string name="yourName" translatable="false">তোমার নাম</string>
+    <string name="yourEmail" translatable="false">তোমার ইমেইল (Optional)</string>
     <string name="yourAge" translatable="false">তোমার বয়স</string>
     <string name="yourAvatar" translatable="false">যেকোনো একটি পছন্দ কর</string>
     <string name="yourCourse" translatable="false">আমার কোর্স সমূহ</string>
@@ -49,7 +50,6 @@
     <string name="notFoundVideo" translatable="false">ভিডিও খুঁজে পাওয়া যায় নি</string>
 
     <string name="progressButton" translatable="false">চলো</string>
-    <string name="yourEmail" translatable="false">তোমার ইমেইল এড্রেস</string>
 
     <string name="myBadge" translatable="false">আমার ব্যাজ</string>
     <string name="summary" translatable="false">সামারি</string>
@@ -59,5 +59,12 @@
     <string name="quizFinished" translatable="false">কুইজ সম্পন্ন</string>
 
     <string name="intro" translatable="false">শিখো, শেখাও, \nদেখাও তোমার প্রতিভা বিশ্বকে</string>
+
+    <string name="youNumber" translatable="false">তোমার মোবাইল নাম্বার</string>
+    <string name="youOTP" translatable="false">ওটিপি কোড</string>
+    <string name="youNumberExample" translatable="false">যেমন : 01712345678</string>
+    <string name="next" translatable="false">পরবর্তী</string>
+    <string name="yourNumberOTP" translatable="false">মোবাইল নাম্বারটি ভেরিফিকেশনের \nজন্য একটি ওটিপি কোড পাঠানো হবে</string>
+    <string name="yourOTPSent" translatable="false">মোবাইল নাম্বারটি ভেরিফিকেশনের \nজন্য একটি ওটিপি কোড পাঠানো হয়েছে</string>
 
 </resources>

@@ -72,6 +72,8 @@ public class MainActivityViewModel extends AndroidViewModel {
 
     LiveData<UserInfo> userInfoLiveData;
 
+    LiveData<Integer> userCourseCompleted;
+
     MutableLiveData<Integer> currentIndexOnBadge = new MutableLiveData<>();
 
     public MainActivityViewModel(@NonNull Application application) {
@@ -83,17 +85,15 @@ public class MainActivityViewModel extends AndroidViewModel {
 
         userInfoRepository = new UserInfoRepository(application);
         userInfoLiveData = userInfoRepository.getUserInfoLiveData();
+        userCourseCompleted = userInfoRepository.getUserCurrentCourseCompleted();
 
         Log.d(TAG, "MainActivityViewModel: ");
-        
+
 
         createCourseList();
         createBlogList();
-        getActivityPicFromDatabase();
         getFieldWorkPicFromDatabase();
         getActivityVideoFromDatabase();
-        getRandomCourseToDisplay_1();
-        getRandomCourseToDisplay_2();
     }
 
     /*******************SERVER QUERY**********************/
@@ -232,12 +232,16 @@ public class MainActivityViewModel extends AndroidViewModel {
      * */
 
 
-    public void insert(UserInfo userInfo){
+    public void insert(UserInfo userInfo) {
         userInfoRepository.insert(userInfo);
     }
 
     public LiveData<UserInfo> getUserInfoLiveData() {
         return userInfoLiveData;
+    }
+
+    public LiveData<Integer> getUserCourseCompleted() {
+        return userCourseCompleted;
     }
 
     public MutableLiveData<Integer> getCurrentIndexOnBadge() {

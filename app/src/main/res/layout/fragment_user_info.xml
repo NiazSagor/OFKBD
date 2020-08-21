@@ -15,39 +15,45 @@
 
     <ImageView
         android:id="@+id/logo"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:layout_below="@+id/waveView"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="16dp"
         android:src="@drawable/ofklogo" />
 
-    <LinearLayout
-        android:id="@+id/inputPhoneNumberCardView"
+    <EditText
+        android:id="@+id/yourNameEditText"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/logo"
-        android:layout_margin="16dp">
+        android:layout_height="60dp"
+        android:layout_below="@id/logo"
+        android:layout_margin="16dp"
+        android:background="@drawable/input_number_edittext"
+        android:fontFamily="@font/solaimanlipi"
+        android:gravity="center"
+        android:hint="@string/yourName"
+        android:inputType="text"
+        android:textColor="@android:color/black" />
 
-        <EditText
-            android:id="@+id/yourNameEditText"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_gravity="center"
-            android:background="@drawable/rounded_edittext"
-            android:fontFamily="@font/solaimanlipi"
-            android:hint="@string/yourName"
-            android:inputType="text"
-            android:paddingStart="16dp"
-            android:textStyle="bold" />
-
-    </LinearLayout>
+    <EditText
+        android:id="@+id/yourEmailEditText"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_below="@id/yourNameEditText"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/input_number_edittext"
+        android:fontFamily="@font/solaimanlipi"
+        android:gravity="center"
+        android:hint="@string/yourEmail"
+        android:inputType="textEmailAddress"
+        android:textColor="@android:color/black" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/selectAgeCardView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/inputPhoneNumberCardView"
+        android:layout_below="@id/yourEmailEditText"
         android:layout_margin="16dp"
         app:cardCornerRadius="8dp">
 

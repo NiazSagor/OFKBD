@@ -8,15 +8,14 @@
     <color name="colorPrimaryRipple">#42ff9700</color>
 
     <color name="purple">#531295</color>
-    <color name="red">#D72428</color>
+    <color name="red">#F42438</color>
     <color name="lightgrey">#DCDCDC</color>
-
-    <!-- Gradients for the topics  !-->
 
     <color name="darkOrange">#fd8022</color>
     <color name="lightOrange">#febe2b</color>
 
-    <color name="lightPink">#fbc4ff</color>
+    <!-- Gradients for the topics  !-->
+    <color name="lightPink">#fba993</color>
     <color name="darkPink">#fc979b</color>
 
     <color name="lightCyan">#33eeaf</color>
@@ -37,11 +36,11 @@
     <color name="lightPinkYellow">#fad47f</color>
     <color name="darkPinkYellow">#fd86ac</color>
 
+    <!-- Gradients for the topics  !-->
+    <color name="textColorGrey">#6a5941</color>
 
-    <color name="lightGreen">#bdfe2b</color>
-    <color name="darkGreen">#61fd22</color>
+    <!-- Progress fragment colors  !-->
+    <color name="progressCyan">#00c1c3</color>
 
-    <color name="lightLemon">#2bfece</color>
-    <color name="darkLemon">#229cfd</color>
 
 </resources>

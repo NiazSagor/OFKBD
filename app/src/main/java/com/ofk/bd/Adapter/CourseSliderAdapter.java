@@ -14,10 +14,8 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.PagerAdapter;
 
-import com.ofk.bd.CourseActivity;
 import com.ofk.bd.DisplayCourseActivity;
 import com.ofk.bd.HelperClass.Course;
-import com.ofk.bd.HelperClass.DisplayCourse;
 import com.ofk.bd.R;
 
 import java.util.ArrayList;

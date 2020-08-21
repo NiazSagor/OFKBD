@@ -7,6 +7,9 @@ public class SectionCourseTuple {
     @ColumnInfo(name = "sectionName")
     String sectionName;
 
+    @ColumnInfo(name = "sectionNameBangla")
+    String sectionNameBangla;
+
     @ColumnInfo(name = "courseEnrolled")
     String courseEnrolled;
 
@@ -22,8 +25,9 @@ public class SectionCourseTuple {
     @ColumnInfo(name = "videoWatched")
     int videoWatched;
 
-    public SectionCourseTuple(String sectionName, String courseEnrolled, String courseNameEnglish, String courseThumbnailURL, int totalVideos, int videoWatched) {
+    public SectionCourseTuple(String sectionName, String sectionNameBangla, String courseEnrolled, String courseNameEnglish, String courseThumbnailURL, int totalVideos, int videoWatched) {
         this.sectionName = sectionName;
+        this.sectionNameBangla = sectionNameBangla;
         this.courseEnrolled = courseEnrolled;
         this.courseNameEnglish = courseNameEnglish;
         this.courseThumbnailURL = courseThumbnailURL;
@@ -37,6 +41,14 @@ public class SectionCourseTuple {
 
     public void setSectionName(String sectionName) {
         this.sectionName = sectionName;
+    }
+
+    public String getSectionNameBangla() {
+        return sectionNameBangla;
+    }
+
+    public void setSectionNameBangla(String sectionNameBangla) {
+        this.sectionNameBangla = sectionNameBangla;
     }
 
     public String getCourseEnrolled() {

@@ -139,4 +139,13 @@ public class CourseListAdapter extends RecyclerView.Adapter<CourseListAdapter.Co
         }
         return -1;
     }
+
+    @Override
+    public long getItemId(int position) {
+        return super.getItemId(position);
+    }
+
+    public DisplayCourse getCurrentCourse(int position){
+        return courseList.get(position);
+    }
 }
