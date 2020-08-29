@@ -109,36 +109,6 @@ public class VideoFragment extends Fragment {
         return binding.getRoot();
     }
 
-    private void setUpList() {
-
-        sectionList = new ArrayList<>();
-
-        sectionWiseVideoList = new ArrayList<>();
-
-        sectionList.add(new Section("প্রথম অধ্যায়ঃ বিভিন্ন ধরণের ফল (পার্ট ১)"));
-        sectionList.add(new Section("দ্বিতীয় অধ্যায়ঃ বিভিন্ন ধরণের ফল (পার্ট ২)"));
-        sectionList.add(new Section("তৃতীয় অধ্যায়ঃ বিভিন্ন ধরণের ফুল"));
-
-
-        List<Video> list1 = new ArrayList<>();
-        list1.add(new Video("", "How To Draw Apple", "Zf6lflubBNA"));
-        list1.add(new Video("", "How to Draw Banana", "Fmcwap9uwLI"));
-        list1.add(new Video("", "How to Draw Mango", "P0ysy7Bwjy0"));
-
-        List<Video> list2 = new ArrayList<>();
-
-        list2.add(new Video("", "How to Draw Papaya", "hnVy59D6vLE"));
-        list2.add(new Video("", "How to Draw Pineapple", "LryXdfWTKX4"));
-
-        List<Video> list3 = new ArrayList<>();
-
-        list3.add(new Video("", "How To Draw China Rose", "G4CCpvW6wJM"));
-
-        sectionWiseVideoList.add(list1);
-        sectionWiseVideoList.add(list2);
-        sectionWiseVideoList.add(list3);
-    }
-
     public class GetData extends AsyncTask<Void, Void, Void> {
 
         List<String> myList;

@@ -3,6 +3,7 @@
     package="com.ofk.bd">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:name=".HelperClass.MyApp"
@@ -36,7 +37,11 @@
             android:name=".InfoActivity"
             android:fitsSystemWindows="true"
             android:theme="@style/AppTheme.Transparent">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
 
         <activity
@@ -51,12 +56,11 @@
             android:hardwareAccelerated="true"
             android:launchMode="standard"
             android:theme="@style/AppTheme.Transparent">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
+        <service
+            android:name=".JobIntentService.UpdateVideoCountService"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
     </application>
 
 </manifest>

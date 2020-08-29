@@ -15,7 +15,7 @@ import java.util.List;
 
 public class ProfileListAdapter extends RecyclerView.Adapter<ProfileListAdapter.ProfileListViewHolder> {
 
-    private int[] avatars = {R.drawable.dog, R.drawable.duck, R.drawable.fox, R.drawable.lion, R.drawable.lion, R.drawable.lion1, R.drawable.squirrel, R.drawable.duck};
+    private int[] avatars = {R.drawable.name, R.drawable.contact, R.drawable.mail};
 
     private List<String> profileItems;
 

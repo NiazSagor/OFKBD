@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
@@ -62,13 +63,49 @@ public class DisplayCourseActivity extends AppCompatActivity {
         viewModel = ViewModelProviders.of(DisplayCourseActivity.this).get(DisplayCourseActivityViewModel.class);
         viewModel.getCoursesFromDB(getIntent().getStringExtra("section_name"));
 
-
         String headline = getIntent().getStringExtra("section_name_bangla") + " কোর্স";
         binding.sectionHeadline.setText(headline);
 
-        setupCourseRecyclerView();
+        setUpViews();
+    }
 
-        setUpToolbar();
+    private void setUpViews() {
+        String section = getIntent().getStringExtra("section_name");
+
+        if (section.equals("Arts")) {
+            binding.viewTop.setBackground(ContextCompat.getDrawable(this, R.drawable.ic_art_top));
+            binding.viewSide.setBackground(ContextCompat.getDrawable(this, R.drawable.ic_art_side));
+        } else if (section.equals("Calligraphy")) {
+            binding.viewTop.setBackground(ContextCompat.getDrawable(this, R.drawable.ic_cal_top));
+            binding.viewSide.setBackground(ContextCompat.getDrawable(this, R.drawable.ic_cal_side));
+        } else if (section.equals("Case Solving")) {
+            binding.viewTop.setBackground(ContextCompat.getDrawable(this, R.drawable.ic_case_top));
+            binding.viewSide.setBackground(ContextCompat.getDrawable(this, R.drawable.ic_case_side));
+        } else if (section.equals("Craft")) {
+            binding.viewTop.setBackground(ContextCompat.getDrawable(this, R.drawable.ic_craft_top));
+            binding.viewSide.setBackground(ContextCompat.getDrawable(this, R.drawable.ic_craft_side));
+        } else if (section.equals("Critical Thinking")) {
+            binding.viewTop.setBackground(ContextCompat.getDrawable(this, R.drawable.ic_other_top));
+            binding.viewSide.setBackground(ContextCompat.getDrawable(this, R.drawable.ic_other_side));
+        } else if (section.equals("Digital Painting")) {
+            binding.viewTop.setBackground(ContextCompat.getDrawable(this, R.drawable.ic_other_top));
+            binding.viewSide.setBackground(ContextCompat.getDrawable(this, R.drawable.ic_other_side));
+        } else if (section.equals("Guitar")) {
+            binding.viewTop.setBackground(ContextCompat.getDrawable(this, R.drawable.ic_other_top));
+            binding.viewSide.setBackground(ContextCompat.getDrawable(this, R.drawable.ic_other_side));
+        } else if (section.equals("Programming")) {
+            binding.viewTop.setBackground(ContextCompat.getDrawable(this, R.drawable.ic_pro_top));
+            binding.viewSide.setBackground(ContextCompat.getDrawable(this, R.drawable.ic_pro_side));
+        } else if (section.equals("Robotics")) {
+            binding.viewTop.setBackground(ContextCompat.getDrawable(this, R.drawable.ic_rob_top));
+            binding.viewSide.setBackground(ContextCompat.getDrawable(this, R.drawable.ic_rob_side));
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        setupCourseRecyclerView();
     }
 
     private void setUpToolbar() {

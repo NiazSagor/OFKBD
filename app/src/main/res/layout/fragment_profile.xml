@@ -10,6 +10,20 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <View
+            android:layout_width="270dp"
+            android:layout_height="120dp"
+            android:layout_alignParentEnd="true"
+            android:background="@drawable/ic_other_top" />
+
+
+        <View
+            android:layout_width="160dp"
+            android:layout_height="600dp"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="90dp"
+            android:background="@drawable/ic_other_side" />
+
         <LinearLayout
             android:id="@+id/linearLayout"
             android:layout_width="wrap_content"

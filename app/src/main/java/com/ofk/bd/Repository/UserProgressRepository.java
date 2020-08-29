@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData;
 
 import com.ofk.bd.Dao.UserProgressDao;
 import com.ofk.bd.Database.UserProgressDatabase;
+import com.ofk.bd.HelperClass.SectionCourseNameTuple;
 import com.ofk.bd.HelperClass.SectionCourseTuple;
 import com.ofk.bd.HelperClass.UserProgressClass;
 
@@ -22,8 +23,9 @@ public class UserProgressRepository {
      *
      * */
 
+    private LiveData<List<String>> enrolledCourseOnly;
     private LiveData<List<UserProgressClass>> allProgress;// all progress
-    private LiveData<List<String>> courseEnrolled;// already enrolled courses
+    private LiveData<List<SectionCourseNameTuple>> courseEnrolled;// already enrolled courses
     private LiveData<List<SectionCourseTuple>> combinedSectionCourseList;//section name and course name combined list
     private int videoWatchedPerCourse;// video watched course wise
 
@@ -39,6 +41,7 @@ public class UserProgressRepository {
         userProgressDao = database.userProgressDao();
         allProgress = userProgressDao.getAllProgress();
         courseEnrolled = userProgressDao.getAllEnrolledCourses();
+        enrolledCourseOnly = userProgressDao.getAllEnrolledCoursesOnly();
         combinedSectionCourseList = userProgressDao.loadFullName();
     }
 
@@ -47,8 +50,12 @@ public class UserProgressRepository {
         return allProgress;
     }
 
-    public LiveData<List<String>> getCourseEnrolled() {
+    public LiveData<List<SectionCourseNameTuple>> getCourseEnrolled() {
         return courseEnrolled;
+    }
+
+    public LiveData<List<String>> getEnrolledCourseOnly() {
+        return enrolledCourseOnly;
     }
 
     public LiveData<List<SectionCourseTuple>> getCombinedSectionCourseList() {
@@ -65,7 +72,7 @@ public class UserProgressRepository {
 
     // update total video of a course method
     public void updateVideoCount(int videoCount, String courseName) {
-        new UpdateVideoCountAsyncTask(userProgressDao, courseName).execute();
+        new UpdateVideoCountAsyncTask(userProgressDao, courseName, videoCount).execute();
     }
 
     // update total video count of a course
@@ -73,15 +80,17 @@ public class UserProgressRepository {
 
         UserProgressDao dao;
         String course;
+        int count;
 
-        public UpdateVideoCountAsyncTask(UserProgressDao dao, String course) {
+        public UpdateVideoCountAsyncTask(UserProgressDao dao, String course, int count) {
             this.dao = dao;
             this.course = course;
+            this.count = count;
         }
 
         @Override
         protected Void doInBackground(Void... voids) {
-            dao.upDateTotalVideo(course);
+            dao.upDateTotalVideo(course, count);
             return null;
         }
     }

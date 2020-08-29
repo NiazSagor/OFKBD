@@ -7,6 +7,7 @@ import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
 
+import com.ofk.bd.HelperClass.SectionCourseNameTuple;
 import com.ofk.bd.HelperClass.SectionCourseTuple;
 import com.ofk.bd.HelperClass.UserProgressClass;
 
@@ -28,8 +29,11 @@ public interface UserProgressDao {
     @Query("SELECT * FROM user_progress")
     LiveData<List<UserProgressClass>> getAllProgress();
 
+    @Query("SELECT sectionName, courseNameEnglish FROM user_progress")
+    LiveData<List<SectionCourseNameTuple>> getAllEnrolledCourses();
+
     @Query("SELECT courseNameEnglish FROM user_progress")
-    LiveData<List<String>> getAllEnrolledCourses();
+    LiveData<List<String>> getAllEnrolledCoursesOnly();
 
     @Query("SELECT videoWatched FROM user_progress WHERE courseNameEnglish = :courseName")
     int getCurrentVideoWatchCountForCurrentCourse(String courseName);
@@ -37,8 +41,8 @@ public interface UserProgressDao {
     @Query("SELECT sectionName, sectionNameBangla, courseEnrolled, courseThumbnailURL, totalVideos,videoWatched FROM user_progress")
     LiveData<List<SectionCourseTuple>> loadFullName();
 
-    @Query("UPDATE user_progress SET totalVideos = totalVideos + 1 WHERE courseNameEnglish = :courseName")
-    int upDateTotalVideo(String courseName);
+    @Query("UPDATE user_progress SET totalVideos = :count WHERE courseNameEnglish = :courseName")
+    int upDateTotalVideo(String courseName, int count);
 
     @Query("UPDATE user_progress SET videoWatched = videoWatched + 1 WHERE courseNameEnglish = :courseName")
     int upDateVideoWatched(String courseName);

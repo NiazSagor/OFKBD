@@ -112,34 +112,37 @@ public class ProfileFragment extends Fragment {
     private final Observer<UserInfo> userInfoObserver = new Observer<UserInfo>() {
         @Override
         public void onChanged(UserInfo userInfo) {
-            binding.totalCourseCompleted.setText("" + userInfo.getCourseCompleted());
-            binding.totalVideoCompleted.setText("" + userInfo.getVideoCompleted());
-            binding.totalQuizCompleted.setText("" + userInfo.getQuizCompleted());
+            if (userInfo != null) {
+                binding.totalCourseCompleted.setText("" + userInfo.getCourseCompleted());
+                binding.totalVideoCompleted.setText("" + userInfo.getVideoCompleted());
+                binding.totalQuizCompleted.setText("" + userInfo.getQuizCompleted());
 
-            profileItemList.add("" + userInfo.getUserName());
-            profileItemList.add("" + userInfo.getUserPhoneNumber());
+                profileItemList.add("" + userInfo.getUserName());
+                profileItemList.add("" + userInfo.getUserPhoneNumber());
 
-            if (!userInfo.getUserEmail().equals("")) {
-                profileItemList.add("" + userInfo.getUserEmail());
+                if (!userInfo.getUserEmail().equals("")) {
+                    profileItemList.add("" + userInfo.getUserEmail());
+                }
+
+                binding.profileRecyclerView.setAdapter(new ProfileListAdapter(profileItemList));
             }
-
-            binding.profileRecyclerView.setAdapter(new ProfileListAdapter(profileItemList));
         }
     };
 
     private final Observer<Integer> indexObserver = new Observer<Integer>() {
         @Override
         public void onChanged(Integer integer) {
+            if (integer != null) {
+                for (int i = 0; i <= integer; i++) {
+                    acquiredBadgeIndexes.add(i);
+                }
 
-            for (int i = 0; i <= integer; i++) {
-                acquiredBadgeIndexes.add(i);
+                adapter = new AvatarListAdapter("view_badge");
+
+                adapter.setAcquiredBadgeIndexes(acquiredBadgeIndexes);
+
+                binding.badgesRecyclerView.setAdapter(adapter);
             }
-
-            adapter = new AvatarListAdapter("view_badge");
-
-            adapter.setAcquiredBadgeIndexes(acquiredBadgeIndexes);
-
-            binding.badgesRecyclerView.setAdapter(adapter);
         }
     };
 }

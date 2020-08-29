@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -39,7 +40,7 @@ public class ProgressFragment extends Fragment {
 
     private static final String TAG = "ProgressFragment";
 
-    private static  String[] descriptionData = {"Level 1\n\nApprentice", "Level 2\n\nJourneyman", "Level 3\n\nMaster", "Level 4\n\nGrand Master", "Level 5\n\nSuper Kids"};
+    private static String[] descriptionData = {"Level 1\n\nApprentice", "Level 2\n\nJourneyman", "Level 3\n\nMaster", "Level 4\n\nGrand Master", "Level 5\n\nSuper Kids"};
 
     private static int badge_icons[] = {R.drawable.apprentice_1, R.drawable.apprentice_2, R.drawable.apprentice_3,
             R.drawable.journeyman_1, R.drawable.journeyman_2, R.drawable.journeyman_3,
@@ -105,7 +106,6 @@ public class ProgressFragment extends Fragment {
     }
 
     private FragmentProgressBinding binding;
-    long total = 0;
     private StateProgressBar stateProgressBar;
 
     @Override
@@ -119,32 +119,6 @@ public class ProgressFragment extends Fragment {
         stateProgressBar.setStateDescriptionData(descriptionData);
 
         return binding.getRoot();
-    }
-
-    public class TestClass extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-
-            DatabaseReference db = FirebaseDatabase.getInstance().getReference().child("Sub Section");
-            db.child("Arts Section").child("Arter Hatekhori").child("Video")
-                    .addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                                total = total + ds.getChildrenCount();
-                            }
-                            Log.d(TAG, "onDataChange: " + total);
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-                    });
-
-            return null;
-        }
     }
 
 
@@ -170,7 +144,6 @@ public class ProgressFragment extends Fragment {
             } else {
                 current = integer;
             }
-            Log.d(TAG, "getLevel: " + current);
 
             if (current < 38) {
                 BadgeUtilityClass badge = new BadgeUtilityClass(current);
@@ -216,7 +189,7 @@ public class ProgressFragment extends Fragment {
     private final Observer<List<SectionCourseTuple>> listObserver = new Observer<List<SectionCourseTuple>>() {
         @Override
         public void onChanged(List<SectionCourseTuple> sectionCourseTuples) {
-            if (sectionCourseTuples.size() != 0) {
+            if (sectionCourseTuples != null) {
                 binding.courseProgressTextView.setVisibility(View.VISIBLE);
                 binding.subjectProgressRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
                 binding.subjectProgressRecyclerView.setAdapter(new ProgressListAdapter(sectionCourseTuples));

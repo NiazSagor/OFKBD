@@ -1,20 +1,30 @@
 package com.ofk.bd;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.ofk.bd.Adapter.MainActivityViewPager;
+import com.ofk.bd.HelperClass.SectionCourseNameTuple;
 import com.ofk.bd.HelperClass.ServiceResultReceiver;
+import com.ofk.bd.JobIntentService.UpdateVideoCountService;
 import com.ofk.bd.ViewModel.MainActivityViewModel;
 import com.ofk.bd.databinding.ActivityMainBinding;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.ofk.bd.JobIntentService.UpdateVideoCountService.RECEIVER;
 
 public class MainActivity extends FragmentActivity implements ServiceResultReceiver.Receiver {
 
@@ -32,7 +42,6 @@ public class MainActivity extends FragmentActivity implements ServiceResultRecei
 
     private SharedPreferences sharedPreferences;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,8 +57,6 @@ public class MainActivity extends FragmentActivity implements ServiceResultRecei
         // initialize receiver
         mReceiver = new ServiceResultReceiver(new Handler());
         mReceiver.setReceiver(this);
-
-        setupViewPager();
 
         binding.bottomNavigation.setOnNavigationItemSelectedListener(mNavListener);
     }
@@ -82,8 +89,9 @@ public class MainActivity extends FragmentActivity implements ServiceResultRecei
     @Override
     protected void onStart() {
         super.onStart();
+        setupViewPager();
+        setupService();
     }
-
     public void setupViewPager() {
         adapter = new MainActivityViewPager(this);
 
@@ -107,6 +115,34 @@ public class MainActivity extends FragmentActivity implements ServiceResultRecei
         binding.viewpager.setAdapter(adapter);
     }
 
+    private void setupService() {
+        ArrayList<String> sectionNameList = new ArrayList<>();
+        ArrayList<String> courseNameList = new ArrayList<>();
+
+        viewModel.getEnrolledCoursesFromOfflineDb().observe(this, new Observer<List<SectionCourseNameTuple>>() {
+            @Override
+            public void onChanged(List<SectionCourseNameTuple> sectionCourseNameTuples) {
+                //enrolledCourse = sectionCourseNameTuples;
+
+                Log.d(TAG, "onChanged: ");
+
+                for (SectionCourseNameTuple object : sectionCourseNameTuples) {
+                    sectionNameList.add(object.getSectionName());
+                    courseNameList.add(object.getCourseNameEnglish());
+                }
+
+                Intent serviceIntent = new Intent(MainActivity.this, UpdateVideoCountService.class);
+                serviceIntent.putExtra(RECEIVER, mReceiver);
+                serviceIntent.putStringArrayListExtra("sectionName", sectionNameList);
+                serviceIntent.putStringArrayListExtra("courseName", courseNameList);
+
+                UpdateVideoCountService.enqueueWork(MainActivity.this, serviceIntent);
+
+                viewModel.getEnrolledCoursesFromOfflineDb().removeObservers(MainActivity.this);
+            }
+        });
+    }
+
     @Override
     public void onBackPressed() {
         if (binding.viewpager.getCurrentItem() == 0) {
@@ -121,10 +157,18 @@ public class MainActivity extends FragmentActivity implements ServiceResultRecei
         switch (resultCode) {
             case SHOW_RESULT:
                 if (resultData != null) {
-                    int count = resultData.getInt("updatedCount");
-                    String course = resultData.getString("courseName");
-                    //viewModel.updateVideoCount(count, course);
-                    //Log.d(TAG, "onReceiveResult: " + resultData.getInt("updatedCount"));
+
+                    ArrayList<String> courseName = resultData.getStringArrayList("courseName");
+                    ArrayList<Integer> videoCount = resultData.getIntegerArrayList("count");
+
+                    Log.d(TAG, "onReceiveResult: " + courseName.toString());
+                    Log.d(TAG, "onReceiveResult: " + videoCount.toString());
+
+                    for (int i = 0; i < courseName.size(); i++) {
+                        String course = courseName.get(i);
+                        int count = videoCount.get(i);
+                        viewModel.updateTotalVideoCourse(course, count);
+                    }
                 }
         }
     }

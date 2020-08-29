@@ -31,7 +31,7 @@ public class DisplayCourseActivityViewModel extends AndroidViewModel {
     public DisplayCourseActivityViewModel(@NonNull Application application) {
         super(application);
         repository = new UserProgressRepository(application);
-        courseEnrolled = repository.getCourseEnrolled();// all courses enrolled already
+        courseEnrolled = repository.getEnrolledCourseOnly();// all courses enrolled already
     }
 
     // get available courses from bd

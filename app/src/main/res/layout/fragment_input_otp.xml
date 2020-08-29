@@ -7,11 +7,11 @@
     tools:context=".InfoActivityFragment.InputOtpFragment">
 
     <ImageView
-        android:layout_width="200dp"
-        android:layout_height="200dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_above="@+id/inputPhoneNumberCardView"
         android:layout_centerHorizontal="true"
-        android:src="@drawable/input_otp_png" />
+        android:src="@drawable/info_top" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/inputPhoneNumberCardView"
@@ -24,16 +24,18 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@color/progressCyanLight"
             android:orientation="vertical">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:fontFamily="@font/solaimanlipi"
+                android:fontFamily="@font/solaimanlipi_bold"
                 android:gravity="center_horizontal"
                 android:text="@string/youOTP"
-                android:textSize="16sp" />
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:textColor="@color/progressCyan" />
 
             <com.mukesh.OtpView
                 android:id="@+id/otp_view"

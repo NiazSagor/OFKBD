@@ -13,6 +13,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.ofk.bd.HelperClass.Course;
 import com.ofk.bd.HelperClass.FirebaseQueryLiveData;
+import com.ofk.bd.HelperClass.SectionCourseNameTuple;
 import com.ofk.bd.HelperClass.SectionCourseTuple;
 import com.ofk.bd.HelperClass.UserInfo;
 import com.ofk.bd.Repository.UserInfoRepository;
@@ -33,7 +34,7 @@ public class MainActivityViewModel extends AndroidViewModel {
     UserProgressRepository repository;
 
     // already enrolled courses in offline db
-    LiveData<List<String>> enrolledCoursesFromOfflineDb;
+    LiveData<List<SectionCourseNameTuple>> enrolledCoursesFromOfflineDb;
 
     LiveData<List<SectionCourseTuple>> combinedList;
 
@@ -87,9 +88,6 @@ public class MainActivityViewModel extends AndroidViewModel {
         userInfoLiveData = userInfoRepository.getUserInfoLiveData();
         userCourseCompleted = userInfoRepository.getUserCurrentCourseCompleted();
 
-        Log.d(TAG, "MainActivityViewModel: ");
-
-
         createCourseList();
         createBlogList();
         getFieldWorkPicFromDatabase();
@@ -99,27 +97,6 @@ public class MainActivityViewModel extends AndroidViewModel {
     /*******************SERVER QUERY**********************/
 
     // from server
-    public void getEnrolledCourses(String userId) {
-        DatabaseReference db = FirebaseDatabase.getInstance().getReference().child("User").child(userId).child("Courses Enrolled");
-        db.keepSynced(true);
-        enrolledCourses = new FirebaseQueryLiveData(db);
-    }
-
-    // from server
-    private void getRandomCourseToDisplay_1() {
-        DatabaseReference db = FirebaseDatabase.getInstance().getReference().child("Section").child("Robotics Section");
-        db.keepSynced(true);
-        randomCourseLiveData_1 = new FirebaseQueryLiveData(db);
-    }
-
-    // from server
-    private void getRandomCourseToDisplay_2() {
-        DatabaseReference db = FirebaseDatabase.getInstance().getReference().child("Section").child("Arts Section");
-        db.keepSynced(true);
-        randomCourseLiveData_2 = new FirebaseQueryLiveData(db);
-    }
-
-    // from server
     private void getActivityVideoFromDatabase() {
         DatabaseReference db = FirebaseDatabase.getInstance().getReference().child("Activity Videos");
         db.keepSynced(true);
@@ -127,20 +104,17 @@ public class MainActivityViewModel extends AndroidViewModel {
     }
 
     // from server
-    private void getActivityPicFromDatabase() {
-        DatabaseReference db_activity_pic = FirebaseDatabase.getInstance().getReference().child("Activity Pics");
-        db_activity_pic.keepSynced(true);
-        activityPicLiveData = new FirebaseQueryLiveData(db_activity_pic);
-    }
-
-    // from server
     private void getFieldWorkPicFromDatabase() {
-        Log.d(TAG, "getFieldWorkPicFromDatabase: ");
         DatabaseReference db_activity_pic = FirebaseDatabase.getInstance().getReference().child("Field Work Pics");
         db_activity_pic.keepSynced(true);
         fieldWorkPicLiveData = new FirebaseQueryLiveData(db_activity_pic);
     }
 
+    public LiveData<DataSnapshot> getFieldWorkPicLiveData() {
+        return fieldWorkPicLiveData;
+    }
+
+    /*******************OFFLINE QUERY**********************/
 
     // not from server
     private void createCourseList() {
@@ -159,6 +133,11 @@ public class MainActivityViewModel extends AndroidViewModel {
         listMutableLiveData.setValue(list);
     }
 
+    // get all the sections
+    public MutableLiveData<List<Course>> getListMutableLiveData() {
+        return listMutableLiveData;
+    }
+
     private void createBlogList() {
         List<Course> blogList = new ArrayList<>();
 
@@ -172,55 +151,24 @@ public class MainActivityViewModel extends AndroidViewModel {
         blogListMutableLiveData.setValue(blogList);
     }
 
-
-    // from server
-    public LiveData<DataSnapshot> getActivityPicLiveData() {
-        return activityPicLiveData;
-    }
-
-    // from server
-    public LiveData<DataSnapshot> getActivityVideoLiveData() {
-        return activityVideoLiveData;
-    }
-
-    // from server
-    public LiveData<DataSnapshot> getRandomCourseLiveData_1() {
-        return randomCourseLiveData_1;
-    }
-
-    // from server
-    public LiveData<DataSnapshot> getRandomCourseLiveData_2() {
-        return randomCourseLiveData_2;
-    }
-
-    // from server
-    public LiveData<DataSnapshot> getEnrolledCourses() {
-        return enrolledCourses;
-    }
-
-    public LiveData<DataSnapshot> getFieldWorkPicLiveData() {
-        return fieldWorkPicLiveData;
-    }
-
     public MutableLiveData<List<Course>> getBlogListMutableLiveData() {
         return blogListMutableLiveData;
-    }
-
-    /*******************OFFLINE QUERY**********************/
-
-    // get all the sections
-    public MutableLiveData<List<Course>> getListMutableLiveData() {
-        return listMutableLiveData;
-    }
-
-    // not from server
-    public LiveData<List<String>> getEnrolledCoursesFromOfflineDb() {
-        return enrolledCoursesFromOfflineDb;
     }
 
     // not from server
     public LiveData<List<SectionCourseTuple>> getCombinedList() {
         return combinedList;
+    }
+
+    public LiveData<List<SectionCourseNameTuple>> getEnrolledCoursesFromOfflineDb() {
+        return enrolledCoursesFromOfflineDb;
+    }
+
+
+    /*******************UPDATE VIDEO COUNT IN USER PROGRESS TABLE**********************/
+
+    public void updateTotalVideoCourse(String courseName, int count) {
+        repository.updateVideoCount(count, courseName);
     }
 
     /*

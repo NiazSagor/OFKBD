@@ -6,27 +6,20 @@
     android:layout_height="match_parent"
     tools:context=".InfoActivity">
 
-    <View
-        android:id="@+id/waveView"
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:layout_alignParentTop="true"
-        android:background="@drawable/ic_wave" />
-
     <ImageView
         android:id="@+id/logo"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_below="@+id/waveView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/yourNameEditText"
+        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="16dp"
-        android:src="@drawable/ofklogo" />
+        android:src="@drawable/info_top" />
 
     <EditText
         android:id="@+id/yourNameEditText"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:layout_below="@id/logo"
+        android:layout_centerInParent="true"
         android:layout_margin="16dp"
         android:background="@drawable/input_number_edittext"
         android:fontFamily="@font/solaimanlipi"

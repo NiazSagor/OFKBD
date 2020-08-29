@@ -41,6 +41,6 @@
 
     <!-- Progress fragment colors  !-->
     <color name="progressCyan">#00c1c3</color>
-
+    <color name="progressCyanLight">#1A00c1c3</color>
 
 </resources>
