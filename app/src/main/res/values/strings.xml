@@ -4,8 +4,13 @@
     <string name="yourName" translatable="false">তোমার নাম</string>
     <string name="yourEmail" translatable="false">তোমার ইমেইল (Optional)</string>
     <string name="yourAge" translatable="false">তোমার বয়স</string>
-    <string name="yourAvatar" translatable="false">যেকোনো একটি পছন্দ কর</string>
+    <string name="yourPassword" translatable="false">পাসওয়ার্ড সেট করো</string>
+    <string name="password" translatable="false">পাসওয়ার্ড</string>
+    <string name="yourPasswordLimit" translatable="false">সর্বোচ্চ ৬ ক্যারেক্টার</string>
+    <string name="yourAvatar" translatable="false">যেকোনো একটি এভাটার সিলেক্ট করো</string>
     <string name="yourCourse" translatable="false">আমার কোর্স সমূহ</string>
+    <string name="previousAccount" translatable="false">একাউন্ট থাকলে এখান থেকে <font color="#00c1c3">লগ ইন</font> করো</string>
+
 
     <string name="search" translatable="false">কোন কোর্সটি করতে চাও</string>
 

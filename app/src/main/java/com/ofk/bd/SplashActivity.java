@@ -8,6 +8,7 @@ import android.widget.ProgressBar;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.ofk.bd.AsyncTasks.FirebaseQueryActivity;
 import com.ofk.bd.AsyncTasks.FirebaseQueryRandomCourse;
 import com.ofk.bd.AsyncTasks.FirebaseQueryVideo;
@@ -24,6 +25,8 @@ import java.util.List;
 
 public class SplashActivity extends AppCompatActivity {
 
+    private FirebaseAuth mAuth;
+
     private ActivitySplashBinding binding;
 
     private ProgressBar progressBar;
@@ -34,6 +37,8 @@ public class SplashActivity extends AppCompatActivity {
         binding = ActivitySplashBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        mAuth = FirebaseAuth.getInstance();
+
         progressBar = binding.progressBar;
 
         //new ShowProgressBar(SplashActivity.this).execute(3);
@@ -42,6 +47,7 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+
         // all these queries needs to be in splash activity
 
         new FirebaseQueryRandomCourse(new DisplayCourseLoadCallback() {
@@ -77,9 +83,15 @@ public class SplashActivity extends AppCompatActivity {
 
                 binding.progressBar.setVisibility(View.GONE);
 
-                startActivity(new Intent(SplashActivity.this, InfoActivity.class)
-                        .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                if (mAuth.getCurrentUser() == null) {
+                    startActivity(new Intent(SplashActivity.this, InfoActivity.class)
+                            .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP));
 
+                } else {
+                    startActivity(new Intent(SplashActivity.this, MainActivity.class)
+                            .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP));
+
+                }
                 finish();
             }
         }, "Activity Videos").executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);

@@ -44,8 +44,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_gravity="center_vertical"
-                    android:padding="8dp"
-                    android:src="@drawable/dog" />
+                    android:padding="8dp" />
 
             </androidx.cardview.widget.CardView>
 
@@ -67,7 +66,8 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:text="Class 4th"
-                android:textAlignment="center" />
+                android:textAlignment="center"
+                android:visibility="gone" />
 
         </LinearLayout>
 

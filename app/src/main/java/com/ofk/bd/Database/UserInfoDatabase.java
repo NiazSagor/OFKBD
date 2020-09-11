@@ -52,7 +52,7 @@ public abstract class UserInfoDatabase extends RoomDatabase {
         @Override
         protected Void doInBackground(Void... voids) {
             Log.d(TAG, "doInBackground: ");
-            dao.insert(new UserInfo("niaz sagor", "01799018683", "niazsagor@gmail.com", 0, 1, 1));
+            //dao.insert(new UserInfo("niaz sagor", "01799018683", "niazsagor@gmail.com", 0, 0, 0));
             return null;
         }
     }

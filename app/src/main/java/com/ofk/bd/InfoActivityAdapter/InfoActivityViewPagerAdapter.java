@@ -7,6 +7,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.ofk.bd.InfoActivityFragment.InputNumberFragment;
 import com.ofk.bd.InfoActivityFragment.InputOtpFragment;
+import com.ofk.bd.InfoActivityFragment.LogInFragment;
 import com.ofk.bd.InfoActivityFragment.UserInfoFragment;
 
 public class InfoActivityViewPagerAdapter extends FragmentStateAdapter {
@@ -25,12 +26,14 @@ public class InfoActivityViewPagerAdapter extends FragmentStateAdapter {
                 return new InputOtpFragment();
             case 2:
                 return new UserInfoFragment();
+            case 3:
+                return new LogInFragment();
         }
         return null;
     }
 
     @Override
     public int getItemCount() {
-        return 3;
+        return 4;
     }
 }

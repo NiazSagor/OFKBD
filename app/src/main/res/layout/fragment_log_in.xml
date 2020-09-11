@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".InfoActivityFragment.InputNumberFragment">
+    tools:context=".InfoActivityFragment.LogInFragment">
 
     <ImageView
         android:layout_width="wrap_content"
@@ -28,36 +28,50 @@
             android:orientation="vertical">
 
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:fontFamily="@font/solaimanlipi_bold"
-                android:gravity="center_horizontal"
+                android:fontFamily="@font/solaimanlipi"
+                android:paddingStart="16dp"
+                android:paddingTop="16dp"
+                android:paddingEnd="16dp"
                 android:text="@string/youNumber"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                android:textColor="@color/progressCyan" />
+                android:textColor="@color/textColorGrey"
+                android:textSize="16sp" />
 
             <EditText
                 android:id="@+id/phoneNumberEditText"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_height="50dp"
                 android:layout_margin="16dp"
                 android:background="@drawable/input_number_edittext"
                 android:fontFamily="@font/solaimanlipi"
-                android:gravity="center"
-                android:hint="@string/youNumberExample"
                 android:inputType="phone"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
                 android:textColor="@android:color/black" />
 
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
                 android:fontFamily="@font/solaimanlipi"
-                android:gravity="center_horizontal"
-                android:text="@string/yourNumberOTP"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="@string/password"
+                android:textColor="@color/textColorGrey"
                 android:textSize="16sp" />
+
+            <EditText
+                android:id="@+id/passwordEditText"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_margin="16dp"
+                android:background="@drawable/input_number_edittext"
+                android:fontFamily="@font/solaimanlipi"
+                android:inputType="numberPassword"
+                android:maxLength="6"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:textColor="@android:color/black" />
 
             <RelativeLayout
                 android:id="@+id/nextButton"
@@ -100,17 +114,5 @@
         </LinearLayout>
 
     </androidx.cardview.widget.CardView>
-
-    <TextView
-        android:id="@+id/alreadyAccountTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/inputPhoneNumberCardView"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:fontFamily="@font/solaimanlipi"
-        android:text="@string/previousAccount" />
 
 </RelativeLayout>

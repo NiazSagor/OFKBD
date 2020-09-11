@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.ofk.bd.Fragments.BottomSheet;
 import com.ofk.bd.InfoActivityAdapter.InfoActivityViewPagerAdapter;
@@ -13,6 +14,8 @@ import com.ofk.bd.databinding.ActivityInfoBinding;
 public class InfoActivity extends AppCompatActivity implements BottomSheet.BottomSheetListener {
 
     private ActivityInfoBinding binding;
+
+    private ViewPager2 viewPager2;
 
     private InfoActivityViewModel activityViewModel;
 
@@ -26,6 +29,7 @@ public class InfoActivity extends AppCompatActivity implements BottomSheet.Botto
 
         //binding.viewpager.setUserInputEnabled(false);
         binding.viewpager.setAdapter(new InfoActivityViewPagerAdapter(this));
+        binding.viewpager.setOffscreenPageLimit(2);
     }
 
     @Override

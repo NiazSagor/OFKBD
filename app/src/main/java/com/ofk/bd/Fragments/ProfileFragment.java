@@ -1,10 +1,14 @@
 package com.ofk.bd.Fragments;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -13,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.ofk.bd.Adapter.AvatarListAdapter;
 import com.ofk.bd.Adapter.ProfileListAdapter;
 import com.ofk.bd.HelperClass.UserInfo;
+import com.ofk.bd.R;
 import com.ofk.bd.ViewModel.MainActivityViewModel;
 import com.ofk.bd.databinding.FragmentProfileBinding;
 
@@ -26,6 +31,9 @@ import java.util.List;
  */
 public class ProfileFragment extends Fragment {
     private static final String TAG = "ProfileFragment";
+
+    private static int[] avatars = {R.drawable.dog, R.drawable.duck, R.drawable.fox, R.drawable.lion, R.drawable.cats, R.drawable.tiger, R.drawable.squirrel, R.drawable.giraffe, R.drawable.elephant, R.drawable.parrot};
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -62,6 +70,7 @@ public class ProfileFragment extends Fragment {
     private FragmentProfileBinding binding;
 
     private List<Integer> acquiredBadgeIndexes;
+    private SharedPreferences sharedPreferences;
 
     private AvatarListAdapter adapter;
 
@@ -72,6 +81,8 @@ public class ProfileFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+        sharedPreferences = getActivity().getSharedPreferences("userInfo", Context.MODE_PRIVATE);
 
         if (acquiredBadgeIndexes == null) {
             acquiredBadgeIndexes = new ArrayList<>();
@@ -95,6 +106,14 @@ public class ProfileFragment extends Fragment {
         return binding.getRoot();
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        int index = sharedPreferences.getInt("avatarIndex", 0);
+
+        binding.avatarImageView.setBackgroundResource(avatars[index]);
+    }
 
     @Override
     public void onStart() {
