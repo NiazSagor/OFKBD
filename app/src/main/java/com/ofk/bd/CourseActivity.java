@@ -1,6 +1,7 @@
 package com.ofk.bd;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,11 +14,13 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.ofk.bd.CourseActivityAdapter.CourseViewPager;
+import com.ofk.bd.HelperClass.FullScreenHelper;
 import com.ofk.bd.ViewModel.CourseActivityViewModel;
 import com.ofk.bd.ViewModel.VideoFromListViewModel;
 import com.ofk.bd.databinding.ActivityCourseBinding;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer;
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerFullScreenListener;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerListener;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView;
 
@@ -35,6 +38,10 @@ public class CourseActivity extends FragmentActivity {
     private VideoFromListViewModel videoFromListViewModel;
 
     private CourseActivityViewModel courseActivityViewModel;
+
+    private YouTubePlayerView youTubePlayerView;
+
+    private FullScreenHelper fullScreenHelper = new FullScreenHelper(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,7 +119,7 @@ public class CourseActivity extends FragmentActivity {
     // Get the selected video from the list in fragment and play it in youtube player
     private void getPlayVideoFromList() {
 
-        YouTubePlayerView youTubePlayerView = binding.youtubePlayerView;
+        youTubePlayerView = binding.youtubePlayerView;
 
         youTubePlayerView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
 
@@ -132,6 +139,8 @@ public class CourseActivity extends FragmentActivity {
                                 }
                             }
                         });
+
+                        addFullScreenListenerToPlayer();
                     }
 
                     @Override
@@ -210,5 +219,21 @@ public class CourseActivity extends FragmentActivity {
         });
 
         binding.videoRecourseViewPager.setAdapter(adapter);
+    }
+
+    private void addFullScreenListenerToPlayer() {
+        youTubePlayerView.addFullScreenListener(new YouTubePlayerFullScreenListener() {
+            @Override
+            public void onYouTubePlayerEnterFullScreen() {
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                fullScreenHelper.enterFullScreen();
+            }
+
+            @Override
+            public void onYouTubePlayerExitFullScreen() {
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                fullScreenHelper.exitFullScreen();
+            }
+        });
     }
 }

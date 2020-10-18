@@ -42,20 +42,9 @@ public class DisplayCourseActivityViewModel extends AndroidViewModel {
         availableCourses = new FirebaseQueryLiveData(db);
     }
 
-    public void getEnrolledCourses(String userId) {
-        DatabaseReference db = FirebaseDatabase.getInstance().getReference().child("User").child(userId).child("Courses Enrolled");
-        db.keepSynced(true);
-        enrolledCourses = new FirebaseQueryLiveData(db);
-    }
-
     // get available that come from db
     public LiveData<DataSnapshot> getAvailableCourses() {
         return availableCourses;
-    }
-
-    // from server db
-    public LiveData<DataSnapshot> getEnrolledCourses() {
-        return enrolledCourses;
     }
 
 

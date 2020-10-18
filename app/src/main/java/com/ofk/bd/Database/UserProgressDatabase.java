@@ -13,7 +13,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 import com.ofk.bd.Dao.UserProgressDao;
 import com.ofk.bd.HelperClass.UserProgressClass;
 
-@Database(entities = UserProgressClass.class, version = 1, exportSchema = true)
+@Database(entities = UserProgressClass.class, version = 1)
 public abstract class UserProgressDatabase extends RoomDatabase {
     private static final String TAG = "UserProgressDatabase";
     private static UserProgressDatabase instance;

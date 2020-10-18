@@ -1,13 +1,17 @@
 package com.ofk.bd.CourseActivityFragments;
 
+import android.graphics.Color;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.developer.kalert.KAlertDialog;
 import com.ofk.bd.R;
 
 /**
@@ -48,6 +52,8 @@ public class QuizFragment extends Fragment {
         return fragment;
     }
 
+    private KAlertDialog pDialog;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,5 +68,38 @@ public class QuizFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_quiz, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        showAlertDialog("done");
+    }
+
+    private void showAlertDialog(String command) {
+        switch (command) {
+            case "start":
+                pDialog = new KAlertDialog(getActivity(), KAlertDialog.PROGRESS_TYPE);
+                pDialog.getProgressHelper().setBarColor(Color.parseColor("#00c1c3"));
+                pDialog.setTitleText("লোড হচ্ছে");
+                pDialog.setCancelable(false);
+                pDialog.show();
+                break;
+            case "end":
+                pDialog.dismissWithAnimation();
+                break;
+            case "done":
+                pDialog = new KAlertDialog(getActivity(), KAlertDialog.ERROR_TYPE);
+                pDialog.setTitleText("কুইজ পাওয়া যায় নি")
+                        .setConfirmText("OK")
+                        .setConfirmClickListener(new KAlertDialog.KAlertClickListener() {
+                            @Override
+                            public void onClick(KAlertDialog kAlertDialog) {
+                                pDialog.dismissWithAnimation();
+                            }
+                        })
+                        .show();
+                break;
+        }
     }
 }

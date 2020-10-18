@@ -72,6 +72,7 @@ public class MainActivityViewModel extends AndroidViewModel {
     UserInfoRepository userInfoRepository;
 
     LiveData<UserInfo> userInfoLiveData;
+    LiveData<UserInfo> userInfoLiveData2;
 
     LiveData<Integer> userCourseCompleted;
 
@@ -86,6 +87,7 @@ public class MainActivityViewModel extends AndroidViewModel {
 
         userInfoRepository = new UserInfoRepository(application);
         userInfoLiveData = userInfoRepository.getUserInfoLiveData();
+        userInfoLiveData2 = userInfoRepository.getUserInfoLiveData();
         userCourseCompleted = userInfoRepository.getUserCurrentCourseCompleted();
 
         createCourseList();
@@ -186,6 +188,10 @@ public class MainActivityViewModel extends AndroidViewModel {
 
     public LiveData<UserInfo> getUserInfoLiveData() {
         return userInfoLiveData;
+    }
+
+    public LiveData<UserInfo> getUserInfoLiveData2() {
+        return userInfoLiveData2;
     }
 
     public LiveData<Integer> getUserCourseCompleted() {

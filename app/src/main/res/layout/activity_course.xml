@@ -23,6 +23,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/orange_gradient"
+            android:fontFamily="@font/solaimanlipi"
             android:padding="16dp"
             android:text="Course Name"
             android:textColor="@android:color/white"

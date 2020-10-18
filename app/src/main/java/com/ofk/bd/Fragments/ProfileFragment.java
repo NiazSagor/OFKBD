@@ -1,6 +1,7 @@
 package com.ofk.bd.Fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,11 +13,12 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.ofk.bd.Adapter.AvatarListAdapter;
 import com.ofk.bd.Adapter.ProfileListAdapter;
 import com.ofk.bd.HelperClass.UserInfo;
+import com.ofk.bd.InfoActivity;
 import com.ofk.bd.R;
 import com.ofk.bd.ViewModel.MainActivityViewModel;
 import com.ofk.bd.databinding.FragmentProfileBinding;
@@ -32,8 +34,13 @@ import java.util.List;
 public class ProfileFragment extends Fragment {
     private static final String TAG = "ProfileFragment";
 
-    private static int[] avatars = {R.drawable.dog, R.drawable.duck, R.drawable.fox, R.drawable.lion, R.drawable.cats, R.drawable.tiger, R.drawable.squirrel, R.drawable.giraffe, R.drawable.elephant, R.drawable.parrot};
+    private static int[] avatars = {R.drawable.ic_dog, R.drawable.ic_duck, R.drawable.ic_fox, R.drawable.ic_lion, R.drawable.ic_cat, R.drawable.ic_tiger, R.drawable.ic_squirrel, R.drawable.ic_giraffe, R.drawable.ic_elephant, R.drawable.ic_parrot};
 
+    private static int[] badge_icons = {R.drawable.apprentice_1, R.drawable.apprentice_2, R.drawable.apprentice_3,
+            R.drawable.journeyman_1, R.drawable.journeyman_2, R.drawable.journeyman_3,
+            R.drawable.master_1, R.drawable.master_2, R.drawable.master_3,
+            R.drawable.grand_master_1, R.drawable.grand_master_2, R.drawable.grand_master_3,
+            R.drawable.super_kids_1, R.drawable.super_kids_2, R.drawable.super_kids_3};
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -101,7 +108,10 @@ public class ProfileFragment extends Fragment {
         // Inflate the layout for this fragment
         binding = FragmentProfileBinding.inflate(getLayoutInflater());
 
-        binding.badgesRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+        mainActivityViewModel.getUserInfoLiveData().observe(this, userInfoObserver);
+        //mainActivityViewModel.getCurrentIndexOnBadge().observe(this, indexObserver);
+
+        //binding.badgesRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
 
         return binding.getRoot();
     }
@@ -113,25 +123,37 @@ public class ProfileFragment extends Fragment {
         int index = sharedPreferences.getInt("avatarIndex", 0);
 
         binding.avatarImageView.setBackgroundResource(avatars[index]);
+
+        mainActivityViewModel.getCurrentIndexOnBadge().observe(this, new Observer<Integer>() {
+            @Override
+            public void onChanged(Integer integer) {
+                if (integer != null) {
+                    binding.currentBadgeImageViewTop.setImageResource(badge_icons[integer]);
+                }
+            }
+        });
     }
 
     @Override
     public void onStart() {
         super.onStart();
-
-        if (!mainActivityViewModel.getUserInfoLiveData().hasObservers()) {
-            mainActivityViewModel.getUserInfoLiveData().observe(this, userInfoObserver);
+/*
+        if (!mainActivityViewModel.getUserInfoLiveData2().hasObservers()) {
+            mainActivityViewModel.getUserInfoLiveData2().observe(getActivity(), userInfoObserver);
         }
 
         if (!mainActivityViewModel.getCurrentIndexOnBadge().hasObservers()) {
-            mainActivityViewModel.getCurrentIndexOnBadge().observe(this, indexObserver);
-        }
+            mainActivityViewModel.getCurrentIndexOnBadge().observe(getActivity(), indexObserver);
+        }*/
     }
 
     private final Observer<UserInfo> userInfoObserver = new Observer<UserInfo>() {
         @Override
         public void onChanged(UserInfo userInfo) {
             if (userInfo != null) {
+
+                binding.userNameTextView.setText(userInfo.getUserName());
+
                 binding.totalCourseCompleted.setText("" + userInfo.getCourseCompleted());
                 binding.totalVideoCompleted.setText("" + userInfo.getVideoCompleted());
                 binding.totalQuizCompleted.setText("" + userInfo.getQuizCompleted());
@@ -141,13 +163,32 @@ public class ProfileFragment extends Fragment {
 
                 if (!userInfo.getUserEmail().equals("")) {
                     profileItemList.add("" + userInfo.getUserEmail());
+                } else {
+                    profileItemList.add("Add your email address");
                 }
 
-                binding.profileRecyclerView.setAdapter(new ProfileListAdapter(profileItemList));
+                profileItemList.add("Log Out");
+
+                ProfileListAdapter adapter = new ProfileListAdapter(profileItemList);
+
+                binding.profileRecyclerView.setAdapter(adapter);
+
+                adapter.setOnItemClickListener(new ProfileListAdapter.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(int position, View view) {
+                        if (position == 3) {
+                            FirebaseAuth.getInstance().signOut();
+
+                            getActivity().startActivity(new Intent(getActivity(), InfoActivity.class)
+                                    .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                        }
+                    }
+                });
             }
         }
     };
 
+    /* recycler view for acquired badges
     private final Observer<Integer> indexObserver = new Observer<Integer>() {
         @Override
         public void onChanged(Integer integer) {
@@ -164,4 +205,5 @@ public class ProfileFragment extends Fragment {
             }
         }
     };
+     */
 }

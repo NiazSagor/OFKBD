@@ -1,7 +1,10 @@
 package com.ofk.bd;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -13,6 +16,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.developer.kalert.KAlertDialog;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.ofk.bd.Adapter.MainActivityViewPager;
 import com.ofk.bd.HelperClass.SectionCourseNameTuple;
@@ -37,8 +41,8 @@ public class MainActivity extends FragmentActivity implements ServiceResultRecei
 
     private ActivityMainBinding binding;
     private MenuItem prevMenuItem;
-    private MainActivityViewPager adapter;
     private MainActivityViewModel viewModel;
+    private KAlertDialog pDialog;
 
     private SharedPreferences sharedPreferences;
 
@@ -90,10 +94,17 @@ public class MainActivity extends FragmentActivity implements ServiceResultRecei
     protected void onStart() {
         super.onStart();
         setupViewPager();
+
+        if (!isConnected()) {
+            showAlertDialog("done");
+            return;
+        }
+
         setupService();
     }
+
     public void setupViewPager() {
-        adapter = new MainActivityViewPager(this);
+        MainActivityViewPager adapter = new MainActivityViewPager(this);
 
         binding.viewpager.setUserInputEnabled(false);
 
@@ -154,22 +165,45 @@ public class MainActivity extends FragmentActivity implements ServiceResultRecei
 
     @Override
     public void onReceiveResult(int resultCode, Bundle resultData) {
-        switch (resultCode) {
-            case SHOW_RESULT:
-                if (resultData != null) {
+        if (resultCode == SHOW_RESULT) {
+            if (resultData != null) {
 
-                    ArrayList<String> courseName = resultData.getStringArrayList("courseName");
-                    ArrayList<Integer> videoCount = resultData.getIntegerArrayList("count");
+                ArrayList<String> courseName = resultData.getStringArrayList("courseName");
+                ArrayList<Integer> videoCount = resultData.getIntegerArrayList("count");
 
-                    Log.d(TAG, "onReceiveResult: " + courseName.toString());
-                    Log.d(TAG, "onReceiveResult: " + videoCount.toString());
+                Log.d(TAG, "onReceiveResult: " + courseName.toString());
+                Log.d(TAG, "onReceiveResult: " + videoCount.toString());
 
-                    for (int i = 0; i < courseName.size(); i++) {
-                        String course = courseName.get(i);
-                        int count = videoCount.get(i);
-                        viewModel.updateTotalVideoCourse(course, count);
-                    }
+                for (int i = 0; i < courseName.size(); i++) {
+                    String course = courseName.get(i);
+                    int count = videoCount.get(i);
+                    viewModel.updateTotalVideoCourse(course, count);
                 }
+            }
         }
+    }
+
+    private void showAlertDialog(String command) {
+        if ("done".equals(command)) {
+            pDialog = new KAlertDialog(this, KAlertDialog.ERROR_TYPE);
+            pDialog.setTitleText("ইন্টারনেট সংযোগ নেই")
+                    .setConfirmText("OK")
+                    .setConfirmClickListener(new KAlertDialog.KAlertClickListener() {
+                        @Override
+                        public void onClick(KAlertDialog kAlertDialog) {
+                            pDialog.dismissWithAnimation();
+                        }
+                    })
+                    .show();
+        }
+    }
+
+    private boolean isConnected() {
+        ConnectivityManager cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+
+        return activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
     }
 }

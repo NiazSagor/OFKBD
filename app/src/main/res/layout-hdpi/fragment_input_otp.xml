@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/ic_login_bg"
+    tools:context=".InfoActivityFragment.InputOtpFragment">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/inputPhoneNumberCardView"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/info_top" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/inputPhoneNumberCardView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        app:cardCornerRadius="6dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/progressCyanLight"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/solaimanlipi_bold"
+                android:gravity="center_horizontal"
+                android:text="@string/youOTP"
+                android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                android:textColor="@color/progressCyan" />
+
+            <com.mukesh.OtpView
+                android:id="@+id/otp_view"
+                style="@style/OtpWidget.OtpView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:gravity="center_horizontal"
+                android:inputType="number"
+                android:itemBackground="#40D3D3D3"
+                android:textColor="@android:color/black"
+                app:OtpCursorColor="@color/colorPrimary"
+                app:OtpItemCount="6"
+                app:OtpItemHeight="35dp"
+                app:OtpItemWidth="35dp"
+                app:OtpLineColor="@android:color/transparent"
+                app:OtpViewType="rectangle" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:fontFamily="@font/solaimanlipi"
+                android:gravity="center_horizontal"
+                android:text="@string/yourOTPSent"
+                android:textSize="@dimen/hdpi_body_text_size" />
+
+            <RelativeLayout
+                android:id="@+id/nextButton"
+                android:layout_width="150dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="16dp"
+                android:background="@drawable/next_button"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:fontFamily="@font/solaimanlipi"
+                    android:text="পরবর্তী"
+                    android:textColor="@android:color/white"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+            </RelativeLayout>
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</RelativeLayout>

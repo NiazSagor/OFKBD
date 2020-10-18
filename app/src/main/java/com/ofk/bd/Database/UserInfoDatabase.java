@@ -13,7 +13,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 import com.ofk.bd.Dao.UserInfoDao;
 import com.ofk.bd.HelperClass.UserInfo;
 
-@Database(entities = UserInfo.class, version = 1, exportSchema = true)
+@Database(entities = UserInfo.class, version = 1)
 
 public abstract class UserInfoDatabase extends RoomDatabase {
 

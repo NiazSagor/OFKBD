@@ -18,9 +18,9 @@ import java.util.List;
 
 public class ActivitySliderAdapter extends RecyclerView.Adapter<ActivitySliderAdapter.ActivityViewHolder> {
 
-    private List<com.ofk.bd.HelperClass.Activity> activityList;
+    private final List<com.ofk.bd.HelperClass.Activity> activityList;
 
-    private Picasso picasso;
+    private final Picasso picasso;
 
     public ActivitySliderAdapter(List<Activity> list) {
         this.activityList = list;
@@ -71,7 +71,7 @@ public class ActivitySliderAdapter extends RecyclerView.Adapter<ActivitySliderAd
 
     public static class ActivityViewHolder extends RecyclerView.ViewHolder {
 
-        ImageView activityImageView;
+        final ImageView activityImageView;
 
         public ActivityViewHolder(@NonNull View itemView) {
             super(itemView);

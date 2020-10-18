@@ -20,19 +20,19 @@ public interface UserInfoDao {
 
     // update user video total count
     @Query("UPDATE user_info SET userName = :userName, userEmail = :userEmail, userPhoneNumber = :userPhoneNumber WHERE id = 1")
-    int updateUser(String userName, String userEmail, String userPhoneNumber);
+    void updateUser(String userName, String userEmail, String userPhoneNumber);
 
     // update user video total count
     @Query("UPDATE user_info SET videoCompleted = videoCompleted + 1 WHERE id = 1")
-    int updateUserVideoTotal();
+    void updateUserVideoTotal();
 
     // update user course total count
     @Query("UPDATE user_info SET courseCompleted = courseCompleted + 1 WHERE id = 1")
-    int updateUserCourseTotal();
+    void updateUserCourseTotal();
 
     // update user quiz total count
     @Query("UPDATE user_info SET quizCompleted = quizCompleted + 1 WHERE id = 1")
-    int updateUserQuizTotal();
+    void updateUserQuizTotal();
 
     @Query("SELECT courseCompleted FROM user_info WHERE id = 1")
     LiveData<Integer> getCurrentCompletedCourseCount();

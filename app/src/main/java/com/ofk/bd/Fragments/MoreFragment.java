@@ -1,5 +1,8 @@
 package com.ofk.bd.Fragments;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,21 +14,19 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.google.firebase.database.DataSnapshot;
+import com.developer.kalert.KAlertDialog;
 import com.ofk.bd.Adapter.ActivitySliderAdapter;
 import com.ofk.bd.Adapter.CourseSliderListAdapter;
-import com.ofk.bd.HelperClass.Activity;
+import com.ofk.bd.HelperClass.Common;
 import com.ofk.bd.HelperClass.Course;
 import com.ofk.bd.R;
 import com.ofk.bd.ViewModel.MainActivityViewModel;
 import com.ofk.bd.databinding.FragmentMoreBinding;
 import com.thefinestartist.finestwebview.FinestWebView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -69,8 +70,6 @@ public class MoreFragment extends Fragment {
     }
 
     private MainActivityViewModel mainActivityViewModel;
-    // activity pics list
-    private List<Activity> activityPics;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -79,27 +78,21 @@ public class MoreFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-        activityPics = new ArrayList<>();
         mainActivityViewModel = ViewModelProviders.of(getActivity()).get(MainActivityViewModel.class);
     }
 
     private FragmentMoreBinding binding;
 
-    private List<Course> courseResources;
-    private List<Course> moreCourses;
-    private List<Course> tutorials;
-
-    private ViewPager.OnPageChangeListener mOnPageChangeListener;
-
     private int customPosition = 0;
 
-    private int[] indicator = {R.drawable.dot, R.drawable.inactivedot};
+    private static final int[] indicator = {R.drawable.dot, R.drawable.inactivedot};
 
     // activity pics adapter
     private ActivitySliderAdapter activityAdapter;
 
     private CourseSliderListAdapter adapter;
 
+    private KAlertDialog pDialog;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -118,18 +111,17 @@ public class MoreFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-        activityPics.clear();
     }
 
     @Override
     public void onStart() {
         super.onStart();
 
-        if (!mainActivityViewModel.getFieldWorkPicLiveData().hasObservers()) {
-            mainActivityViewModel.getFieldWorkPicLiveData().observe(this, fieldWorkObserver);
-        }
+        activityAdapter = new ActivitySliderAdapter(Common.fieldActivityList);
+        binding.activityViewPager.setAdapter(activityAdapter);
+        changeIndicator(0);
 
-        if(!mainActivityViewModel.getBlogListMutableLiveData().hasObservers()){
+        if (!mainActivityViewModel.getBlogListMutableLiveData().hasObservers()) {
             mainActivityViewModel.getBlogListMutableLiveData().observe(this, blogListObserver);
         }
     }
@@ -152,28 +144,23 @@ public class MoreFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        activityPics.clear();
     }
-
-    private final Observer<DataSnapshot> fieldWorkObserver = new Observer<DataSnapshot>() {
-        @Override
-        public void onChanged(DataSnapshot dataSnapshot) {
-            Activity activity = dataSnapshot.getValue(Activity.class);
-            activityPics.add(activity);
-            activityAdapter = new ActivitySliderAdapter(activityPics);
-            binding.activityViewPager.setAdapter(activityAdapter);
-            changeIndicator(0);
-        }
-    };
 
     private final Observer<List<Course>> blogListObserver = new Observer<List<Course>>() {
         @Override
         public void onChanged(List<Course> courses) {
             adapter = new CourseSliderListAdapter(courses, "blog");
             binding.blogRecyclerView.setAdapter(adapter);
+
             adapter.setOnItemClickListener(new CourseSliderListAdapter.OnItemClickListener() {
                 @Override
                 public void onItemClick(int position, View view) {
+
+                    if (!isConnected()) {
+                        showAlertDialog("done");
+                        return;
+                    }
+
                     if (position == 0) {
                         new FinestWebView.Builder(getActivity()).show("https://ofkbd.com/inspirational/");
                     } else if (position == 1) {
@@ -217,5 +204,29 @@ public class MoreFragment extends Fragment {
             layoutParams.setMargins(4, 0, 4, 0);
             binding.dotLayout.addView(dots[i], layoutParams);
         }
+    }
+
+    private void showAlertDialog(String command) {
+        if ("done".equals(command)) {
+            pDialog = new KAlertDialog(getActivity(), KAlertDialog.ERROR_TYPE);
+            pDialog.setTitleText("ইন্টারনেট সংযোগ নেই")
+                    .setConfirmText("OK")
+                    .setConfirmClickListener(new KAlertDialog.KAlertClickListener() {
+                        @Override
+                        public void onClick(KAlertDialog kAlertDialog) {
+                            pDialog.dismissWithAnimation();
+                        }
+                    })
+                    .show();
+        }
+    }
+
+    private boolean isConnected() {
+        ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+
+        return activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
     }
 }

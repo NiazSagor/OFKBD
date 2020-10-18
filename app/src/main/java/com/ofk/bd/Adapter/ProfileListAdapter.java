@@ -1,5 +1,7 @@
 package com.ofk.bd.Adapter;
 
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +17,7 @@ import java.util.List;
 
 public class ProfileListAdapter extends RecyclerView.Adapter<ProfileListAdapter.ProfileListViewHolder> {
 
-    private int[] avatars = {R.drawable.name, R.drawable.contact, R.drawable.mail};
+    private int[] avatars = {R.drawable.name, R.drawable.contact, R.drawable.mail, R.drawable.ic_logout};
 
     private List<String> profileItems;
 
@@ -43,6 +45,12 @@ public class ProfileListAdapter extends RecyclerView.Adapter<ProfileListAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull ProfileListAdapter.ProfileListViewHolder holder, int position) {
+
+        if (position == getItemCount() - 1) {
+            holder.profileItemTextView.setTextColor(Color.RED);
+            holder.profileItemTextView.setTypeface(null, Typeface.BOLD);
+        }
+
         holder.profileItemTextView.setText(profileItems.get(position));
         holder.profileItemImage.setImageResource(avatars[position]);
     }

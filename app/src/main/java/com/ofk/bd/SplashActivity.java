@@ -1,13 +1,18 @@
 package com.ofk.bd;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.developer.kalert.KAlertDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.ofk.bd.AsyncTasks.FirebaseQueryActivity;
 import com.ofk.bd.AsyncTasks.FirebaseQueryRandomCourse;
@@ -25,11 +30,15 @@ import java.util.List;
 
 public class SplashActivity extends AppCompatActivity {
 
+    private static final String TAG = "SplashActivity";
+
     private FirebaseAuth mAuth;
 
     private ActivitySplashBinding binding;
 
     private ProgressBar progressBar;
+
+    private KAlertDialog pDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +57,11 @@ public class SplashActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
+        if (!isConnected()) {
+            showAlertDialog("done");
+            return;
+        }
+
         // all these queries needs to be in splash activity
 
         new FirebaseQueryRandomCourse(new DisplayCourseLoadCallback() {
@@ -55,6 +69,8 @@ public class SplashActivity extends AppCompatActivity {
             public void onLoadCallback(List<DisplayCourse> courses) {
 
                 Common.randomCourses = courses;
+
+                Log.d(TAG, "onLoadCallback: ");
             }
         }, "Robotics Section").executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
@@ -63,6 +79,8 @@ public class SplashActivity extends AppCompatActivity {
             public void onLoadCallback(List<DisplayCourse> courses) {
 
                 Common.randomCourses2 = courses;
+
+                Log.d(TAG, "onLoadCallback: ");
             }
         }, "Arts Section").executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
@@ -72,8 +90,19 @@ public class SplashActivity extends AppCompatActivity {
 
                 Common.activityList = activityPics;
 
+                Log.d(TAG, "onPicLoadCallback: ");
+
             }
         }, "Activity Pics").executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+        new FirebaseQueryActivity(new ActivityPicLoadCallback() {
+            @Override
+            public void onPicLoadCallback(List<Activity> activityPics) {
+
+                Common.fieldActivityList = activityPics;
+                Log.d(TAG, "onPicLoadCallback: ");
+            }
+        }, "Field Work Pics").executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         new FirebaseQueryVideo(new VideoLoadCallback() {
             @Override
@@ -81,6 +110,7 @@ public class SplashActivity extends AppCompatActivity {
 
                 Common.activityVideoList = list;
 
+                Log.d(TAG, "onLoadCallback: ");
                 binding.progressBar.setVisibility(View.GONE);
 
                 if (mAuth.getCurrentUser() == null) {
@@ -95,5 +125,29 @@ public class SplashActivity extends AppCompatActivity {
                 finish();
             }
         }, "Activity Videos").executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    private boolean isConnected() {
+        ConnectivityManager cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+
+        return activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+    }
+
+    private void showAlertDialog(String command) {
+        if ("done".equals(command)) {
+            pDialog = new KAlertDialog(this, KAlertDialog.ERROR_TYPE);
+            pDialog.setTitleText("ইন্টারনেট সংযোগ নেই")
+                    .setConfirmText("OK")
+                    .setConfirmClickListener(new KAlertDialog.KAlertClickListener() {
+                        @Override
+                        public void onClick(KAlertDialog kAlertDialog) {
+                            pDialog.dismissWithAnimation();
+                        }
+                    })
+                    .show();
+        }
     }
 }

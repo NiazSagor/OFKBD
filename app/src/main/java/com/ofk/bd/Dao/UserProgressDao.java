@@ -42,8 +42,8 @@ public interface UserProgressDao {
     LiveData<List<SectionCourseTuple>> loadFullName();
 
     @Query("UPDATE user_progress SET totalVideos = :count WHERE courseNameEnglish = :courseName")
-    int upDateTotalVideo(String courseName, int count);
+    void upDateTotalVideo(String courseName, int count);
 
     @Query("UPDATE user_progress SET videoWatched = videoWatched + 1 WHERE courseNameEnglish = :courseName")
-    int upDateVideoWatched(String courseName);
+    void upDateVideoWatched(String courseName);
 }

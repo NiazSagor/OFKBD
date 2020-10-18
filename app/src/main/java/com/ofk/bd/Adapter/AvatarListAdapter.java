@@ -24,9 +24,9 @@ public class AvatarListAdapter extends RecyclerView.Adapter<AvatarListAdapter.Av
 
     private List<Integer> acquiredBadgeIndexes;
 
-    private static int[] avatars = {R.drawable.dog, R.drawable.duck, R.drawable.fox, R.drawable.lion, R.drawable.cats, R.drawable.tiger, R.drawable.squirrel, R.drawable.giraffe, R.drawable.elephant,R.drawable.parrot};
+    private static int[] avatars = {R.drawable.ic_dog, R.drawable.ic_duck, R.drawable.ic_fox, R.drawable.ic_lion, R.drawable.ic_cat, R.drawable.ic_tiger, R.drawable.ic_squirrel, R.drawable.ic_giraffe, R.drawable.ic_elephant, R.drawable.ic_parrot};
 
-    private static int badge_icons[] = {R.drawable.apprentice_1, R.drawable.apprentice_2, R.drawable.apprentice_3,
+    private static int[] badge_icons = {R.drawable.apprentice_1, R.drawable.apprentice_2, R.drawable.apprentice_3,
             R.drawable.journeyman_1, R.drawable.journeyman_2, R.drawable.journeyman_3,
             R.drawable.master_1, R.drawable.master_2, R.drawable.master_3,
             R.drawable.grand_master_1, R.drawable.grand_master_2, R.drawable.grand_master_3,

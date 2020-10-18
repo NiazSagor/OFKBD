@@ -42,19 +42,17 @@ public class ProgressFragment extends Fragment {
 
     private static String[] descriptionData = {"Level 1\n\nApprentice", "Level 2\n\nJourneyman", "Level 3\n\nMaster", "Level 4\n\nGrand Master", "Level 5\n\nSuper Kids"};
 
-    private static int badge_icons[] = {R.drawable.apprentice_1, R.drawable.apprentice_2, R.drawable.apprentice_3,
+    private static int[] badge_icons = {R.drawable.apprentice_1, R.drawable.apprentice_2, R.drawable.apprentice_3,
             R.drawable.journeyman_1, R.drawable.journeyman_2, R.drawable.journeyman_3,
             R.drawable.master_1, R.drawable.master_2, R.drawable.master_3,
             R.drawable.grand_master_1, R.drawable.grand_master_2, R.drawable.grand_master_3,
             R.drawable.super_kids_1, R.drawable.super_kids_2, R.drawable.super_kids_3};
 
-    private static String level_names[] = {"Apprentice 1", "Apprentice 2", "Apprentice 3",
+    private static String[] level_names = {"Apprentice 1", "Apprentice 2", "Apprentice 3",
             "Journeyman 1", "Journeyman 2", "Journeyman 3",
             "Master 1", "Master 2", "Master 3",
             "Grand Master 1", "Grand Master 2", "Grand Master 3",
             "Super Kids 1", "Super Kids 2", "Super Kids 3"};
-
-    private static int min_require_next_level[] = {1, 2, 3, 4, 7, 9, 11, 14, 17, 20, 23, 26, 28, 33, 38};
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER

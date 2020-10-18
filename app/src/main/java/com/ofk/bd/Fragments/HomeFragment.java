@@ -27,6 +27,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.ofk.bd.Adapter.ActivitySliderAdapter;
 import com.ofk.bd.Adapter.CourseSliderListAdapter;
+import com.ofk.bd.Adapter.ProfileListAdapter;
 import com.ofk.bd.Adapter.VideoSliderAdapter;
 import com.ofk.bd.CourseActivity;
 import com.ofk.bd.DisplayCourseActivity;
@@ -35,6 +36,7 @@ import com.ofk.bd.HelperClass.Activity;
 import com.ofk.bd.HelperClass.Common;
 import com.ofk.bd.HelperClass.Course;
 import com.ofk.bd.HelperClass.DisplayCourse;
+import com.ofk.bd.HelperClass.UserInfo;
 import com.ofk.bd.HelperClass.Video;
 import com.ofk.bd.R;
 import com.ofk.bd.SearchResultActivity;
@@ -158,9 +160,17 @@ public class HomeFragment extends Fragment {
         binding.activityViewPager.setClipToPadding(false);
         binding.activityViewPager.setPageTransformer(new MarginPageTransformer(40));
 
+        LinearLayoutManager manager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
+        manager.setItemPrefetchEnabled(true);
+        manager.setInitialPrefetchItemCount(3);
+
+        LinearLayoutManager manager2 = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
+        manager.setItemPrefetchEnabled(true);
+        manager.setInitialPrefetchItemCount(3);
+
         // random course 1, 2
-        binding.randomCourseRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-        binding.randomCourseRecyclerView2.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        binding.randomCourseRecyclerView.setLayoutManager(manager);
+        binding.randomCourseRecyclerView2.setLayoutManager(manager2);
 
         // this is for activity videos view pager
         binding.activityVideoViewPager.setClipToPadding(false);
@@ -205,12 +215,6 @@ public class HomeFragment extends Fragment {
                     startActivity(intent);
                 }
             });
-        }
-
-        if (activityAdapter == null) {
-            activityAdapter = new ActivitySliderAdapter(Common.activityList);
-            binding.activityViewPager.setAdapter(activityAdapter);
-            changeIndicatorOnActivityViewPager(0);
         }
 
         binding.searchButtonCardView.setOnClickListener(new View.OnClickListener() {
@@ -259,6 +263,26 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 binding.parentScrollView.smoothScrollTo(0, 0);
+            }
+        });
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        if (activityAdapter == null) {
+            activityAdapter = new ActivitySliderAdapter(Common.activityList);
+            binding.activityViewPager.setAdapter(activityAdapter);
+            changeIndicatorOnActivityViewPager(0);
+        }
+
+        mainActivityViewModel.getUserInfoLiveData2().observe(this, new Observer<UserInfo>() {
+            @Override
+            public void onChanged(UserInfo userInfo) {
+                if(userInfo != null){
+                    binding.userNameTextView.setText(userInfo.getUserName());
+                }
             }
         });
     }
@@ -360,6 +384,15 @@ public class HomeFragment extends Fragment {
                     Log.d(TAG, "onItemClick: " + courses.get(position).getCourseTitle());
                 }
             });
+        }
+    };
+
+    private final Observer<UserInfo> userInfoObserver = new Observer<UserInfo>() {
+        @Override
+        public void onChanged(UserInfo userInfo) {
+            if (userInfo != null) {
+                binding.userNameTextView.setText(userInfo.getUserName());
+            }
         }
     };
 
