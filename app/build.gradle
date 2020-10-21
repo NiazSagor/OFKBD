@@ -42,7 +42,7 @@ android {
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.2'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     testImplementation 'junit:junit:4.12'
 
@@ -86,5 +86,9 @@ dependencies {
     // state progress bar
     implementation 'com.kofigyan.stateprogressbar:stateprogressbar:1.0.0'
 
+    // alert dialog
     implementation 'com.github.TutorialsAndroid:KAlertDialog:v14.0.19'
+
+    // date picker
+    implementation 'com.wdullaer:materialdatetimepicker:4.2.3'
 }

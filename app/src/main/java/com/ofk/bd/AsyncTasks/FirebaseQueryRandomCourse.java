@@ -12,22 +12,27 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.ofk.bd.HelperClass.DisplayCourse;
 import com.ofk.bd.Interface.DisplayCourseLoadCallback;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class FirebaseQueryRandomCourse extends AsyncTask<Void, Void, Void> {
 
-    DisplayCourseLoadCallback callback;
+    private final DisplayCourseLoadCallback callback;
 
-    String mNode;
+    private final String mNode;
 
-    List<DisplayCourse> courseList;
+    private final List<DisplayCourse> courseList;
+
+    private Picasso mPicasso;
 
     public FirebaseQueryRandomCourse(DisplayCourseLoadCallback callback, String node) {
         this.callback = callback;
         this.mNode = node;
         courseList = new ArrayList<>();
+        mPicasso = Picasso.get();
     }
 
     @Override
@@ -37,7 +42,10 @@ public class FirebaseQueryRandomCourse extends AsyncTask<Void, Void, Void> {
         db.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
                 DisplayCourse course = dataSnapshot.getValue(DisplayCourse.class);
+
+                mPicasso.load(course.getThumbnailURL()).fetch();
                 courseList.add(course);
                 callback.onLoadCallback(courseList);
             }
@@ -64,5 +72,12 @@ public class FirebaseQueryRandomCourse extends AsyncTask<Void, Void, Void> {
         });
 
         return null;
+    }
+
+    private abstract static class CustomChildEventListener implements ChildEventListener {
+        @Override
+        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+        }
     }
 }

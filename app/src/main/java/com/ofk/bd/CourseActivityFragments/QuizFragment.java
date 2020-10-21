@@ -73,7 +73,7 @@ public class QuizFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        showAlertDialog("done");
+        //showAlertDialog("done");
     }
 
     private void showAlertDialog(String command) {

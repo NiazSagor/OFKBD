@@ -29,6 +29,7 @@
     <string name="more" translatable="false">আরো</string>
     <string name="ourWorks" translatable="false">আমাদের কার্যক্রম</string>
     <string name="profile" translatable="false">প্রোফাইল</string>
+    <string name="profileEnglish" translatable="false">Profile Details</string>
 
 
     <string name="trainer" translatable="false">ট্রেইনার</string>
@@ -53,6 +54,9 @@
 
     <string name="notFoundCourse" translatable="false">কোর্স খুঁজে পাওয়া যায় নি</string>
     <string name="notFoundVideo" translatable="false">ভিডিও খুঁজে পাওয়া যায় নি</string>
+    <string name="notFoundQuiz" translatable="false">কুইজ পাওয়া যায় নি</string>
+    <string name="notFoundResource" translatable="false">রিসোর্স পাওয়া যায় নি</string>
+    <string name="notVerified" translatable="false">মোবাইল নাম্বার ভেরিফাই করা হয় নি</string>
 
     <string name="progressButton" translatable="false">চলো</string>
 
@@ -71,5 +75,6 @@
     <string name="next" translatable="false">পরবর্তী</string>
     <string name="yourNumberOTP" translatable="false">মোবাইল নাম্বারটি ভেরিফিকেশনের \nজন্য একটি ওটিপি কোড পাঠানো হবে</string>
     <string name="yourOTPSent" translatable="false">মোবাইল নাম্বারটি ভেরিফিকেশনের \nজন্য একটি ওটিপি কোড পাঠানো হয়েছে</string>
+    <string name="avatarSelected" translatable="false">এভাটার সিলেক্ট করা হয়েছে</string>
 
 </resources>

@@ -1,5 +1,6 @@
 package com.ofk.bd.Repository;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.os.AsyncTask;
 
@@ -155,6 +156,47 @@ public class UserInfoRepository {
         @Override
         protected Void doInBackground(Void... voids) {
             dao.updateUser(userName, userEmail, userPhoneNumber);
+            return null;
+        }
+    }
+
+    public void updateUserInfo(String text, String entry) {
+        new UpdateUserInfo(userInfoDao, entry, text).execute();
+    }
+
+    private static class UpdateUserInfo extends AsyncTask<Void, Void, Void> {
+
+        private final UserInfoDao dao;
+        private final String entry;
+        private final String text;
+
+        public UpdateUserInfo(UserInfoDao dao, String entry, String text) {
+            this.dao = dao;
+            this.entry = entry;
+            this.text = text;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+
+            switch (entry) {
+                case "email":
+                    dao.updateUserEmail(text);
+                    break;
+                case "class":
+                    dao.updateUserClass(text);
+                    break;
+                case "institute":
+                    dao.updateUserSchool(text);
+                    break;
+                case "gender":
+                    dao.updateUserGender(text);
+                    break;
+                case "dob":
+                    dao.updateUserDOB(text);
+                    break;
+            }
+
             return null;
         }
     }

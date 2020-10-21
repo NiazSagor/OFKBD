@@ -72,11 +72,14 @@
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tab_layout"
-            style="@style/MyTabLayoutTextAppearance"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp"
-            app:tabMode="scrollable" />
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            app:tabMode="scrollable"
+            app:tabSelectedTextColor="@android:color/black"
+            app:tabTextAppearance="@style/MyTabLayoutTextAppearance"
+            app:tabTextColor="@android:color/darker_gray" />
 
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/pager"

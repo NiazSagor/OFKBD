@@ -63,27 +63,6 @@ public class SplashActivity extends AppCompatActivity {
         }
 
         // all these queries needs to be in splash activity
-
-        new FirebaseQueryRandomCourse(new DisplayCourseLoadCallback() {
-            @Override
-            public void onLoadCallback(List<DisplayCourse> courses) {
-
-                Common.randomCourses = courses;
-
-                Log.d(TAG, "onLoadCallback: ");
-            }
-        }, "Robotics Section").executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
-        new FirebaseQueryRandomCourse(new DisplayCourseLoadCallback() {
-            @Override
-            public void onLoadCallback(List<DisplayCourse> courses) {
-
-                Common.randomCourses2 = courses;
-
-                Log.d(TAG, "onLoadCallback: ");
-            }
-        }, "Arts Section").executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
         new FirebaseQueryActivity(new ActivityPicLoadCallback() {
             @Override
             public void onPicLoadCallback(List<Activity> activityPics) {
@@ -111,6 +90,27 @@ public class SplashActivity extends AppCompatActivity {
                 Common.activityVideoList = list;
 
                 Log.d(TAG, "onLoadCallback: ");
+            }
+        }, "Activity Videos").executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+        new FirebaseQueryRandomCourse(new DisplayCourseLoadCallback() {
+            @Override
+            public void onLoadCallback(List<DisplayCourse> courses) {
+
+                Common.randomCourses = courses;
+
+                Log.d(TAG, "onLoadCallback: ");
+            }
+        }, "Robotics Section").executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+        new FirebaseQueryRandomCourse(new DisplayCourseLoadCallback() {
+            @Override
+            public void onLoadCallback(List<DisplayCourse> courses) {
+
+                Common.randomCourses2 = courses;
+
+                Log.d(TAG, "onLoadCallback: ");
+
                 binding.progressBar.setVisibility(View.GONE);
 
                 if (mAuth.getCurrentUser() == null) {
@@ -124,7 +124,7 @@ public class SplashActivity extends AppCompatActivity {
                 }
                 finish();
             }
-        }, "Activity Videos").executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }, "Arts Section").executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     private boolean isConnected() {

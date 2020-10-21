@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/ic_login_bg"
-    tools:context=".InfoActivityFragment.InputNumberFragment">
+    tools:context=".InfoActivityFragment.InputOtpFragment">
 
     <ImageView
         android:layout_width="wrap_content"
@@ -35,21 +35,28 @@
                 android:layout_marginTop="16dp"
                 android:fontFamily="@font/solaimanlipi_bold"
                 android:gravity="center_horizontal"
-                android:text="@string/youNumber"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:text="@string/youOTP"
+                android:textAppearance="@style/TextAppearance.AppCompat.Small"
                 android:textColor="@color/progressCyan" />
 
-            <EditText
-                android:id="@+id/phoneNumberEditText"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_margin="16dp"
-                android:background="@drawable/input_number_edittext"
-                android:fontFamily="@font/solaimanlipi"
-                android:gravity="center"
-                android:hint="@string/youNumberExample"
-                android:inputType="phone"
-                android:textColor="@android:color/black" />
+            <com.mukesh.OtpView
+                android:id="@+id/otp_view"
+                style="@style/OtpWidget.OtpView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:gravity="center_horizontal"
+                android:inputType="number"
+                android:itemBackground="#40D3D3D3"
+                android:textColor="@android:color/black"
+                app:OtpCursorColor="@color/colorPrimary"
+                app:OtpItemCount="6"
+                app:OtpItemHeight="35dp"
+                app:OtpItemWidth="35dp"
+                app:OtpLineColor="@android:color/transparent"
+                app:OtpViewType="rectangle" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -58,13 +65,13 @@
                 android:layout_marginBottom="8dp"
                 android:fontFamily="@font/solaimanlipi"
                 android:gravity="center_horizontal"
-                android:text="@string/yourNumberOTP"
-                android:textSize="14sp" />
+                android:text="@string/yourOTPSent"
+                android:textSize="@dimen/hdpi_body_text_size" />
 
             <RelativeLayout
                 android:id="@+id/nextButton"
-                android:layout_width="170dp"
-                android:layout_height="35dp"
+                android:layout_width="150dp"
+                android:layout_height="30dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_margin="16dp"
                 android:background="@drawable/next_button"
@@ -77,27 +84,14 @@
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
                     android:fontFamily="@font/solaimanlipi"
-                    android:text="@string/next"
+                    android:text="পরবর্তী"
                     android:textColor="@android:color/white"
-                    android:textSize="16sp"
+                    android:textSize="14sp"
                     android:textStyle="bold" />
 
             </RelativeLayout>
         </LinearLayout>
 
     </androidx.cardview.widget.CardView>
-
-    <TextView
-        android:id="@+id/alreadyAccountTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/inputPhoneNumberCardView"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:fontFamily="@font/solaimanlipi"
-        android:text="@string/previousAccount" />
 
 </RelativeLayout>

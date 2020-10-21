@@ -3,6 +3,8 @@ package com.ofk.bd.InfoActivityFragment;
 import android.app.Service;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -132,6 +134,25 @@ public class InputNumberFragment extends Fragment {
                 } else {
                     binding.phoneNumberEditText.setError("মোবাইল নাম্বার দাও নি");
                 }
+            }
+        });
+
+        binding.phoneNumberEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (charSequence.length() == 11) {
+                    hideKeyboardFrom();
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
             }
         });
 

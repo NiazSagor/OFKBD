@@ -10,4 +10,5 @@ public class Common {
     public static List<Activity> activityList = new ArrayList<>();
     public static List<Activity> fieldActivityList = new ArrayList<>();
     public static List<Video> activityVideoList = new ArrayList<>();
+    public static List<SectionVideo> sectionVideoList = new ArrayList<>();
 }

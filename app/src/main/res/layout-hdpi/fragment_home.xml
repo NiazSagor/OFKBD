@@ -5,6 +5,7 @@
     android:id="@+id/parentScrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/background_light"
     tools:context=".Fragments.HomeFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -36,9 +37,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="56dp"
-            android:text="Good Morning"
-            android:textAppearance="@style/TextAppearance.AppCompat.Small"
-            android:textColor="@android:color/black"
+            android:text=""
+            android:textSize="12sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -47,8 +47,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:text="TextView"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:text=""
+            android:textSize="@dimen/hdpi_heading_text_size"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/geetingMessage" />
 
@@ -263,7 +263,6 @@
             android:layout_height="1dp"
             android:layout_below="@id/randomCourseRecyclerView"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:background="@color/lightgrey"
             app:layout_constraintStart_toStartOf="parent"
@@ -304,7 +303,6 @@
             android:layout_height="1dp"
             android:layout_below="@id/randomCourseRecyclerView_2"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:background="@color/lightgrey"
             app:layout_constraintStart_toStartOf="parent"

@@ -15,6 +15,8 @@ import java.util.List;
 
 public class AvatarListAdapter extends RecyclerView.Adapter<AvatarListAdapter.AvatarListViewHolder> {
 
+    public static boolean isClickable = true;
+
     public static final int CHOOSE_AVATAR = 1;
     public static final int VIEW_BADGE = 2;
 
@@ -109,7 +111,7 @@ public class AvatarListAdapter extends RecyclerView.Adapter<AvatarListAdapter.Av
 
                     int position = getAdapterPosition();
 
-                    if (!sender.equals("view_badge")) {
+                    if (!sender.equals("view_badge") && isClickable) {
                         flipper.showNext();
                     }
                     if (listener != null) {

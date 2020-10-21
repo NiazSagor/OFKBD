@@ -182,6 +182,10 @@ public class MainActivityViewModel extends AndroidViewModel {
      * */
 
 
+    public void updateUserInfo(String text, String entry){
+        userInfoRepository.updateUserInfo(text, entry);
+    }
+
     public void insert(UserInfo userInfo) {
         userInfoRepository.insert(userInfo);
     }

@@ -10,8 +10,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.ofk.bd.HelperClass.Activity;
 import com.ofk.bd.R;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -37,31 +35,7 @@ public class ActivitySliderAdapter extends RecyclerView.Adapter<ActivitySliderAd
 
     @Override
     public void onBindViewHolder(@NonNull ActivityViewHolder holder, int position) {
-        picasso.load(activityList.get(position).getUrl())
-                .networkPolicy(NetworkPolicy.OFFLINE)
-                .into(holder.activityImageView, new Callback() {
-                    @Override
-                    public void onSuccess() {
-
-                    }
-
-                    @Override
-                    public void onError(Exception e) {
-                        picasso.load(activityList.get(position).getUrl())
-                                .error(R.drawable.ofklogo)
-                                .into(holder.activityImageView, new Callback() {
-                                    @Override
-                                    public void onSuccess() {
-
-                                    }
-
-                                    @Override
-                                    public void onError(Exception e) {
-
-                                    }
-                                });
-                    }
-                });
+        picasso.load(activityList.get(position).getUrl()).into(holder.activityImageView);
     }
 
     @Override
@@ -75,7 +49,6 @@ public class ActivitySliderAdapter extends RecyclerView.Adapter<ActivitySliderAd
 
         public ActivityViewHolder(@NonNull View itemView) {
             super(itemView);
-
             activityImageView = itemView.findViewById(R.id.activityImageView);
         }
     }

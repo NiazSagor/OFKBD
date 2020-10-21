@@ -10,10 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ofk.bd.HelperClass.DisplayCourse;
-import com.ofk.bd.HelperClass.Video;
 import com.ofk.bd.R;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -70,8 +67,8 @@ public class CourseListAdapter extends RecyclerView.Adapter<CourseListAdapter.Co
     public void onBindViewHolder(@NonNull CourseListViewHolder holder, int position) {
 
         holder.title.setText(courseList.get(position).getCourseTitle());
-
-        mPicasso.setIndicatorsEnabled(false);
+        mPicasso.load(courseList.get(position).getThumbnailURL()).into(holder.thumbnail);
+        /*mPicasso.setIndicatorsEnabled(false);
         mPicasso.load(courseList.get(position).getThumbnailURL())
                 .networkPolicy(NetworkPolicy.OFFLINE)
                 .into(holder.thumbnail, new Callback() {
@@ -97,6 +94,8 @@ public class CourseListAdapter extends RecyclerView.Adapter<CourseListAdapter.Co
                                 });
                     }
                 });
+
+         */
     }
 
     @Override
@@ -145,7 +144,7 @@ public class CourseListAdapter extends RecyclerView.Adapter<CourseListAdapter.Co
         return super.getItemId(position);
     }
 
-    public DisplayCourse getCurrentCourse(int position){
+    public DisplayCourse getCurrentCourse(int position) {
         return courseList.get(position);
     }
 }

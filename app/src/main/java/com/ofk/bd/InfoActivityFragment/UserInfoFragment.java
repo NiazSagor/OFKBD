@@ -32,6 +32,7 @@ import com.ofk.bd.Adapter.AvatarListAdapter;
 import com.ofk.bd.HelperClass.UserForFirebase;
 import com.ofk.bd.HelperClass.UserInfo;
 import com.ofk.bd.MainActivity;
+import com.ofk.bd.R;
 import com.ofk.bd.ViewModel.InfoActivityViewModel;
 import com.ofk.bd.databinding.FragmentUserInfoBinding;
 
@@ -105,6 +106,7 @@ public class UserInfoFragment extends Fragment {
 
     private AvatarListAdapter avatarListAdapter;
     private KAlertDialog pDialog;
+    private Handler handler;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -112,14 +114,14 @@ public class UserInfoFragment extends Fragment {
         // Inflate the layout for this fragment
         binding = FragmentUserInfoBinding.inflate(getLayoutInflater());
 
+        handler = new Handler();
+
         return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        Handler handler = new Handler();
 
         binding.avatarRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 5));
 
@@ -135,7 +137,7 @@ public class UserInfoFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if(charSequence.length() == 6){
+                if (charSequence.length() == 6) {
                     hideKeyboardFrom();
                 }
             }
@@ -149,6 +151,11 @@ public class UserInfoFragment extends Fragment {
         binding.progressButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                if (mAuth.getCurrentUser() == null) {
+                    Toast.makeText(getContext(), getResources().getString(R.string.notVerified), Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
                 if (!binding.yourEmailEditText.getText().toString().trim().isEmpty()) {
                     String email = binding.yourEmailEditText.getText().toString().trim();
@@ -172,7 +179,6 @@ public class UserInfoFragment extends Fragment {
                     if (userPassword != null && userAvatar >= 0 && userAvatar <= 10) {
 
                         showAlertDialog("start");
-
                         // inset user to db
                         insertUser();
 
@@ -183,10 +189,10 @@ public class UserInfoFragment extends Fragment {
 
                                 getActivity().startActivity(new Intent(getActivity(), MainActivity.class)
                                         .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP));
+
+                                getActivity().finish();
                             }
                         }, 2000);
-
-                        // and start main activity
 
                     } else {
                         Toast.makeText(getContext(), "এভাটার সিলেক্ট করো", Toast.LENGTH_SHORT).show();
@@ -198,9 +204,14 @@ public class UserInfoFragment extends Fragment {
         avatarListAdapter.setOnItemClickListener(new AvatarListAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position, View view) {
-                userAvatar = position;
-                Log.d(TAG, "onItemClick: " + userAvatar);
-                sharedPreferences.edit().putInt("avatarIndex", position).apply();
+                if (avatarListAdapter.isClickable) {
+                    userAvatar = position;
+                    Log.d(TAG, "onItemClick: " + userAvatar);
+                    sharedPreferences.edit().putInt("avatarIndex", position).apply();
+                    avatarListAdapter.isClickable = false;
+                } else {
+                    Toast.makeText(getContext(), getResources().getString(R.string.avatarSelected), Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -212,7 +223,7 @@ public class UserInfoFragment extends Fragment {
 
         assert firebaseUser != null;
 
-        UserInfo userInfo = new UserInfo(userName, firebaseUser.getPhoneNumber(), userEmail, 0, 0, 0);
+        UserInfo userInfo = new UserInfo(userName, firebaseUser.getPhoneNumber(), userEmail, "", "", "", "", 0, 0, 0);
         activityViewModel.insert(userInfo);
 
         UserForFirebase user = new UserForFirebase(userEmail, userName, userPassword, firebaseUser.getPhoneNumber());

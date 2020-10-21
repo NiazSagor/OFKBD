@@ -17,18 +17,15 @@ import java.util.List;
 public class CourseSliderListAdapter extends RecyclerView.Adapter<CourseSliderListAdapter.CourseSliderListViewHolder> {
 
     public static final int VIEW_PAGER_COURSE = 1;
-    public static final int RANDOM_COURSE = 2;
     public static final int BLOG_ITEM = 3;
-    private static final int TUTORIAL = 4;
 
     private String mSender;
 
     private static final String TAG = "CourseSliderListAdapter";
 
-    private static int[] firstSixIcons = {R.drawable.art, R.drawable.calligraphy, R.drawable.case_solve, R.drawable.craft, R.drawable.critical, R.drawable.digital,
+    private static final int[] sectionIcons = {R.drawable.art, R.drawable.calligraphy, R.drawable.case_solve, R.drawable.craft, R.drawable.critical, R.drawable.digital,
             R.drawable.guitar, R.drawable.programming, R.drawable.robotics};
-    private static int[] secondFiveIcons = {R.drawable.guitar, R.drawable.programming, R.drawable.robotics};
-    private static int[] firstSixGradients = {R.drawable.gradient_pink, R.drawable.gradient_cyan, R.drawable.gradient_purple,
+    private static final int[] sectionGradients = {R.drawable.gradient_pink, R.drawable.gradient_cyan, R.drawable.gradient_purple,
             R.drawable.gradient_blue, R.drawable.gradient_purple_pink, R.drawable.gradient_pink_yellow,
             R.drawable.gradient_pink, R.drawable.gradient_cyan, R.drawable.gradient_purple};
 
@@ -59,19 +56,12 @@ public class CourseSliderListAdapter extends RecyclerView.Adapter<CourseSliderLi
 
         switch (viewType) {
             case 1:
-                View viewPagerCourseLayout = inflater.inflate(R.layout.course_item_layout, parent, false);
-                return new CourseSliderListViewHolder(viewPagerCourseLayout, mListener);
-
-            case 2:
-                View randomCourseLayout = inflater.inflate(R.layout.random_course_layout, parent, false);
-                return new CourseSliderListViewHolder(randomCourseLayout, mListener);
+                View sectionLayout = inflater.inflate(R.layout.course_item_layout, parent, false);
+                return new CourseSliderListViewHolder(sectionLayout, mListener);
 
             case 3:
-                View resourceLayout = inflater.inflate(R.layout.blog_item_layout, parent, false);
-                return new CourseSliderListViewHolder(resourceLayout, mListener);
-            case 4:
-                View moreCourseLayout = inflater.inflate(R.layout.display_course_layout, parent, false);
-                return new CourseSliderListViewHolder(moreCourseLayout, mListener);
+                View blogLayout = inflater.inflate(R.layout.blog_item_layout, parent, false);
+                return new CourseSliderListViewHolder(blogLayout, mListener);
 
             default:
                 View view = inflater.inflate(R.layout.age_layout, parent, false);
@@ -82,27 +72,13 @@ public class CourseSliderListAdapter extends RecyclerView.Adapter<CourseSliderLi
     @Override
     public void onBindViewHolder(@NonNull CourseSliderListAdapter.CourseSliderListViewHolder holder, int position) {
 
-        if (mSender.equals("random")) {
-            holder.courseTitleTextView.setText(courseList.get(position).getCourseTitle());
-            holder.courseSubtitle.setText(courseList.get(position).getCourseSubtitle());
-            //holder.courseImageView.setImageResource(avatars[position]);
-        } else if (mSender.equals("blog")) {
+        if (mSender.equals("blog")) {
             holder.courseTitleTextView.setText(courseList.get(position).getCourseTitle());
             holder.courseImageView.setBackgroundResource(blogThumbs[position]);
-        } else if (mSender.equals("viewpager")) {
-            holder.courseTitleTextView.setText(courseList.get(position).getCourseTitle());
-            holder.courseImageView.setImageResource(firstSixIcons[position]);
-        } else if (mSender.equals("course_resource")) {
-            holder.courseTitleTextView.setText(courseList.get(position).getCourseTitle());
-            holder.courseImageView.setImageResource(firstSixIcons[position]);
         } else if (mSender.equals("viewpager0")) {
             holder.courseTitleTextView.setText(courseList.get(position).getCourseSubtitle());
-            holder.courseImageView.setImageResource(firstSixIcons[position]);
-            holder.gradientView.setBackgroundResource(firstSixGradients[position]);
-        } else if (mSender.equals("viewpager1")) {
-            holder.courseTitleTextView.setText(courseList.get(position).getCourseSubtitle());
-            holder.courseImageView.setImageResource(secondFiveIcons[position]);
-            holder.gradientView.setBackgroundResource(firstSixGradients[position]);
+            holder.courseImageView.setImageResource(sectionIcons[position]);
+            holder.gradientView.setBackgroundResource(sectionGradients[position]);
         }
     }
 
@@ -146,12 +122,8 @@ public class CourseSliderListAdapter extends RecyclerView.Adapter<CourseSliderLi
     public int getItemViewType(int position) {
         if (mSender.equals("viewpager") || mSender.equals("viewpager0") || mSender.equals("viewpager1")) {
             return VIEW_PAGER_COURSE;
-        } else if (mSender.equals("random")) {
-            return RANDOM_COURSE;
         } else if (mSender.equals("blog")) {
             return BLOG_ITEM;
-        } else if (mSender.equals("tutorial")) {
-            return TUTORIAL;
         }
         return -1;
     }

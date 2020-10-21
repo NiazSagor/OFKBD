@@ -12,20 +12,24 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.ofk.bd.HelperClass.Activity;
 import com.ofk.bd.Interface.ActivityPicLoadCallback;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class FirebaseQueryActivity extends AsyncTask<Void, Void, Void> {
 
-    private ActivityPicLoadCallback callback;
-    private String mNode;
-    private List<Activity> activityList;
+    private final ActivityPicLoadCallback callback;
+    private final String mNode;
+    private final List<Activity> activityList;
+    private final Picasso mPicasso;
 
     public FirebaseQueryActivity(ActivityPicLoadCallback callback, String node) {
         this.callback = callback;
         this.mNode = node;
         activityList = new ArrayList<>();
+        mPicasso = Picasso.get();
     }
 
     @Override
@@ -34,7 +38,10 @@ public class FirebaseQueryActivity extends AsyncTask<Void, Void, Void> {
         db.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
                 Activity activity = dataSnapshot.getValue(Activity.class);
+
+                mPicasso.load(activity.getUrl()).fetch();
                 activityList.add(activity);
                 callback.onPicLoadCallback(activityList);
             }

@@ -35,12 +35,12 @@
                 android:id="@+id/resourceTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="48dp"
+                android:layout_marginTop="@dimen/xxhdpi_heading_top_margin"
                 android:fontFamily="@font/solaimanlipi"
                 android:padding="16dp"
                 android:text="@string/ourWorks"
                 android:textColor="@color/textColorGrey"
-                android:textSize="32sp"
+                android:textSize="@dimen/hdpi_heading_text_size"
                 android:textStyle="bold" />
 
             <RelativeLayout

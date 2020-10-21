@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,15 +26,12 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.ofk.bd.Adapter.ActivitySliderAdapter;
 import com.ofk.bd.Adapter.CourseSliderListAdapter;
-import com.ofk.bd.Adapter.ProfileListAdapter;
 import com.ofk.bd.Adapter.VideoSliderAdapter;
 import com.ofk.bd.CourseActivity;
 import com.ofk.bd.DisplayCourseActivity;
 import com.ofk.bd.DisplayCourseActivityAdapter.CourseListAdapter;
-import com.ofk.bd.HelperClass.Activity;
 import com.ofk.bd.HelperClass.Common;
 import com.ofk.bd.HelperClass.Course;
-import com.ofk.bd.HelperClass.DisplayCourse;
 import com.ofk.bd.HelperClass.UserInfo;
 import com.ofk.bd.HelperClass.Video;
 import com.ofk.bd.R;
@@ -101,17 +97,8 @@ public class HomeFragment extends Fragment {
         return fragment;
     }
 
-    // activity pics list
-    private List<Activity> activityPics;
-
     // activity video list
     private List<Video> videoList;
-
-    // random course 1 display
-    private List<DisplayCourse> randomCourse_1;
-
-    // random course 2 display
-    private List<DisplayCourse> randomCourse_2;
 
     private MainActivityViewModel mainActivityViewModel;
 
@@ -140,7 +127,7 @@ public class HomeFragment extends Fragment {
             mainActivityViewModel = ViewModelProviders.of(getActivity()).get(MainActivityViewModel.class);
         }
 
-        handler = new Handler(Looper.getMainLooper());
+        handler = new Handler();
     }
 
     // activity pics adapter
@@ -170,7 +157,9 @@ public class HomeFragment extends Fragment {
 
         // random course 1, 2
         binding.randomCourseRecyclerView.setLayoutManager(manager);
+        binding.randomCourseRecyclerView.setHasFixedSize(true);
         binding.randomCourseRecyclerView2.setLayoutManager(manager2);
+        binding.randomCourseRecyclerView2.setHasFixedSize(true);
 
         // this is for activity videos view pager
         binding.activityVideoViewPager.setClipToPadding(false);
@@ -195,6 +184,9 @@ public class HomeFragment extends Fragment {
                     intent.putExtra("course_name", recom_course_1.getCurrentCourse(position).getCourseTitle());
                     intent.putExtra("course_name_english", recom_course_1.getCurrentCourse(position).getCourseTitleEnglish());
                     intent.putExtra("from", "home");
+
+                    //TODO add from display course activity
+
                     startActivity(intent);
                 }
             });
@@ -212,6 +204,9 @@ public class HomeFragment extends Fragment {
                     intent.putExtra("course_name", recom_course_2.getCurrentCourse(position).getCourseTitle());
                     intent.putExtra("course_name_english", recom_course_2.getCurrentCourse(position).getCourseTitleEnglish());
                     intent.putExtra("from", "home");
+
+                    //TODO add from display course activity
+
                     startActivity(intent);
                 }
             });
@@ -280,7 +275,7 @@ public class HomeFragment extends Fragment {
         mainActivityViewModel.getUserInfoLiveData2().observe(this, new Observer<UserInfo>() {
             @Override
             public void onChanged(UserInfo userInfo) {
-                if(userInfo != null){
+                if (userInfo != null) {
                     binding.userNameTextView.setText(userInfo.getUserName());
                 }
             }
@@ -317,24 +312,8 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                Calendar c = Calendar.getInstance();
-
-                int timeOfDay = c.get(Calendar.HOUR_OF_DAY);
-
-                if (timeOfDay >= 0 && timeOfDay < 12) {
-                    binding.geetingMessage.setText("Good Morning");
-                } else if (timeOfDay >= 12 && timeOfDay < 16) {
-                    binding.geetingMessage.setText("Good Afternoon");
-                } else if (timeOfDay >= 16 && timeOfDay < 21) {
-                    binding.geetingMessage.setText("Good Evening");
-                } else if (timeOfDay >= 21 && timeOfDay < 24) {
-                    binding.geetingMessage.setText("Good Night");
-                }
-            }
-        });
+        // shows greeting message according to time from background thread
+        new Thread(new GreetingMessage()).start();
     }
 
     @Override
@@ -370,28 +349,21 @@ public class HomeFragment extends Fragment {
     private final Observer<List<Course>> sectionListObserver = new Observer<List<Course>>() {
         @Override
         public void onChanged(List<Course> courses) {
-            courseSliderListAdapter = new CourseSliderListAdapter(courses, "viewpager0");
+            if (courses != null) {
+                courseSliderListAdapter = new CourseSliderListAdapter(courses, "viewpager0");
 
-            binding.courseRecyclerView.setAdapter(courseSliderListAdapter);
+                binding.courseRecyclerView.setAdapter(courseSliderListAdapter);
 
-            courseSliderListAdapter.setOnItemClickListener(new CourseSliderListAdapter.OnItemClickListener() {
-                @Override
-                public void onItemClick(int position, View view) {
-                    Intent intent = new Intent(getActivity(), DisplayCourseActivity.class);
-                    intent.putExtra("section_name", courses.get(position).getCourseTitle());
-                    intent.putExtra("section_name_bangla", courses.get(position).getCourseSubtitle());
-                    getActivity().startActivity(intent);
-                    Log.d(TAG, "onItemClick: " + courses.get(position).getCourseTitle());
-                }
-            });
-        }
-    };
-
-    private final Observer<UserInfo> userInfoObserver = new Observer<UserInfo>() {
-        @Override
-        public void onChanged(UserInfo userInfo) {
-            if (userInfo != null) {
-                binding.userNameTextView.setText(userInfo.getUserName());
+                courseSliderListAdapter.setOnItemClickListener(new CourseSliderListAdapter.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(int position, View view) {
+                        Intent intent = new Intent(getActivity(), DisplayCourseActivity.class);
+                        intent.putExtra("section_name", courses.get(position).getCourseTitle());
+                        intent.putExtra("section_name_bangla", courses.get(position).getCourseSubtitle());
+                        getActivity().startActivity(intent);
+                        Log.d(TAG, "onItemClick: " + courses.get(position).getCourseTitle());
+                    }
+                });
             }
         }
     };
@@ -421,6 +393,35 @@ public class HomeFragment extends Fragment {
 
             layoutParams.setMargins(4, 0, 4, 0);
             binding.dotLayout2.addView(dots[i], layoutParams);
+        }
+    }
+
+    private class GreetingMessage implements Runnable {
+
+        @Override
+        public void run() {
+            Calendar c = Calendar.getInstance();
+
+            int timeOfDay = c.get(Calendar.HOUR_OF_DAY);
+
+            if (timeOfDay >= 0 && timeOfDay < 12) {
+                showOnUi("Good Morning");
+            } else if (timeOfDay >= 12 && timeOfDay < 16) {
+                showOnUi("Good Afternoon");
+            } else if (timeOfDay >= 16 && timeOfDay < 21) {
+                showOnUi("Good Evening");
+            } else if (timeOfDay >= 21 && timeOfDay < 24) {
+                showOnUi("Good Night");
+            }
+        }
+
+        private void showOnUi(String message) {
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    binding.geetingMessage.setText(message);
+                }
+            });
         }
     }
 }

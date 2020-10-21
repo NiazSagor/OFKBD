@@ -58,7 +58,8 @@
             android:fitsSystemWindows="true"
             android:hardwareAccelerated="true"
             android:launchMode="standard"
-            android:theme="@style/AppTheme.Transparent">
+            android:theme="@style/AppTheme.Transparent"
+            android:windowSoftInputMode="adjustPan|adjustUnspecified">
 
         </activity>
 

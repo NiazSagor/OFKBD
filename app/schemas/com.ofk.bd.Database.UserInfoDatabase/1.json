@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "822418cace773287a6747732f5a54494",
+    "identityHash": "c1e569e88abd011c5e311210f705abf2",
     "entities": [
       {
         "tableName": "user_info",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `userName` TEXT, `userPhoneNumber` TEXT, `userEmail` TEXT, `videoCompleted` INTEGER NOT NULL, `courseCompleted` INTEGER NOT NULL, `quizCompleted` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `userName` TEXT, `userPhoneNumber` TEXT, `userEmail` TEXT, `userClass` TEXT, `userSchool` TEXT, `userDOB` TEXT, `userGender` TEXT, `videoCompleted` INTEGER NOT NULL, `courseCompleted` INTEGER NOT NULL, `quizCompleted` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -29,6 +29,30 @@
           {
             "fieldPath": "userEmail",
             "columnName": "userEmail",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "userClass",
+            "columnName": "userClass",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "userSchool",
+            "columnName": "userSchool",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "userDOB",
+            "columnName": "userDOB",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "userGender",
+            "columnName": "userGender",
             "affinity": "TEXT",
             "notNull": false
           },
@@ -64,7 +88,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '822418cace773287a6747732f5a54494')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c1e569e88abd011c5e311210f705abf2')"
     ]
   }
 }

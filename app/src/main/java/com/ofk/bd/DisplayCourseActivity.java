@@ -12,7 +12,6 @@ import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -21,22 +20,21 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.developer.kalert.KAlertDialog;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.ofk.bd.AsyncTasks.FirebaseQueryRandomCourse;
+import com.ofk.bd.AsyncTasks.FirebaseQuerySubSection;
 import com.ofk.bd.DisplayCourseActivityAdapter.CourseListAdapter;
+import com.ofk.bd.HelperClass.Common;
 import com.ofk.bd.HelperClass.DisplayCourse;
+import com.ofk.bd.HelperClass.SectionVideo;
 import com.ofk.bd.HelperClass.UserProgressClass;
 import com.ofk.bd.Interface.DisplayCourseLoadCallback;
+import com.ofk.bd.Interface.SectionVideoLoadCallback;
 import com.ofk.bd.ViewModel.DisplayCourseActivityViewModel;
 import com.ofk.bd.databinding.ActivityDisplayCourseBinding;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class DisplayCourseActivity extends AppCompatActivity {
@@ -51,7 +49,7 @@ public class DisplayCourseActivity extends AppCompatActivity {
 
     private KAlertDialog pDialog;
 
-    private Handler handler;
+    private final Handler handler = new Handler();
 
     private LiveData<List<String>> enrolledCourseLiveData = new LiveData<List<String>>() {
         @Override
@@ -73,7 +71,6 @@ public class DisplayCourseActivity extends AppCompatActivity {
         binding = ActivityDisplayCourseBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        handler = new Handler();
         viewModel = ViewModelProviders.of(DisplayCourseActivity.this).get(DisplayCourseActivityViewModel.class);
 
         String headline = getIntent().getStringExtra("section_name_bangla") + " কোর্স";
@@ -133,19 +130,52 @@ public class DisplayCourseActivity extends AppCompatActivity {
             return;
         }
 
-        setupCourseRecyclerView();
-    }
-
-
-    private void setupCourseRecyclerView() {
+        binding.courseRecyclerView.setLayoutManager(new GridLayoutManager(DisplayCourseActivity.this, 2));
 
         showAlertDialog("start");
 
-        RecyclerView courseRecyclerView = binding.courseRecyclerView;
+        getData();
+    }
 
-        courseRecyclerView.setLayoutManager(new GridLayoutManager(DisplayCourseActivity.this, 2));
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume: ");
+    }
 
-        getData(new DisplayCourseLoadCallback() {
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (availableCourseLiveData.hasObservers()) {
+            Log.d(TAG, "onStop: has observer");
+            availableCourseLiveData.removeObservers(this);
+        }
+        if (availableCourseLiveData.hasObservers()) {
+            Log.d(TAG, "onStop: has observer");
+            availableCourseLiveData.removeObservers(this);
+        }
+        Log.d(TAG, "onStop: ");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy: ");
+
+        if (enrolledCourseLiveData.hasObservers()) {
+            enrolledCourseLiveData.removeObservers(this);
+        }
+        if (availableCourseLiveData.hasObservers()) {
+            availableCourseLiveData.removeObservers(this);
+        }
+    }
+
+
+    private void getData() {
+
+        String node = getIntent().getStringExtra("section_name") + " Section";
+
+        new FirebaseQueryRandomCourse(new DisplayCourseLoadCallback() {
             @Override
             public void onLoadCallback(List<DisplayCourse> courses) {
 
@@ -154,12 +184,12 @@ public class DisplayCourseActivity extends AppCompatActivity {
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        courseRecyclerView.setAdapter(adapter);
+                        showAlertDialog("end");
+                        binding.courseRecyclerView.setAdapter(adapter);
                         String count = adapter.getItemCount() + " টি কোর্স";
                         binding.courseCount.setText(count);
-                        showAlertDialog("end");
                     }
-                }, 1500);
+                }, 2200);
 
                 adapter.setOnItemClickListener(new CourseListAdapter.OnItemClickListener() {
                     @Override
@@ -193,9 +223,8 @@ public class DisplayCourseActivity extends AppCompatActivity {
                         }
                     }
                 });
-
             }
-        });
+        }, node).execute();
     }
 
     private void showAlertDialog(String sectionName, String sectionNameBangla, String courseName, String courseNameEnglish, String thumbnailURL) {
@@ -239,84 +268,32 @@ public class DisplayCourseActivity extends AppCompatActivity {
     }
 
     private void proceedNormally(String sectionName, String courseName, String courseNameEnglish) {
+
+        showAlertDialog("start");
+
         Intent intent = new Intent(DisplayCourseActivity.this, CourseActivity.class);
         intent.putExtra("section_name", sectionName);
         intent.putExtra("course_name", courseName);
         intent.putExtra("course_name_english", courseNameEnglish);
         intent.putExtra("from", "display");
-        startActivity(intent);
-    }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Log.d(TAG, "onResume: ");
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (availableCourseLiveData.hasObservers()) {
-            Log.d(TAG, "onStop: has observer");
-            availableCourseLiveData.removeObservers(this);
-        }
-        if (availableCourseLiveData.hasObservers()) {
-            Log.d(TAG, "onStop: has observer");
-            availableCourseLiveData.removeObservers(this);
-        }
-        Log.d(TAG, "onStop: ");
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Log.d(TAG, "onDestroy: ");
-
-        if (enrolledCourseLiveData.hasObservers()) {
-            enrolledCourseLiveData.removeObservers(this);
-        }
-        if (availableCourseLiveData.hasObservers()) {
-            availableCourseLiveData.removeObservers(this);
-        }
-    }
-
-
-    private void getData(DisplayCourseLoadCallback callback) {
-
-        availableCourses = new ArrayList<>();
-
-        String node = getIntent().getStringExtra("section_name") + " Section";
-
-        DatabaseReference db = FirebaseDatabase.getInstance().getReference().child("Section").child(node);
-
-        db.addChildEventListener(new ChildEventListener() {
+        new FirebaseQuerySubSection(new SectionVideoLoadCallback() {
             @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                DisplayCourse course = dataSnapshot.getValue(DisplayCourse.class);
-                availableCourses.add(course);
-                callback.onLoadCallback(availableCourses);
+            public void onSectionVideoLoadCallback(List<SectionVideo> sectionVideoList) {
+
+                Common.sectionVideoList = sectionVideoList;
+
+                Log.d(TAG, "onSectionVideoLoadCallback: " + sectionVideoList.get(0).getSectionName());
+
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        showAlertDialog("end");
+                        startActivity(intent);
+                    }
+                }, 2300);
             }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+        }, sectionName, courseNameEnglish).execute();
     }
 
     private void showAlertDialog(String command) {

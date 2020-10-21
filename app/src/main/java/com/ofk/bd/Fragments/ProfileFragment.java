@@ -1,5 +1,6 @@
 package com.ofk.bd.Fragments;
 
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -7,6 +8,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,9 +37,9 @@ import java.util.List;
 public class ProfileFragment extends Fragment {
     private static final String TAG = "ProfileFragment";
 
-    private static int[] avatars = {R.drawable.ic_dog, R.drawable.ic_duck, R.drawable.ic_fox, R.drawable.ic_lion, R.drawable.ic_cat, R.drawable.ic_tiger, R.drawable.ic_squirrel, R.drawable.ic_giraffe, R.drawable.ic_elephant, R.drawable.ic_parrot};
+    private static final int[] avatars = {R.drawable.ic_dog, R.drawable.ic_duck, R.drawable.ic_fox, R.drawable.ic_lion, R.drawable.ic_cat, R.drawable.ic_tiger, R.drawable.ic_squirrel, R.drawable.ic_giraffe, R.drawable.ic_elephant, R.drawable.ic_parrot};
 
-    private static int[] badge_icons = {R.drawable.apprentice_1, R.drawable.apprentice_2, R.drawable.apprentice_3,
+    private static final int[] badge_icons = {R.drawable.apprentice_1, R.drawable.apprentice_2, R.drawable.apprentice_3,
             R.drawable.journeyman_1, R.drawable.journeyman_2, R.drawable.journeyman_3,
             R.drawable.master_1, R.drawable.master_2, R.drawable.master_3,
             R.drawable.grand_master_1, R.drawable.grand_master_2, R.drawable.grand_master_3,
@@ -164,7 +167,11 @@ public class ProfileFragment extends Fragment {
                 if (!userInfo.getUserEmail().equals("")) {
                     profileItemList.add("" + userInfo.getUserEmail());
                 } else {
-                    profileItemList.add("Add your email address");
+                    profileItemList.add("");//email
+                    profileItemList.add("");//class
+                    profileItemList.add("");//institute
+                    profileItemList.add("");//bd
+                    profileItemList.add("");//gender
                 }
 
                 profileItemList.add("Log Out");
@@ -176,12 +183,21 @@ public class ProfileFragment extends Fragment {
                 adapter.setOnItemClickListener(new ProfileListAdapter.OnItemClickListener() {
                     @Override
                     public void onItemClick(int position, View view) {
-                        if (position == 3) {
+                        if (position == 7) {
                             FirebaseAuth.getInstance().signOut();
 
                             getActivity().startActivity(new Intent(getActivity(), InfoActivity.class)
                                     .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP));
+
+                            getActivity().finish();
                         }
+                    }
+                });
+
+                adapter.setOnItemEditListener(new ProfileListAdapter.OnItemEditListener() {
+                    @Override
+                    public void onItemClick(int position, View view, String text) {
+                        hideKeyboardFrom();
                     }
                 });
             }
@@ -206,4 +222,9 @@ public class ProfileFragment extends Fragment {
         }
     };
      */
+    public void hideKeyboardFrom() {
+        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Service.INPUT_METHOD_SERVICE);
+        View view = getActivity().getCurrentFocus();
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
 }
