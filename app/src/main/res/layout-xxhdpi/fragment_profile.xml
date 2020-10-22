@@ -8,22 +8,22 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <View
             android:id="@+id/view"
             android:layout_width="match_parent"
-            android:layout_height="160dp"
-            android:background="@drawable/gradient_dark_blue"
+            android:layout_height="@dimen/profile_top_view_height"
+            android:background="@drawable/profile_top"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cardView"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            app:cardCornerRadius="40dp"
+            android:layout_width="@dimen/profile_pic_width"
+            android:layout_height="@dimen/profile_pic_height"
+            app:cardCornerRadius="@dimen/profile_pic_radius"
             app:layout_constraintBottom_toBottomOf="@+id/view"
             app:layout_constraintEnd_toEndOf="@+id/view"
             app:layout_constraintStart_toStartOf="parent"
@@ -44,6 +44,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:textColor="@android:color/white"
+            android:textSize="@dimen/inner_body_text_size"
             app:layout_constraintEnd_toEndOf="@+id/cardView"
             app:layout_constraintStart_toStartOf="@+id/cardView"
             app:layout_constraintTop_toBottomOf="@+id/cardView" />
@@ -51,7 +52,7 @@
         <androidx.cardview.widget.CardView
             android:id="@+id/summaryCardView"
             android:layout_width="match_parent"
-            android:layout_height="120dp"
+            android:layout_height="@dimen/profile_box_height"
             android:layout_margin="16dp"
             app:cardCornerRadius="4dp"
             app:layout_constraintEnd_toEndOf="@+id/view"
@@ -65,32 +66,39 @@
                 android:orientation="horizontal">
 
 
-                <LinearLayout
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_weight="0.2"
-                    android:gravity="center_horizontal"
-                    android:orientation="vertical">
+                    android:layout_weight="0.2">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
                         android:fontFamily="@font/solaimanlipi"
-                        android:padding="8dp"
+                        android:gravity="top"
                         android:text="@string/myBadge"
-                        android:textAlignment="center"
                         android:textColor="@android:color/white"
-                        android:textStyle="bold" />
+                        android:textSize="@dimen/section_text_size"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
                     <ImageView
                         android:id="@+id/currentBadgeImageViewTop"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:layout_weight="1"
+                        android:layout_width="@dimen/current_badge_size"
+                        android:layout_height="@dimen/current_badge_size"
                         android:gravity="center_vertical"
-                        android:src="@drawable/ic_letter_p" />
+                        android:src="@drawable/ic_letter_p"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.68" />
 
-                </LinearLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -120,14 +128,17 @@
                                 android:layout_height="wrap_content"
                                 android:text="5"
                                 android:textColor="@android:color/white"
-                                android:textSize="32sp" />
+                                android:textSize="@dimen/stats_text_size" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/solaimanlipi"
                                 android:text="@string/videoFinished"
-                                android:textColor="@android:color/white" />
+                                android:textAlignment="center"
+                                android:textColor="@android:color/white"
+                                android:textSize="@dimen/inner_body_text_size"
+                                android:textStyle="bold" />
 
                         </LinearLayout>
 
@@ -144,14 +155,17 @@
                                 android:layout_height="wrap_content"
                                 android:text="5"
                                 android:textColor="@android:color/white"
-                                android:textSize="32sp" />
+                                android:textSize="@dimen/stats_text_size" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/solaimanlipi"
                                 android:text="@string/courseFinished"
-                                android:textColor="@android:color/white" />
+                                android:textAlignment="center"
+                                android:textColor="@android:color/white"
+                                android:textSize="@dimen/inner_body_text_size"
+                                android:textStyle="bold" />
 
                         </LinearLayout>
 
@@ -168,14 +182,17 @@
                                 android:layout_height="wrap_content"
                                 android:text="5"
                                 android:textColor="@android:color/white"
-                                android:textSize="32sp" />
+                                android:textSize="@dimen/stats_text_size" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/solaimanlipi"
                                 android:text="@string/quizFinished"
-                                android:textColor="@android:color/white" />
+                                android:textAlignment="center"
+                                android:textColor="@android:color/white"
+                                android:textSize="@dimen/inner_body_text_size"
+                                android:textStyle="bold" />
 
                         </LinearLayout>
 
@@ -208,10 +225,10 @@
                     android:layout_gravity="start"
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="16dp"
-                    android:fontFamily="@font/solaimanlipi"
                     android:padding="8dp"
                     android:text="@string/profileEnglish"
-                    android:textColor="@android:color/black" />
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/section_text_size" />
 
 
                 <androidx.recyclerview.widget.RecyclerView

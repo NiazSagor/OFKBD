@@ -20,19 +20,41 @@
         android:id="@+id/profileItemName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="8dp"
+        android:padding="16dp"
+        android:text="@string/app_name"
         android:textColor="@android:color/black"
-        android:textSize="@dimen/hdpi_body_text_size"
+        android:textSize="@dimen/inner_body_text_size"
         app:layout_constraintBottom_toBottomOf="@id/profileItemImage"
         app:layout_constraintStart_toEndOf="@+id/profileItemImage"
         app:layout_constraintTop_toTopOf="@id/profileItemImage" />
 
+    <EditText
+        android:id="@+id/editText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/inner_body_text_size"
+        android:visibility="gone"
+        app:layout_constraintEnd_toStartOf="@id/imageView"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/profileItemImage"
+        app:layout_constraintTop_toTopOf="@id/profileItemImage" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginEnd="16dp"
+        android:src="@drawable/ic_baseline_edit"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
         android:background="@color/lightgrey"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/profileItemName" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

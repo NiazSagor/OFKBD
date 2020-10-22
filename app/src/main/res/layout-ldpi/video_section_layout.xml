@@ -33,7 +33,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:text="Section Name"
-            android:textSize="@dimen/hdpi_body_text_size"
+            android:textSize="@dimen/inner_body_text_size"
             app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
             app:layout_constraintStart_toEndOf="@+id/imageView"
             app:layout_constraintTop_toTopOf="parent" />

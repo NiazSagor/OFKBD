@@ -24,7 +24,7 @@
             android:layout_height="wrap_content"
             android:background="@drawable/orange_gradient"
             android:fontFamily="@font/solaimanlipi"
-            android:padding="16dp"
+            android:padding="@dimen/inner_body_text_padding"
             android:text="Course Name"
             android:textColor="@android:color/white"
             android:textSize="16sp" />

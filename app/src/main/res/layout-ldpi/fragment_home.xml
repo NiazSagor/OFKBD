@@ -48,7 +48,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:text="Hello"
-            android:textSize="@dimen/hdpi_heading_text_size"
+            android:textSize="@dimen/heading_text_size"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/geetingMessage" />
 
@@ -68,7 +68,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:text="100"
-            android:textSize="@dimen/hdpi_body_text_size"
+            android:textSize="@dimen/inner_body_text_size"
             app:layout_constraintBottom_toBottomOf="@+id/view4"
             app:layout_constraintStart_toEndOf="@+id/view4"
             app:layout_constraintTop_toBottomOf="@+id/userNameTextView" />
@@ -106,7 +106,7 @@
                     android:text="@string/intro"
                     android:textAlignment="center"
                     android:textColor="@android:color/white"
-                    android:textSize="10sp"
+                    android:textSize="@dimen/inner_body_text_size"
                     android:textStyle="bold" />
 
             </LinearLayout>
@@ -115,7 +115,7 @@
         <EditText
             android:id="@+id/searchEditText"
             android:layout_width="0dp"
-            android:layout_height="@dimen/hdpi_editText_height"
+            android:layout_height="@dimen/custom_editText_height"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
@@ -127,7 +127,7 @@
             android:inputType="text"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
-            android:textSize="@dimen/hdpi_body_text_size"
+            android:textSize="@dimen/inner_body_text_size"
             android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@+id/searchButtonCardView"
             app:layout_constraintStart_toStartOf="parent"
@@ -239,7 +239,7 @@
             android:fontFamily="@font/solaimanlipi"
             android:text="@string/otherCourse1"
             android:textColor="@color/textColorGrey"
-            android:textSize="@dimen/hdpi_section_text_size"
+            android:textSize="@dimen/section_text_size"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/line2" />
@@ -279,7 +279,7 @@
             android:fontFamily="@font/solaimanlipi"
             android:text="@string/otherCourse2"
             android:textColor="@color/textColorGrey"
-            android:textSize="@dimen/hdpi_section_text_size"
+            android:textSize="@dimen/section_text_size"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/line4" />
@@ -318,7 +318,7 @@
             android:paddingEnd="16dp"
             android:text="@string/rate"
             android:textColor="@color/textColorGrey"
-            android:textSize="@dimen/hdpi_section_text_size"
+            android:textSize="@dimen/section_text_size"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/line5" />
@@ -372,12 +372,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/solaimanlipi"
-            android:paddingStart="@dimen/hdpi_section_text_size"
+            android:paddingStart="@dimen/section_text_size"
             android:paddingTop="16dp"
             android:paddingEnd="16dp"
             android:text="@string/share"
             android:textColor="@color/textColorGrey"
-            android:textSize="@dimen/hdpi_section_text_size"
+            android:textSize="@dimen/section_text_size"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/line7" />

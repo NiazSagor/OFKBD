@@ -48,7 +48,8 @@
                 android:gravity="center"
                 android:hint="@string/youNumberExample"
                 android:inputType="phone"
-                android:textColor="@android:color/black" />
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/inner_body_text_size" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -58,12 +59,12 @@
                 android:fontFamily="@font/solaimanlipi"
                 android:gravity="center_horizontal"
                 android:text="@string/yourNumberOTP"
-                android:textSize="14sp" />
+                android:textSize="@dimen/inner_body_text_size" />
 
             <RelativeLayout
                 android:id="@+id/nextButton"
-                android:layout_width="170dp"
-                android:layout_height="35dp"
+                android:layout_width="@dimen/custom_button_width"
+                android:layout_height="@dimen/custom_button_height"
                 android:layout_gravity="center_horizontal"
                 android:layout_margin="16dp"
                 android:background="@drawable/next_button"
@@ -97,6 +98,7 @@
         android:clickable="true"
         android:focusable="true"
         android:fontFamily="@font/solaimanlipi"
-        android:text="@string/previousAccount" />
+        android:text="@string/previousAccount"
+        android:textSize="@dimen/inner_body_text_size" />
 
 </RelativeLayout>

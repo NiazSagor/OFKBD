@@ -238,17 +238,34 @@ public class DisplayCourseActivity extends AppCompatActivity {
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
 
+                        showAlertDialog("start");
+
                         Intent intent = new Intent(DisplayCourseActivity.this, CourseActivity.class);
                         intent.putExtra("section_name", sectionName);
                         intent.putExtra("course_name", courseName);
                         intent.putExtra("course_name_english", courseNameEnglish);
                         intent.putExtra("from", "display");
 
-                        viewModel.insert(new UserProgressClass(sectionName, sectionNameBangla, courseName, courseNameEnglish, thumbnailURL, 9, 0));
+                        viewModel.insert(new UserProgressClass(sectionName, sectionNameBangla, courseName, courseNameEnglish, false, thumbnailURL, 9, 0));
 
-                        startActivity(intent);
+                        new FirebaseQuerySubSection(new SectionVideoLoadCallback() {
+                            @Override
+                            public void onSectionVideoLoadCallback(List<SectionVideo> sectionVideoList) {
 
-                        dialog.cancel();
+                                Common.sectionVideoList = sectionVideoList;
+
+                                Log.d(TAG, "onSectionVideoLoadCallback: " + sectionVideoList.get(0).getSectionName());
+
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        dialog.cancel();
+                                        showAlertDialog("end");
+                                        startActivity(intent);
+                                    }
+                                }, 2300);
+                            }
+                        }, sectionName, courseNameEnglish).execute();
                     }
                 });
 

@@ -104,7 +104,7 @@
                     android:text="@string/intro"
                     android:textAlignment="center"
                     android:textColor="@android:color/white"
-                    android:textSize="12sp"
+                    android:textSize="@dimen/inner_body_text_size"
                     android:textStyle="bold" />
 
             </LinearLayout>
@@ -237,7 +237,7 @@
             android:fontFamily="@font/solaimanlipi"
             android:text="@string/otherCourse1"
             android:textColor="@color/textColorGrey"
-            android:textSize="16sp"
+            android:textSize="@dimen/section_text_size"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/line2" />
@@ -277,7 +277,7 @@
             android:fontFamily="@font/solaimanlipi"
             android:text="@string/otherCourse2"
             android:textColor="@color/textColorGrey"
-            android:textSize="16sp"
+            android:textSize="@dimen/section_text_size"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/line4" />
@@ -316,7 +316,7 @@
             android:paddingEnd="16dp"
             android:text="@string/rate"
             android:textColor="@color/textColorGrey"
-            android:textSize="16sp"
+            android:textSize="@dimen/section_text_size"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/line5" />
@@ -375,7 +375,7 @@
             android:paddingEnd="16dp"
             android:text="@string/share"
             android:textColor="@color/textColorGrey"
-            android:textSize="16sp"
+            android:textSize="@dimen/section_text_size"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/line7" />

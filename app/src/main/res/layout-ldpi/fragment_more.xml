@@ -10,8 +10,8 @@
         android:layout_height="wrap_content">
 
         <View
-            android:layout_width="@dimen/hdpi_width"
-            android:layout_height="@dimen/hdpi_height"
+            android:layout_width="@dimen/top_view_width"
+            android:layout_height="@dimen/top_view_height"
             android:layout_alignParentEnd="true"
             android:background="@drawable/ic_more_top"
             app:layout_constraintEnd_toEndOf="parent"
@@ -21,12 +21,12 @@
             android:id="@+id/resourceTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/ldpi_heading_top_margin"
+            android:layout_marginTop="@dimen/heading_top_margin"
             android:fontFamily="@font/solaimanlipi"
             android:padding="16dp"
             android:text="@string/ourWorks"
             android:textColor="@color/textColorGrey"
-            android:textSize="@dimen/ldpi_heading_text_size"
+            android:textSize="@dimen/heading_text_size"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -89,7 +89,7 @@
             android:fontFamily="@font/solaimanlipi"
             android:text="@string/blog"
             android:textColor="@color/textColorGrey"
-            android:textSize="14sp"
+            android:textSize="@dimen/section_text_size"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/view5" />
@@ -123,7 +123,7 @@
             android:fontFamily="@font/solaimanlipi"
             android:text="@string/joinUs"
             android:textColor="@color/textColorGrey"
-            android:textSize="14sp"
+            android:textSize="@dimen/section_text_size"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/view6" />
@@ -174,7 +174,7 @@
                         android:padding="8dp"
                         android:text="@string/trainer"
                         android:textColor="@android:color/black"
-                        android:textSize="@dimen/hdpi_blog_text_size" />
+                        android:textSize="@dimen/inner_body_text_size" />
 
                 </LinearLayout>
 
@@ -209,7 +209,7 @@
                         android:padding="8dp"
                         android:text="@string/member"
                         android:textColor="@android:color/black"
-                        android:textSize="@dimen/hdpi_blog_text_size" />
+                        android:textSize="@dimen/inner_body_text_size" />
 
                 </LinearLayout>
 
@@ -244,7 +244,7 @@
                         android:padding="8dp"
                         android:text="@string/contributor"
                         android:textColor="@android:color/black"
-                        android:textSize="@dimen/hdpi_blog_text_size" />
+                        android:textSize="@dimen/inner_body_text_size" />
 
                 </LinearLayout>
 

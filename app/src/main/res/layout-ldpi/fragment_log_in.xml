@@ -38,12 +38,12 @@
                 android:paddingEnd="16dp"
                 android:text="@string/youNumber"
                 android:textColor="@color/textColorGrey"
-                android:textSize="14sp" />
+                android:textSize="@dimen/section_text_size" />
 
             <EditText
                 android:id="@+id/phoneNumberEditText"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/hdpi_editText_height"
+                android:layout_height="@dimen/custom_editText_height"
                 android:layout_margin="16dp"
                 android:background="@drawable/input_number_edittext"
                 android:fontFamily="@font/solaimanlipi"
@@ -60,12 +60,12 @@
                 android:paddingEnd="16dp"
                 android:text="@string/password"
                 android:textColor="@color/textColorGrey"
-                android:textSize="14sp" />
+                android:textSize="@dimen/section_text_size" />
 
             <EditText
                 android:id="@+id/passwordEditText"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/hdpi_editText_height"
+                android:layout_height="@dimen/custom_editText_height"
                 android:layout_margin="16dp"
                 android:background="@drawable/input_number_edittext"
                 android:fontFamily="@font/solaimanlipi"
@@ -77,8 +77,8 @@
 
             <RelativeLayout
                 android:id="@+id/nextButton"
-                android:layout_width="150dp"
-                android:layout_height="30dp"
+                android:layout_width="@dimen/custom_button_width"
+                android:layout_height="@dimen/custom_button_height"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="16dp"
                 android:background="@drawable/next_button"
@@ -93,7 +93,7 @@
                     android:fontFamily="@font/solaimanlipi"
                     android:text="@string/next"
                     android:textColor="@android:color/white"
-                    android:textSize="14sp"
+                    android:textSize="@dimen/inner_body_text_size"
                     android:textStyle="bold" />
 
             </RelativeLayout>

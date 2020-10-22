@@ -19,7 +19,7 @@
             android:src="@drawable/ic_baseline_library_books_24" />
 
         <TextView
-            android:textSize="@dimen/hdpi_body_text_size"
+            android:textSize="@dimen/inner_body_text_size"
             android:id="@+id/subjectTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -43,7 +43,7 @@
         android:layout_weight="1" />
 
     <TextView
-        android:textSize="@dimen/hdpi_body_text_size"
+        android:textSize="@dimen/inner_body_text_size"
         android:id="@+id/progressPercentage"
         android:layout_width="32dp"
         android:layout_height="wrap_content"

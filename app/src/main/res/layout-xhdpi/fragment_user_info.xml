@@ -38,20 +38,21 @@
                     android:paddingEnd="16dp"
                     android:text="@string/yourName"
                     android:textColor="@color/textColorGrey"
-                    android:textSize="14sp" />
+                    android:textSize="@dimen/section_text_size" />
 
                 <EditText
-                    android:hint="John Doe"
                     android:id="@+id/yourNameEditText"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:layout_margin="16dp"
                     android:background="@drawable/input_number_edittext"
                     android:fontFamily="@font/solaimanlipi"
+                    android:hint="John Doe"
                     android:inputType="text"
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp"
-                    android:textColor="@android:color/black" />
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/inner_body_text_size" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -61,7 +62,7 @@
                     android:paddingEnd="16dp"
                     android:text="@string/yourPassword"
                     android:textColor="@color/textColorGrey"
-                    android:textSize="14sp" />
+                    android:textSize="@dimen/section_text_size" />
 
                 <EditText
                     android:id="@+id/password"
@@ -75,7 +76,8 @@
                     android:maxLength="6"
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp"
-                    android:textColor="@android:color/black" />
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/inner_body_text_size" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -85,20 +87,21 @@
                     android:paddingEnd="16dp"
                     android:text="@string/yourEmail"
                     android:textColor="@color/textColorGrey"
-                    android:textSize="14sp" />
+                    android:textSize="@dimen/section_text_size" />
 
                 <EditText
-                    android:hint="johndoe@gmail.com"
                     android:id="@+id/yourEmailEditText"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:layout_margin="16dp"
                     android:background="@drawable/input_number_edittext"
                     android:fontFamily="@font/solaimanlipi"
+                    android:hint="johndoe@gmail.com"
                     android:inputType="textEmailAddress"
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp"
-                    android:textColor="@android:color/black" />
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/inner_body_text_size" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -108,7 +111,7 @@
                     android:paddingEnd="16dp"
                     android:text="@string/yourAvatar"
                     android:textColor="@color/textColorGrey"
-                    android:textSize="14sp" />
+                    android:textSize="@dimen/section_text_size" />
 
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
@@ -141,8 +144,8 @@
 
     <RelativeLayout
         android:id="@+id/progressButton"
-        android:layout_width="170dp"
-        android:layout_height="35dp"
+        android:layout_width="@dimen/custom_button_width"
+        android:layout_height="@dimen/custom_button_height"
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="32dp"
         android:background="@drawable/next_button"
@@ -157,7 +160,7 @@
             android:fontFamily="@font/solaimanlipi"
             android:text="পরবর্তী"
             android:textColor="@android:color/white"
-            android:textSize="16sp"
+            android:textSize="@dimen/inner_body_text_size"
             android:textStyle="bold" />
 
 

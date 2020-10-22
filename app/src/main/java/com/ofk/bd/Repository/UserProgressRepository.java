@@ -29,12 +29,6 @@ public class UserProgressRepository {
     private LiveData<List<SectionCourseTuple>> combinedSectionCourseList;//section name and course name combined list
     private int videoWatchedPerCourse;// video watched course wise
 
-    /*
-     *
-     * User info table variables
-     *
-     * */
-
 
     public UserProgressRepository(Application application) {
         UserProgressDatabase database = UserProgressDatabase.getInstance(application);

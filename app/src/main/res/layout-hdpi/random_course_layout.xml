@@ -38,7 +38,7 @@
                 android:paddingEnd="8dp"
                 android:text="@string/member"
                 android:textColor="@android:color/black"
-                android:textSize="@dimen/hdpi_body_text_size" />
+                android:textSize="@dimen/inner_body_text_size" />
 
             <TextView
                 android:id="@+id/courseSubtitle"

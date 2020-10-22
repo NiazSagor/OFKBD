@@ -37,7 +37,7 @@
                 android:paddingEnd="16dp"
                 android:text="@string/youNumber"
                 android:textColor="@color/textColorGrey"
-                android:textSize="16sp" />
+                android:textSize="@dimen/section_text_size" />
 
             <EditText
                 android:id="@+id/phoneNumberEditText"
@@ -59,7 +59,7 @@
                 android:paddingEnd="16dp"
                 android:text="@string/password"
                 android:textColor="@color/textColorGrey"
-                android:textSize="16sp" />
+                android:textSize="@dimen/section_text_size" />
 
             <EditText
                 android:id="@+id/passwordEditText"
@@ -76,8 +76,9 @@
 
             <RelativeLayout
                 android:id="@+id/nextButton"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_width="@dimen/custom_button_width"
+                android:layout_height="@dimen/custom_button_height"
+                android:layout_gravity="center_horizontal"
                 android:layout_margin="16dp"
                 android:background="@drawable/next_button"
                 android:clickable="true"
@@ -91,24 +92,8 @@
                     android:fontFamily="@font/solaimanlipi"
                     android:text="@string/next"
                     android:textColor="@android:color/white"
-                    android:textSize="16sp"
+                    android:textSize="@dimen/inner_body_text_size"
                     android:textStyle="bold" />
-
-                <androidx.cardview.widget.CardView
-                    android:layout_width="26dp"
-                    android:layout_height="26dp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_margin="16dp"
-                    app:cardCornerRadius="13dp">
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:padding="4dp"
-                        android:src="@drawable/ic_baseline_arrow_forward_ios_24" />
-
-                </androidx.cardview.widget.CardView>
 
 
             </RelativeLayout>

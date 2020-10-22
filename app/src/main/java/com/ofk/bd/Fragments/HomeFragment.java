@@ -3,6 +3,7 @@ package com.ofk.bd.Fragments;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -24,16 +25,20 @@ import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.developer.kalert.KAlertDialog;
 import com.ofk.bd.Adapter.ActivitySliderAdapter;
 import com.ofk.bd.Adapter.CourseSliderListAdapter;
 import com.ofk.bd.Adapter.VideoSliderAdapter;
+import com.ofk.bd.AsyncTasks.FirebaseQuerySubSection;
 import com.ofk.bd.CourseActivity;
 import com.ofk.bd.DisplayCourseActivity;
 import com.ofk.bd.DisplayCourseActivityAdapter.CourseListAdapter;
 import com.ofk.bd.HelperClass.Common;
 import com.ofk.bd.HelperClass.Course;
+import com.ofk.bd.HelperClass.SectionVideo;
 import com.ofk.bd.HelperClass.UserInfo;
 import com.ofk.bd.HelperClass.Video;
+import com.ofk.bd.Interface.SectionVideoLoadCallback;
 import com.ofk.bd.R;
 import com.ofk.bd.SearchResultActivity;
 import com.ofk.bd.ViewModel.MainActivityViewModel;
@@ -62,8 +67,6 @@ public class HomeFragment extends Fragment {
     private String mParam2;
 
     private FragmentHomeBinding binding;
-
-    private ViewPager.OnPageChangeListener mOnPageChangeListenerForActivityVideoViewPager;
 
     private static int[] indicator = {R.drawable.dot, R.drawable.inactivedot};
 
@@ -128,10 +131,16 @@ public class HomeFragment extends Fragment {
         }
 
         handler = new Handler();
+
+        if (!mainActivityViewModel.getListMutableLiveData().hasObservers()) {
+            mainActivityViewModel.getListMutableLiveData().observe(this, sectionListObserver);
+        }
     }
 
     // activity pics adapter
     private ActivitySliderAdapter activityAdapter;
+
+    private KAlertDialog pDialog;
 
 
     @Override
@@ -179,15 +188,38 @@ public class HomeFragment extends Fragment {
             recom_course_1.setOnItemClickListener(new CourseListAdapter.OnItemClickListener() {
                 @Override
                 public void onItemClick(int position, View view) {
+
+                    showAlertDialog("start");
+
                     Intent intent = new Intent(getActivity(), CourseActivity.class);
+
+                    String courseName = recom_course_1.getCurrentCourse(position).getCourseTitleEnglish();
+
                     intent.putExtra("section_name", "Robotics");
                     intent.putExtra("course_name", recom_course_1.getCurrentCourse(position).getCourseTitle());
-                    intent.putExtra("course_name_english", recom_course_1.getCurrentCourse(position).getCourseTitleEnglish());
+                    intent.putExtra("course_name_english", courseName);
                     intent.putExtra("from", "home");
 
-                    //TODO add from display course activity
+                    new FirebaseQuerySubSection(new SectionVideoLoadCallback() {
+                        @Override
+                        public void onSectionVideoLoadCallback(List<SectionVideo> sectionVideoList) {
 
-                    startActivity(intent);
+                            if(sectionVideoList == null){
+                                showAlertDialog("done");
+                                return;
+                            }
+
+                            Common.sectionVideoList = sectionVideoList;
+
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    showAlertDialog("end");
+                                    startActivity(intent);
+                                }
+                            }, 2300);
+                        }
+                    }, "Robotics", courseName).execute();
                 }
             });
         }
@@ -199,18 +231,46 @@ public class HomeFragment extends Fragment {
             recom_course_2.setOnItemClickListener(new CourseListAdapter.OnItemClickListener() {
                 @Override
                 public void onItemClick(int position, View view) {
+
+                    showAlertDialog("start");
+
                     Intent intent = new Intent(getActivity(), CourseActivity.class);
+
+                    String courseName = recom_course_2.getCurrentCourse(position).getCourseTitleEnglish();
+
                     intent.putExtra("section_name", "Arts");
                     intent.putExtra("course_name", recom_course_2.getCurrentCourse(position).getCourseTitle());
                     intent.putExtra("course_name_english", recom_course_2.getCurrentCourse(position).getCourseTitleEnglish());
                     intent.putExtra("from", "home");
 
-                    //TODO add from display course activity
+                    new FirebaseQuerySubSection(new SectionVideoLoadCallback() {
+                        @Override
+                        public void onSectionVideoLoadCallback(List<SectionVideo> sectionVideoList) {
 
-                    startActivity(intent);
+                            if(sectionVideoList == null){
+                                showAlertDialog("done");
+                                return;
+                            }
+
+                            Common.sectionVideoList = sectionVideoList;
+
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    showAlertDialog("end");
+                                    startActivity(intent);
+                                }
+                            }, 2300);
+                        }
+                    }, "Arts", courseName).execute();
                 }
             });
         }
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         binding.searchButtonCardView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -262,15 +322,12 @@ public class HomeFragment extends Fragment {
         });
     }
 
+    // when fragment is visible
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    public void onStart() {
+        super.onStart();
 
-        if (activityAdapter == null) {
-            activityAdapter = new ActivitySliderAdapter(Common.activityList);
-            binding.activityViewPager.setAdapter(activityAdapter);
-            changeIndicatorOnActivityViewPager(0);
-        }
+        Log.d(TAG, "onStart: ");
 
         mainActivityViewModel.getUserInfoLiveData2().observe(this, new Observer<UserInfo>() {
             @Override
@@ -280,17 +337,11 @@ public class HomeFragment extends Fragment {
                 }
             }
         });
-    }
 
-    // when fragment is visible
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        Log.d(TAG, "onStart: ");
-
-        if (!mainActivityViewModel.getListMutableLiveData().hasObservers()) {
-            mainActivityViewModel.getListMutableLiveData().observe(this, sectionListObserver);
+        if (activityAdapter == null) {
+            activityAdapter = new ActivitySliderAdapter(Common.activityList);
+            binding.activityViewPager.setAdapter(activityAdapter);
+            changeIndicatorOnActivityViewPager(0);
         }
 
         binding.activityVideoViewPager.setAdapter(new VideoSliderAdapter(Common.activityVideoList, getContext(), getLifecycle()));
@@ -422,6 +473,35 @@ public class HomeFragment extends Fragment {
                     binding.geetingMessage.setText(message);
                 }
             });
+        }
+    }
+
+    private void showAlertDialog(String command) {
+        switch (command) {
+            case "start":
+                pDialog = new KAlertDialog(getContext(), KAlertDialog.PROGRESS_TYPE);
+                pDialog.getProgressHelper().setBarColor(Color.parseColor("#00c1c3"));
+                pDialog.setTitleText("লোড হচ্ছে");
+                pDialog.setCancelable(true);
+                pDialog.show();
+                break;
+            case "end":
+                //pDialog.dismissWithAnimation();
+                pDialog.dismiss();
+                break;
+            case "done":
+                pDialog.dismiss();
+                pDialog = new KAlertDialog(getContext(), KAlertDialog.ERROR_TYPE);
+                pDialog.setTitleText(getResources().getString(R.string.notFoundVideo))
+                        .setConfirmText("OK")
+                        .setConfirmClickListener(new KAlertDialog.KAlertClickListener() {
+                            @Override
+                            public void onClick(KAlertDialog kAlertDialog) {
+                                pDialog.dismissWithAnimation();
+                            }
+                        })
+                        .show();
+                break;
         }
     }
 }

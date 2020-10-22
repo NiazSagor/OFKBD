@@ -7,14 +7,14 @@
     tools:context=".SearchResultActivity">
 
     <View
-        android:layout_width="@dimen/ldpi_side_width"
-        android:layout_height="@dimen/ldpi_side_height"
+        android:layout_width="@dimen/side_view_width"
+        android:layout_height="@dimen/side_view_height"
         android:layout_marginTop="90dp"
         android:background="@drawable/ic_other_side" />
 
     <View
-        android:layout_width="@dimen/ldpi_width"
-        android:layout_height="@dimen/ldpi_height"
+        android:layout_width="@dimen/top_view_width"
+        android:layout_height="@dimen/top_view_height"
         android:layout_alignParentEnd="true"
         android:background="@drawable/ic_other_top" />
 
@@ -32,7 +32,7 @@
             android:paddingEnd="16dp"
             android:text="@string/searchResult"
             android:textColor="@color/textColorGrey"
-            android:textSize="@dimen/ldpi_heading_text_size"
+            android:textSize="@dimen/heading_text_size"
             android:textStyle="bold" />
 
         <LinearLayout
@@ -48,16 +48,15 @@
                 android:fontFamily="@font/solaimanlipi"
                 android:text="@string/course0result"
                 android:textColor="@color/textColorGrey"
-                android:textSize="14sp" />
+                android:textSize="@dimen/inner_body_text_size" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/solaimanlipi"
                 android:paddingStart="8dp"
                 android:paddingEnd="8dp"
                 android:text="|"
-                android:textSize="14sp" />
+                android:textSize="@dimen/inner_body_text_size" />
 
             <TextView
                 android:id="@+id/videoCountTextView"
@@ -66,7 +65,7 @@
                 android:fontFamily="@font/solaimanlipi"
                 android:text="@string/video0result"
                 android:textColor="@color/textColorGrey"
-                android:textSize="14sp" />
+                android:textSize="@dimen/inner_body_text_size" />
         </LinearLayout>
 
 

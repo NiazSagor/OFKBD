@@ -12,15 +12,17 @@ public class UserProgressClass {
     private String sectionNameBangla;
     private String courseEnrolled;
     private String courseNameEnglish;
+    private boolean isFinished;
     private String courseThumbnailURL;
     private int totalVideos;
     private int videoWatched;
 
-    public UserProgressClass(String sectionName, String sectionNameBangla, String courseEnrolled, String courseNameEnglish, String courseThumbnailURL, int totalVideos, int videoWatched) {
+    public UserProgressClass(String sectionName, String sectionNameBangla, String courseEnrolled, String courseNameEnglish, boolean isFinished, String courseThumbnailURL, int totalVideos, int videoWatched) {
         this.sectionName = sectionName;
         this.sectionNameBangla = sectionNameBangla;
         this.courseEnrolled = courseEnrolled;
         this.courseNameEnglish = courseNameEnglish;
+        this.isFinished = isFinished;
         this.courseThumbnailURL = courseThumbnailURL;
         this.totalVideos = totalVideos;
         this.videoWatched = videoWatched;
@@ -88,5 +90,13 @@ public class UserProgressClass {
 
     public void setVideoWatched(int videoWatched) {
         this.videoWatched = videoWatched;
+    }
+
+    public boolean isFinished() {
+        return isFinished;
+    }
+
+    public void setFinished(boolean finished) {
+        isFinished = finished;
     }
 }

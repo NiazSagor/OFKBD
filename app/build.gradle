@@ -61,6 +61,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-database:16.0.4'
     implementation 'com.google.firebase:firebase-storage:16.0.4'
     implementation 'com.google.firebase:firebase-auth:16.0.5'
+    implementation 'com.google.firebase:firebase-analytics:17.6.0'
 
     //youtube player
     implementation 'com.pierfrancescosoffritti.androidyoutubeplayer:core:10.0.5'
@@ -88,7 +89,4 @@ dependencies {
 
     // alert dialog
     implementation 'com.github.TutorialsAndroid:KAlertDialog:v14.0.19'
-
-    // date picker
-    implementation 'com.wdullaer:materialdatetimepicker:4.2.3'
 }

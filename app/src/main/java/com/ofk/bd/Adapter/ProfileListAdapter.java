@@ -24,7 +24,7 @@ public class ProfileListAdapter extends RecyclerView.Adapter<ProfileListAdapter.
 
     private static final String TAG = "ProfileListAdapter";
 
-    private static final int[] avatars = {R.drawable.name, R.drawable.contact, R.drawable.mail, R.drawable.ic_logout, R.drawable.contact, R.drawable.contact, R.drawable.contact, R.drawable.ic_logout};
+    private static final int[] avatars = {R.drawable.ic_profile, R.drawable.ic_phone, R.drawable.ic_mail, R.drawable.ic_logout, R.drawable.contact, R.drawable.ic_birthday, R.drawable.ic_gender, R.drawable.ic_logout};
 
     private final List<String> profileItems;
 
@@ -148,7 +148,7 @@ public class ProfileListAdapter extends RecyclerView.Adapter<ProfileListAdapter.
                                 public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                                     if (charSequence.length() > 0) {
 
-                                        editImageView.setImageResource(R.drawable.ic_round_check_circle);
+                                        editImageView.setImageResource(R.drawable.ic_baseline_save);
 
                                         editImageView.setOnClickListener(new View.OnClickListener() {
                                             @Override

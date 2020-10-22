@@ -104,7 +104,7 @@
                     android:text="@string/intro"
                     android:textAlignment="center"
                     android:textColor="@android:color/white"
-                    android:textSize="12sp"
+                    android:textSize="@dimen/inner_body_text_size"
                     android:textStyle="bold" />
 
             </LinearLayout>
