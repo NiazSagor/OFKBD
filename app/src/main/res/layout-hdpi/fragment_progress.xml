@@ -270,14 +270,15 @@
                 android:text="@string/subProgress"
                 android:textAlignment="textStart"
                 android:textColor="@color/textColorGrey"
-                android:textSize="14sp"
+                android:textSize="@dimen/section_text_size"
                 android:textStyle="bold" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/subjectProgressRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingStart="16dp"
+                android:paddingStart="8dp"
+                android:paddingTop="8dp"
                 android:paddingEnd="16dp"
                 android:paddingBottom="16dp" />
 

@@ -9,6 +9,10 @@
     <dimen name="side_view_width">200dp</dimen>
     <dimen name="side_view_height">600dp</dimen>
 
+    <!-- Course card dimens-->
+    <dimen name="course_card_width">150dp</dimen>
+    <dimen name="course_card_height">180dp</dimen>
+
     <!-- Badge view dimens-->
     <dimen name="badge_width">48dp</dimen>
     <dimen name="badge_height">48dp</dimen>

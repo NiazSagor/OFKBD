@@ -9,16 +9,20 @@
     <dimen name="side_view_width">100dp</dimen>
     <dimen name="side_view_height">600dp</dimen>
 
+    <!-- Course card dimens-->
+    <dimen name="course_card_width">144dp</dimen>
+    <dimen name="course_card_height">172dp</dimen>
+
     <!-- Badge view dimens-->
     <dimen name="badge_width">48dp</dimen>
     <dimen name="badge_height">48dp</dimen>
 
     <!-- Edit Text-->
     <dimen name="custom_editText_height">40dp</dimen>
-    <dimen name="custom_editText_text_size">12sp</dimen>
+    <dimen name="custom_editText_text_size">14sp</dimen>
 
     <!-- Custom layout button -->
-    <dimen name="custom_button_width">120dp</dimen>
+    <dimen name="custom_button_width">130dp</dimen>
     <dimen name="custom_button_height">32dp</dimen>
 
     <!-- Headline-->
@@ -26,11 +30,11 @@
     <dimen name="heading_text_size">22sp</dimen>
 
     <!-- Inner body text size -->
-    <dimen name="inner_body_text_size">12sp</dimen>
+    <dimen name="inner_body_text_size">14sp</dimen>
     <dimen name="inner_body_text_padding">16dp</dimen>
 
     <!-- Section headline size-->
-    <dimen name="section_text_size">14sp</dimen>
+    <dimen name="section_text_size">16sp</dimen>
 
     <!-- Blog -->
     <dimen name="blog_text_size">10sp</dimen>

@@ -166,7 +166,7 @@ public class ProgressFragment extends Fragment {
 
                 binding.currentLevelTextViewTop.setText(currentLevel);
 
-                binding.currentBadgeImageViewTop.setImageResource(badge_icons[14]);
+                binding.currentBadge.setImageResource(badge_icons[14]);
 
             } else if (current == 0) {
                 binding.line1.setVisibility(View.GONE);

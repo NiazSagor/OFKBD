@@ -84,9 +84,6 @@ dependencies {
     // otp view
     implementation 'com.github.mukeshsolanki:android-otpview-pinview:2.1.1'
 
-    // state progress bar
-    implementation 'com.kofigyan.stateprogressbar:stateprogressbar:1.0.0'
-
     // alert dialog
     implementation 'com.github.TutorialsAndroid:KAlertDialog:v14.0.19'
 }

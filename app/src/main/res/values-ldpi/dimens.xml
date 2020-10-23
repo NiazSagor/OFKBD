@@ -9,6 +9,10 @@
     <dimen name="side_view_width">100dp</dimen>
     <dimen name="side_view_height">450dp</dimen>
 
+    <!-- Course card dimens-->
+    <dimen name="course_card_width">96dp</dimen>
+    <dimen name="course_card_height">112dp</dimen>
+
     <!-- Badge view dimens-->
     <dimen name="badge_width">40dp</dimen>
     <dimen name="badge_height">40dp</dimen>
@@ -30,7 +34,7 @@
     <dimen name="inner_body_text_padding">12dp</dimen>
 
     <!-- Section headline size-->
-    <dimen name="section_text_size">14sp</dimen>
+    <dimen name="section_text_size">12sp</dimen>
 
     <!-- Blog -->
     <dimen name="blog_text_size">10sp</dimen>

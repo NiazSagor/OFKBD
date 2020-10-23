@@ -203,15 +203,14 @@
             </androidx.cardview.widget.CardView>
 
             <View
-                android:visibility="gone"
                 android:id="@+id/line1"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_margin="16dp"
-                android:background="@color/lightgrey" />
+                android:background="@color/lightgrey"
+                android:visibility="gone" />
 
             <TextView
-                android:visibility="gone"
                 android:id="@+id/earnedBadgeTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -220,13 +219,14 @@
                 android:text="@string/earnedBadge"
                 android:textColor="@color/textColorGrey"
                 android:textSize="@dimen/section_text_size"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:visibility="gone" />
 
             <androidx.recyclerview.widget.RecyclerView
-                android:visibility="gone"
                 android:id="@+id/earnedBadgesRecyclerView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
 
             <View
                 android:layout_width="match_parent"
@@ -277,7 +277,8 @@
                 android:id="@+id/subjectProgressRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingStart="16dp"
+                android:paddingStart="8dp"
+                android:paddingTop="8dp"
                 android:paddingEnd="16dp"
                 android:paddingBottom="16dp" />
 
