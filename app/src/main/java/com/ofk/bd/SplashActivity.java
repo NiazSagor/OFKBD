@@ -8,18 +8,20 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.ProgressBar;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.developer.kalert.KAlertDialog;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.ofk.bd.AsyncTasks.FirebaseQueryActivity;
 import com.ofk.bd.AsyncTasks.FirebaseQueryRandomCourse;
 import com.ofk.bd.AsyncTasks.FirebaseQueryVideo;
 import com.ofk.bd.HelperClass.Activity;
 import com.ofk.bd.HelperClass.Common;
 import com.ofk.bd.HelperClass.DisplayCourse;
+import com.ofk.bd.HelperClass.StringUtilityClass;
 import com.ofk.bd.HelperClass.Video;
 import com.ofk.bd.Interface.ActivityPicLoadCallback;
 import com.ofk.bd.Interface.DisplayCourseLoadCallback;
@@ -32,11 +34,13 @@ public class SplashActivity extends AppCompatActivity {
 
     private static final String TAG = "SplashActivity";
 
+    public static final String COURSE_TO_DISPLAY = "course_to_display";
+
     private FirebaseAuth mAuth;
 
     private ActivitySplashBinding binding;
 
-    private ProgressBar progressBar;
+    private FirebaseRemoteConfig remoteConfig;
 
     private KAlertDialog pDialog;
 
@@ -47,8 +51,12 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         mAuth = FirebaseAuth.getInstance();
+        remoteConfig = FirebaseRemoteConfig.getInstance();
 
-        progressBar = binding.progressBar;
+        // activating previously saved config
+        //remoteConfig.activate();
+
+        initRemoteConfig();
 
         //new ShowProgressBar(SplashActivity.this).execute(3);
     }
@@ -79,7 +87,6 @@ public class SplashActivity extends AppCompatActivity {
             public void onPicLoadCallback(List<Activity> activityPics) {
 
                 Common.fieldActivityList = activityPics;
-                Log.d(TAG, "onPicLoadCallback: ");
             }
         }, "Field Work Pics").executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
@@ -88,8 +95,6 @@ public class SplashActivity extends AppCompatActivity {
             public void onLoadCallback(List<Video> list) {
 
                 Common.activityVideoList = list;
-
-                Log.d(TAG, "onLoadCallback: ");
             }
         }, "Activity Videos").executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
@@ -97,19 +102,7 @@ public class SplashActivity extends AppCompatActivity {
             @Override
             public void onLoadCallback(List<DisplayCourse> courses) {
 
-                Common.randomCourses = courses;
-
-                Log.d(TAG, "onLoadCallback: ");
-            }
-        }, "Robotics Section").executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
-        new FirebaseQueryRandomCourse(new DisplayCourseLoadCallback() {
-            @Override
-            public void onLoadCallback(List<DisplayCourse> courses) {
-
                 Common.randomCourses2 = courses;
-
-                Log.d(TAG, "onLoadCallback: ");
 
                 binding.progressBar.setVisibility(View.GONE);
 
@@ -124,7 +117,28 @@ public class SplashActivity extends AppCompatActivity {
                 }
                 finish();
             }
-        }, "Arts Section").executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }, remoteConfig.getString(COURSE_TO_DISPLAY)).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    private void initRemoteConfig() {
+        FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
+                .setMinimumFetchIntervalInSeconds(3)
+                .build();
+
+        remoteConfig.setConfigSettingsAsync(configSettings);
+        remoteConfig.setDefaultsAsync(R.xml.remote_default_values);
+
+        //remoteConfig.fetch();
+
+        // getting the course name from server
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Common.courseToDisplay = remoteConfig.getString(COURSE_TO_DISPLAY);
+                Common.courseHeadline = new StringUtilityClass(getApplicationContext())
+                        .getSectionHeadline(remoteConfig.getString(COURSE_TO_DISPLAY));
+            }
+        }).start();
     }
 
     private boolean isConnected() {

@@ -246,15 +246,18 @@ public class DisplayCourseActivity extends AppCompatActivity {
                         intent.putExtra("course_name_english", courseNameEnglish);
                         intent.putExtra("from", "display");
 
-                        viewModel.insert(new UserProgressClass(sectionName, sectionNameBangla, courseName, courseNameEnglish, false, thumbnailURL, 9, 0));
+                        // inserts selected course to database
+                        viewModel.insert(new UserProgressClass(sectionName, sectionNameBangla, courseName, courseNameEnglish, false, thumbnailURL, 0, 0));
 
                         new FirebaseQuerySubSection(new SectionVideoLoadCallback() {
                             @Override
-                            public void onSectionVideoLoadCallback(List<SectionVideo> sectionVideoList) {
+                            public void onSectionVideoLoadCallback(List<SectionVideo> sectionVideoList, int totalVideos) {
 
                                 Common.sectionVideoList = sectionVideoList;
 
-                                Log.d(TAG, "onSectionVideoLoadCallback: " + sectionVideoList.get(0).getSectionName());
+                                Log.d(TAG, "onSectionVideoLoadCallback: " + totalVideos);
+
+                                viewModel.updateTotalVideoCourse(courseNameEnglish, totalVideos);
 
                                 handler.postDelayed(new Runnable() {
                                     @Override
@@ -265,7 +268,7 @@ public class DisplayCourseActivity extends AppCompatActivity {
                                     }
                                 }, 2300);
                             }
-                        }, sectionName, courseNameEnglish).execute();
+                        }, sectionName + " Section", courseNameEnglish).execute();
                     }
                 });
 
@@ -296,11 +299,11 @@ public class DisplayCourseActivity extends AppCompatActivity {
 
         new FirebaseQuerySubSection(new SectionVideoLoadCallback() {
             @Override
-            public void onSectionVideoLoadCallback(List<SectionVideo> sectionVideoList) {
+            public void onSectionVideoLoadCallback(List<SectionVideo> sectionVideoList, int totalVideos) {
 
                 Common.sectionVideoList = sectionVideoList;
 
-                Log.d(TAG, "onSectionVideoLoadCallback: " + sectionVideoList.get(0).getSectionName());
+                Log.d(TAG, "onSectionVideoLoadCallback: " + totalVideos);
 
                 handler.postDelayed(new Runnable() {
                     @Override
@@ -310,7 +313,7 @@ public class DisplayCourseActivity extends AppCompatActivity {
                     }
                 }, 2300);
             }
-        }, sectionName, courseNameEnglish).execute();
+        }, sectionName + " Section", courseNameEnglish).execute();
     }
 
     private void showAlertDialog(String command) {

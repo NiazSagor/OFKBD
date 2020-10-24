@@ -56,5 +56,8 @@
     <!-- Card view corner radius-->
     <dimen name="corner_radius">10dp</dimen>
 
+    <!-- Default margin and padding -->
+    <dimen name="default_gap">8dp</dimen>
+    <dimen name="default_gap_half">4dp</dimen>
 
 </resources>

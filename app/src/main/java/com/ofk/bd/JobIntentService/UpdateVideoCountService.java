@@ -31,7 +31,7 @@ public class UpdateVideoCountService extends JobIntentService {
     private ArrayList<String> sectionList;
     private ResultReceiver mReceiver;
 
-    private DatabaseReference db = FirebaseDatabase.getInstance().getReference().child("Sub Section");
+    private final DatabaseReference db = FirebaseDatabase.getInstance().getReference().child("Sub Section");
 
     public static final int SHOW_RESULT = 123;
 

@@ -13,7 +13,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 import com.ofk.bd.Dao.UserProgressDao;
 import com.ofk.bd.HelperClass.UserProgressClass;
 
-@Database(entities = UserProgressClass.class, version = 2)
+@Database(entities = UserProgressClass.class, version = 1)
 public abstract class UserProgressDatabase extends RoomDatabase {
     private static final String TAG = "UserProgressDatabase";
     private static UserProgressDatabase instance;
@@ -31,27 +31,10 @@ public abstract class UserProgressDatabase extends RoomDatabase {
         return instance;
     }
 
-    private static RoomDatabase.Callback roomCallback = new RoomDatabase.Callback() {
+    private static final RoomDatabase.Callback roomCallback = new RoomDatabase.Callback() {
         @Override
         public void onCreate(@NonNull SupportSQLiteDatabase db) {
             super.onCreate(db);
-            new PopulateDatabase(instance).execute();
         }
     };
-
-    public static class PopulateDatabase extends AsyncTask<Void, Void, Void> {
-
-        private UserProgressDao dao;
-
-        public PopulateDatabase(UserProgressDatabase instance) {
-            this.dao = instance.userProgressDao();
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            Log.d(TAG, "doInBackground: ");
-            //dao.insert(new UserProgressClass("dummy", "dummy", "dummy", "", 0, 0));
-            return null;
-        }
-    }
 }

@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
@@ -18,6 +19,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.developer.kalert.KAlertDialog;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.ofk.bd.Adapter.MainActivityViewPager;
 import com.ofk.bd.HelperClass.SectionCourseNameTuple;
 import com.ofk.bd.HelperClass.ServiceResultReceiver;
@@ -37,12 +39,16 @@ public class MainActivity extends FragmentActivity implements ServiceResultRecei
     // for result receiver
     private static final int SHOW_RESULT = 123;
 
+    public static final String IS_COURSE_UPDATED = "is_course_updated";
+
     private static final String TAG = "MainActivity";
 
     private ActivityMainBinding binding;
     private MenuItem prevMenuItem;
     private MainActivityViewModel viewModel;
     private KAlertDialog pDialog;
+
+    private FirebaseRemoteConfig remoteConfig;
 
     private SharedPreferences sharedPreferences;
 
@@ -52,6 +58,7 @@ public class MainActivity extends FragmentActivity implements ServiceResultRecei
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         // for every data needed in main activity child fragments
+        remoteConfig = FirebaseRemoteConfig.getInstance();
 
         if (viewModel == null) {
             viewModel = ViewModelProviders.of(MainActivity.this).get(MainActivityViewModel.class);
@@ -100,7 +107,10 @@ public class MainActivity extends FragmentActivity implements ServiceResultRecei
             return;
         }
 
-        setupService();
+        if(remoteConfig.getBoolean(IS_COURSE_UPDATED)){
+            //true
+            setupService();
+        }
     }
 
     public void setupViewPager() {

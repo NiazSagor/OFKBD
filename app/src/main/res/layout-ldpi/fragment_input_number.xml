@@ -88,7 +88,6 @@
     </androidx.cardview.widget.CardView>
 
     <TextView
-        android:textSize="@dimen/inner_body_text_size"
         android:id="@+id/alreadyAccountTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -100,6 +99,7 @@
         android:focusable="true"
         android:fontFamily="@font/solaimanlipi"
         android:text="@string/previousAccount"
-        android:textAppearance="@style/TextAppearance.AppCompat.Small" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+        android:textSize="@dimen/inner_body_text_size" />
 
 </RelativeLayout>

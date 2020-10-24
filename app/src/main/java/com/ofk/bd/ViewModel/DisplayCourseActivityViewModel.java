@@ -18,35 +18,15 @@ import java.util.List;
 
 public class DisplayCourseActivityViewModel extends AndroidViewModel {
 
-    // courses from db
-    LiveData<DataSnapshot> availableCourses = new MutableLiveData<>();
-
-    // enrolled courses from server db
-    LiveData<DataSnapshot> enrolledCourses = new MutableLiveData<>();
-
     // sql lite
-    private UserProgressRepository repository;
-    private LiveData<List<String>> courseEnrolled;
+    private final UserProgressRepository repository;
+    private final LiveData<List<String>> courseEnrolled;
 
     public DisplayCourseActivityViewModel(@NonNull Application application) {
         super(application);
         repository = new UserProgressRepository(application);
         courseEnrolled = repository.getEnrolledCourseOnly();// all courses enrolled already
     }
-
-    // get available courses from bd
-    public void getCoursesFromDB(String entry) {
-        String entryPoint = entry + " Section";
-        DatabaseReference db = FirebaseDatabase.getInstance().getReference().child("Section").child(entryPoint);
-        db.keepSynced(true);
-        availableCourses = new FirebaseQueryLiveData(db);
-    }
-
-    // get available that come from db
-    public LiveData<DataSnapshot> getAvailableCourses() {
-        return availableCourses;
-    }
-
 
     /*******************************************************************************/
 
@@ -58,6 +38,11 @@ public class DisplayCourseActivityViewModel extends AndroidViewModel {
     // sql lite update
     public void update(UserProgressClass userProgressClass) {
         repository.update(userProgressClass);
+    }
+
+    // updates total videos of a particular course
+    public void updateTotalVideoCourse(String courseName, int count){
+        repository.updateVideoCount(count, courseName);
     }
 
     // sql lite enrolled courses

@@ -79,7 +79,7 @@
                     android:fontFamily="@font/solaimanlipi"
                     android:text="@string/next"
                     android:textColor="@android:color/white"
-                    android:textSize="16sp"
+                    android:textSize="@dimen/inner_body_text_size"
                     android:textStyle="bold" />
 
             </RelativeLayout>

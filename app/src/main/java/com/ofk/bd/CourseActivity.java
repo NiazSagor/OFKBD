@@ -54,12 +54,6 @@ public class CourseActivity extends FragmentActivity {
 
         courseActivityViewModel = ViewModelProviders.of(CourseActivity.this).get(CourseActivityViewModel.class);
 
-        List<String> list = new ArrayList<>();
-        list.add(getIntent().getStringExtra("section_name"));
-        list.add(getIntent().getStringExtra("course_name_english"));
-
-        courseActivityViewModel.setCombinedList(list);
-
         // Calling view model to get the selected video from the fragment
         videoFromListViewModel = ViewModelProviders.of(CourseActivity.this).get(VideoFromListViewModel.class);
 

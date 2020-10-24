@@ -13,7 +13,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 import com.ofk.bd.Dao.UserInfoDao;
 import com.ofk.bd.HelperClass.UserInfo;
 
-@Database(entities = UserInfo.class, version = 2)
+@Database(entities = UserInfo.class, version = 1)
 
 public abstract class UserInfoDatabase extends RoomDatabase {
 
@@ -33,27 +33,10 @@ public abstract class UserInfoDatabase extends RoomDatabase {
         return instance;
     }
 
-    private static RoomDatabase.Callback roomCallback = new RoomDatabase.Callback() {
+    private static final RoomDatabase.Callback roomCallback = new RoomDatabase.Callback() {
         @Override
         public void onCreate(@NonNull SupportSQLiteDatabase db) {
             super.onCreate(db);
-            new PopulateDatabase(instance).execute();
         }
     };
-
-    public static class PopulateDatabase extends AsyncTask<Void, Void, Void> {
-
-        private UserInfoDao dao;
-
-        public PopulateDatabase(UserInfoDatabase instance) {
-            this.dao = instance.userInfoDao();
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            Log.d(TAG, "doInBackground: ");
-            //dao.insert(new UserInfo("niaz sagor", "01799018683", "niazsagor@gmail.com", 0, 0, 0));
-            return null;
-        }
-    }
 }

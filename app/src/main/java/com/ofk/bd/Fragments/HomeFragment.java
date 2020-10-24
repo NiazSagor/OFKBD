@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,6 +27,7 @@ import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.developer.kalert.KAlertDialog;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.ofk.bd.Adapter.ActivitySliderAdapter;
 import com.ofk.bd.Adapter.CourseSliderListAdapter;
 import com.ofk.bd.Adapter.VideoSliderAdapter;
@@ -41,6 +43,7 @@ import com.ofk.bd.HelperClass.Video;
 import com.ofk.bd.Interface.SectionVideoLoadCallback;
 import com.ofk.bd.R;
 import com.ofk.bd.SearchResultActivity;
+import com.ofk.bd.SplashActivity;
 import com.ofk.bd.ViewModel.MainActivityViewModel;
 import com.ofk.bd.databinding.FragmentHomeBinding;
 
@@ -113,6 +116,8 @@ public class HomeFragment extends Fragment {
 
     private Handler handler;
 
+    private FirebaseRemoteConfig remoteConfig;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -121,6 +126,8 @@ public class HomeFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
         Log.d(TAG, "onCreate: ");
+
+        remoteConfig = FirebaseRemoteConfig.getInstance();
 
         if (videoList == null) {
             videoList = new ArrayList<>();
@@ -165,8 +172,6 @@ public class HomeFragment extends Fragment {
         manager.setInitialPrefetchItemCount(3);
 
         // random course 1, 2
-        binding.randomCourseRecyclerView.setLayoutManager(manager);
-        binding.randomCourseRecyclerView.setHasFixedSize(true);
         binding.randomCourseRecyclerView2.setLayoutManager(manager2);
         binding.randomCourseRecyclerView2.setHasFixedSize(true);
 
@@ -181,90 +186,10 @@ public class HomeFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        if (recom_course_1 == null) {
-            recom_course_1 = new CourseListAdapter(Common.randomCourses, "home_page");
-            binding.randomCourseRecyclerView.setAdapter(recom_course_1);
-
-            recom_course_1.setOnItemClickListener(new CourseListAdapter.OnItemClickListener() {
-                @Override
-                public void onItemClick(int position, View view) {
-
-                    showAlertDialog("start");
-
-                    Intent intent = new Intent(getActivity(), CourseActivity.class);
-
-                    String courseName = recom_course_1.getCurrentCourse(position).getCourseTitleEnglish();
-
-                    intent.putExtra("section_name", "Robotics");
-                    intent.putExtra("course_name", recom_course_1.getCurrentCourse(position).getCourseTitle());
-                    intent.putExtra("course_name_english", courseName);
-                    intent.putExtra("from", "home");
-
-                    new FirebaseQuerySubSection(new SectionVideoLoadCallback() {
-                        @Override
-                        public void onSectionVideoLoadCallback(List<SectionVideo> sectionVideoList) {
-
-                            if(sectionVideoList == null){
-                                showAlertDialog("done");
-                                return;
-                            }
-
-                            Common.sectionVideoList = sectionVideoList;
-
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    showAlertDialog("end");
-                                    startActivity(intent);
-                                }
-                            }, 2300);
-                        }
-                    }, "Robotics", courseName).execute();
-                }
-            });
-        }
+        binding.recommendedCourseTextView2.setText(Common.courseHeadline);
 
         if (recom_course_2 == null) {
-            recom_course_2 = new CourseListAdapter(Common.randomCourses2, "home_page");
-            binding.randomCourseRecyclerView2.setAdapter(recom_course_2);
-
-            recom_course_2.setOnItemClickListener(new CourseListAdapter.OnItemClickListener() {
-                @Override
-                public void onItemClick(int position, View view) {
-
-                    showAlertDialog("start");
-
-                    Intent intent = new Intent(getActivity(), CourseActivity.class);
-
-                    String courseName = recom_course_2.getCurrentCourse(position).getCourseTitleEnglish();
-
-                    intent.putExtra("section_name", "Arts");
-                    intent.putExtra("course_name", recom_course_2.getCurrentCourse(position).getCourseTitle());
-                    intent.putExtra("course_name_english", recom_course_2.getCurrentCourse(position).getCourseTitleEnglish());
-                    intent.putExtra("from", "home");
-
-                    new FirebaseQuerySubSection(new SectionVideoLoadCallback() {
-                        @Override
-                        public void onSectionVideoLoadCallback(List<SectionVideo> sectionVideoList) {
-
-                            if(sectionVideoList == null){
-                                showAlertDialog("done");
-                                return;
-                            }
-
-                            Common.sectionVideoList = sectionVideoList;
-
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    showAlertDialog("end");
-                                    startActivity(intent);
-                                }
-                            }, 2300);
-                        }
-                    }, "Arts", courseName).execute();
-                }
-            });
+            populateCourseList();
         }
     }
 
@@ -445,6 +370,50 @@ public class HomeFragment extends Fragment {
             layoutParams.setMargins(4, 0, 4, 0);
             binding.dotLayout2.addView(dots[i], layoutParams);
         }
+    }
+
+    private void populateCourseList() {
+
+        recom_course_2 = new CourseListAdapter(Common.randomCourses2, "home_page");
+        binding.randomCourseRecyclerView2.setAdapter(recom_course_2);
+
+        recom_course_2.setOnItemClickListener(new CourseListAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position, View view) {
+
+                showAlertDialog("start");
+
+                Intent intent = new Intent(getActivity(), CourseActivity.class);
+
+                String courseName = recom_course_2.getCurrentCourse(position).getCourseTitleEnglish();
+
+                intent.putExtra("section_name", Common.courseToDisplay);
+                intent.putExtra("course_name", recom_course_2.getCurrentCourse(position).getCourseTitle());
+                intent.putExtra("course_name_english", recom_course_2.getCurrentCourse(position).getCourseTitleEnglish());
+                intent.putExtra("from", "home");
+
+                new FirebaseQuerySubSection(new SectionVideoLoadCallback() {
+                    @Override
+                    public void onSectionVideoLoadCallback(List<SectionVideo> sectionVideoList, int totalVideos) {
+
+                        if(sectionVideoList == null){
+                            showAlertDialog("done");
+                            return;
+                        }
+
+                        Common.sectionVideoList = sectionVideoList;
+
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                showAlertDialog("end");
+                                startActivity(intent);
+                            }
+                        }, 2300);
+                    }
+                }, Common.courseToDisplay, courseName).execute();
+            }
+        });
     }
 
     private class GreetingMessage implements Runnable {

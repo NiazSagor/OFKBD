@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,8 +17,8 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.ofk.bd.Adapter.AvatarListAdapter;
 import com.ofk.bd.Adapter.ProfileListAdapter;
+import com.ofk.bd.HelperClass.StringUtilityClass;
 import com.ofk.bd.HelperClass.UserInfo;
 import com.ofk.bd.InfoActivity;
 import com.ofk.bd.R;
@@ -76,13 +75,10 @@ public class ProfileFragment extends Fragment {
     }
 
     private MainActivityViewModel mainActivityViewModel;
-    private List<String> profileItemList;
     private FragmentProfileBinding binding;
 
     private List<Integer> acquiredBadgeIndexes;
     private SharedPreferences sharedPreferences;
-
-    private AvatarListAdapter adapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -97,9 +93,6 @@ public class ProfileFragment extends Fragment {
         if (acquiredBadgeIndexes == null) {
             acquiredBadgeIndexes = new ArrayList<>();
         }
-        if (profileItemList == null) {
-            profileItemList = new ArrayList<>();
-        }
         if (mainActivityViewModel == null) {
             mainActivityViewModel = ViewModelProviders.of(getActivity()).get(MainActivityViewModel.class);
         }
@@ -112,9 +105,7 @@ public class ProfileFragment extends Fragment {
         binding = FragmentProfileBinding.inflate(getLayoutInflater());
 
         mainActivityViewModel.getUserInfoLiveData().observe(this, userInfoObserver);
-        //mainActivityViewModel.getCurrentIndexOnBadge().observe(this, indexObserver);
-
-        //binding.badgesRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+        binding.profileRecyclerView.setHasFixedSize(true);
 
         return binding.getRoot();
     }
@@ -157,71 +148,79 @@ public class ProfileFragment extends Fragment {
 
                 binding.userNameTextView.setText(userInfo.getUserName());
 
-                binding.totalCourseCompleted.setText("" + userInfo.getCourseCompleted());
-                binding.totalVideoCompleted.setText("" + userInfo.getVideoCompleted());
-                binding.totalQuizCompleted.setText("" + userInfo.getQuizCompleted());
+                binding.totalCourseCompleted.setText(StringUtilityClass.getSting(userInfo.getCourseCompleted()));
+                binding.totalVideoCompleted.setText(StringUtilityClass.getSting(userInfo.getVideoCompleted()));
+                binding.totalQuizCompleted.setText(StringUtilityClass.getSting(userInfo.getQuizCompleted()));
 
+                populateUserInfoList(userInfo);
+            }
+        }
+    };
+
+    private void populateUserInfoList(UserInfo userInfo) {
+
+        List<String> profileItemList = new ArrayList<>();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
                 profileItemList.add("" + userInfo.getUserName());
                 profileItemList.add("" + userInfo.getUserPhoneNumber());
 
-                if (!userInfo.getUserEmail().equals("")) {
-                    profileItemList.add("" + userInfo.getUserEmail());
-                } else {
-                    profileItemList.add("");//email
-                    profileItemList.add("");//class
-                    profileItemList.add("");//institute
-                    profileItemList.add("");//bd
-                    profileItemList.add("");//gender
-                }
-
+                profileItemList.add(userInfo.getUserEmail().equals("") ? "" : userInfo.getUserEmail());
+                profileItemList.add(userInfo.getUserClass().equals("") ? "" : userInfo.getUserClass());
+                profileItemList.add(userInfo.getUserSchool().equals("") ? "" : userInfo.getUserSchool());
+                profileItemList.add(userInfo.getUserDOB().equals("") ? "" : userInfo.getUserDOB());
+                profileItemList.add(userInfo.getUserGender().equals("") ? "" : userInfo.getUserGender());
                 profileItemList.add("Log Out");
-
-                ProfileListAdapter adapter = new ProfileListAdapter(profileItemList);
-
-                binding.profileRecyclerView.setAdapter(adapter);
-
-                adapter.setOnItemClickListener(new ProfileListAdapter.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(int position, View view) {
-                        if (position == 7) {
-                            FirebaseAuth.getInstance().signOut();
-
-                            getActivity().startActivity(new Intent(getActivity(), InfoActivity.class)
-                                    .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP));
-
-                            getActivity().finish();
-                        }
-                    }
-                });
-
-                adapter.setOnItemEditListener(new ProfileListAdapter.OnItemEditListener() {
-                    @Override
-                    public void onItemClick(int position, View view, String text) {
-                        hideKeyboardFrom();
-                    }
-                });
             }
-        }
-    };
+        }).start();
 
-    /* recycler view for acquired badges
-    private final Observer<Integer> indexObserver = new Observer<Integer>() {
-        @Override
-        public void onChanged(Integer integer) {
-            if (integer != null) {
-                for (int i = 0; i <= integer; i++) {
-                    acquiredBadgeIndexes.add(i);
+        ProfileListAdapter adapter = new ProfileListAdapter(profileItemList);
+
+        binding.profileRecyclerView.setAdapter(adapter);
+
+        adapter.setOnItemClickListener(new ProfileListAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position, View view) {
+                if (position == 7) {
+                    FirebaseAuth.getInstance().signOut();
+
+                    getActivity().startActivity(new Intent(getActivity(), InfoActivity.class)
+                            .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP));
+
+                    getActivity().finish();
+                }
+            }
+        });
+
+        // editable fields in the list
+        adapter.setOnItemEditListener(new ProfileListAdapter.OnItemEditListener() {
+            @Override
+            public void onItemClick(int position, View view, String text) {
+
+                if (position == 2) {
+                    // email
+                    mainActivityViewModel.updateUserInfo(text, "email");
+                } else if (position == 3) {
+                    // class
+                    mainActivityViewModel.updateUserInfo(text, "class");
+                } else if (position == 4) {
+                    // institute
+                    mainActivityViewModel.updateUserInfo(text, "institute");
+                } else if (position == 5) {
+                    // dob
+                    mainActivityViewModel.updateUserInfo(text, "dob");
+                } else if (position == 6) {
+                    // gender
+                    mainActivityViewModel.updateUserInfo(text, "gender");
                 }
 
-                adapter = new AvatarListAdapter("view_badge");
-
-                adapter.setAcquiredBadgeIndexes(acquiredBadgeIndexes);
-
-                binding.badgesRecyclerView.setAdapter(adapter);
+                hideKeyboardFrom();
             }
-        }
-    };
-     */
+        });
+    }
+
     public void hideKeyboardFrom() {
         InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Service.INPUT_METHOD_SERVICE);
         View view = getActivity().getCurrentFocus();

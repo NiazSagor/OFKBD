@@ -16,9 +16,15 @@
 
     <string name="searchResult" translatable="false">সার্চ</string>
 
-    <string name="otherCourse1" translatable="false">রোবোটিক্সের কোর্সসমুহ</string>
-    <string name="otherCourse" translatable="false">রোবোটিক্সের কোর্সসমুহ</string>
-    <string name="otherCourse2" translatable="false">আর্টের কোর্সসমুহ</string>
+    <string name="roboticsCourseHeadline" translatable="false">রোবোটিক্সের কোর্সসমুহ</string>
+    <string name="artCourseHeadline" translatable="false">আর্টের কোর্সসমুহ</string>
+    <string name="calligraphyCourseHeadline" translatable="false">ক্যালিগ্রাফির কোর্সসমুহ</string>
+    <string name="caseCourseHeadline" translatable="false">কেইস সল্ভিং কোর্সসমুহ</string>
+    <string name="craftCourseHeadline" translatable="false">ক্রাফটের কোর্সসমুহ</string>
+    <string name="criticalCourseHeadline" translatable="false">ক্রিটিক্যাল থিংকিং কোর্সসমুহ</string>
+    <string name="paintingCourseHeadline" translatable="false">ডিজিটাল পেইন্টিং কোর্সসমুহ</string>
+    <string name="guitarCourseHeadline" translatable="false">গিটার কোর্সসমুহ</string>
+    <string name="programmingCourseHeadline" translatable="false">প্রোগ্রামিং কোর্সসমুহ</string>
     <string name="rate" translatable="false">আমাদের এপটি তোমাদের কেমন লাগলো</string>
     <string name="share" translatable="false">OFK এপ বন্ধুদের সাথে শেয়ার করো</string>
 
