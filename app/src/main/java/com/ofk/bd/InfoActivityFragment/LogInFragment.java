@@ -3,10 +3,10 @@ package com.ofk.bd.InfoActivityFragment;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -14,13 +14,14 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.ofk.bd.HelperClass.UserForFirebase;
 import com.ofk.bd.MainActivity;
+import com.ofk.bd.Utility.AlertDialogUtility;
 import com.ofk.bd.ViewModel.InfoActivityViewModel;
 import com.ofk.bd.databinding.FragmentLogInBinding;
 
@@ -30,6 +31,8 @@ import com.ofk.bd.databinding.FragmentLogInBinding;
  * create an instance of this fragment.
  */
 public class LogInFragment extends Fragment {
+
+    private static final String TAG = "LogInFragment";
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -76,7 +79,7 @@ public class LogInFragment extends Fragment {
 
     private FragmentLogInBinding binding;
 
-    private EditText phoneNumberEditText, passwordEditText;
+    private AlertDialogUtility dialogUtility = new AlertDialogUtility();
 
     private String userPhoneNumber = null;
     private String userPassword = null;
@@ -101,19 +104,25 @@ public class LogInFragment extends Fragment {
                     if (binding.phoneNumberEditText.getText().toString().trim().length() < 11) {
                         binding.phoneNumberEditText.setError("সঠিক নাম্বার দাও নি");
                     } else {
-                        userPhoneNumber = binding.phoneNumberEditText.getText().toString().trim();
+                        if (!binding.phoneNumberEditText.getText().toString().trim().contains("+88")) {
+                            userPhoneNumber = "+88" + binding.phoneNumberEditText.getText().toString().trim();
+                        } else {
+                            userPhoneNumber = binding.phoneNumberEditText.getText().toString().trim();
+                        }
                     }
 
                 } else {
                     binding.phoneNumberEditText.setError("মোবাইল নাম্বার দাও নি");
                 }
 
+                //Log.d(TAG, "onClick: " + userPhoneNumber);
+
                 if (!binding.passwordEditText.getText().toString().trim().isEmpty()) {
 
                     if (binding.passwordEditText.getText().toString().trim().length() < 6) {
                         binding.passwordEditText.setError("৬ ক্যারেক্টার হয়নি");
                     } else {
-                        userPassword = binding.phoneNumberEditText.getText().toString().trim();
+                        userPassword = binding.passwordEditText.getText().toString().trim();
                     }
 
                 } else {
@@ -121,6 +130,7 @@ public class LogInFragment extends Fragment {
                 }
 
                 if (userPassword != null && userPhoneNumber != null) {
+                    dialogUtility.showAlertDialog(getContext(), "start");
                     checkDatabase(userPhoneNumber, userPassword);
                 }
             }
@@ -142,47 +152,43 @@ public class LogInFragment extends Fragment {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            DatabaseReference db = FirebaseDatabase.getInstance().getReference("User");
-            db.addChildEventListener(new ChildEventListener() {
-                @Override
-                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                    if (dataSnapshot.exists()) {
 
+            DatabaseReference db = FirebaseDatabase.getInstance().getReference("User");
+
+            db.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
                         if (dataSnapshot.child(userPhoneNumber).exists()) {
 
                             String pass = dataSnapshot.child(userPhoneNumber).child("userPassword").getValue(String.class);
 
-                            if (userPassword.equals(pass)) {
+                            Log.d(TAG, "onDataChange: db" + pass);
+                            Log.d(TAG, "onDataChange: user" + userPassword);
+
+                            if (pass.equals(userPassword)) {
+
+                                dialogUtility.dismissAlertDialog();
+
                                 UserForFirebase user = dataSnapshot.child(userPhoneNumber).getValue(UserForFirebase.class);
                                 assert user != null;
                                 activityViewModel.updateUserInfo(user.getUserName(), user.getUserEmail(), user.getUserPhoneNumber());
 
+                                Toast.makeText(getActivity(), "Welcome Back!", Toast.LENGTH_SHORT).show();
+
                                 getActivity().startActivity(new Intent(getActivity(), MainActivity.class)
                                         .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP));
-
+                                getActivity().finish();
                             } else {
+                                dialogUtility.dismissAlertDialog();
                                 Toast.makeText(getContext(), "পাসওয়ার্ড সঠিক হয় নি", Toast.LENGTH_SHORT).show();
                             }
                         } else {
+                            dialogUtility.dismissAlertDialog();
                             Toast.makeText(getContext(), "ইউজার একাউন্ট নেই", Toast.LENGTH_SHORT).show();
                         }
 
                     }
-                }
-
-                @Override
-                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                }
-
-                @Override
-                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-                }
-
-                @Override
-                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
                 }
 
                 @Override

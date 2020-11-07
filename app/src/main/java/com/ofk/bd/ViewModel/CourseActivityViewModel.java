@@ -22,20 +22,10 @@ public class CourseActivityViewModel extends AndroidViewModel {
     MutableLiveData<String> sectionName = new MutableLiveData<>();
     MutableLiveData<String> courseName = new MutableLiveData<>();
 
-    MutableLiveData<List<String>> combinedList = new MutableLiveData<>();
-
     public CourseActivityViewModel(@NonNull Application application) {
         super(application);
         repository = new UserProgressRepository(application);
         userInfoRepository = new UserInfoRepository(application);
-    }
-
-    public void setCombinedList(List<String> list) {
-        combinedList.setValue(list);
-    }
-
-    public MutableLiveData<List<String>> getCombinedList() {
-        return combinedList;
     }
 
     public MutableLiveData<String> getSectionName() {

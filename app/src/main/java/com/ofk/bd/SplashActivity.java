@@ -21,7 +21,7 @@ import com.ofk.bd.AsyncTasks.FirebaseQueryVideo;
 import com.ofk.bd.HelperClass.Activity;
 import com.ofk.bd.HelperClass.Common;
 import com.ofk.bd.HelperClass.DisplayCourse;
-import com.ofk.bd.HelperClass.StringUtilityClass;
+import com.ofk.bd.Utility.StringUtility;
 import com.ofk.bd.HelperClass.Video;
 import com.ofk.bd.Interface.ActivityPicLoadCallback;
 import com.ofk.bd.Interface.DisplayCourseLoadCallback;
@@ -135,7 +135,7 @@ public class SplashActivity extends AppCompatActivity {
             @Override
             public void run() {
                 Common.courseToDisplay = remoteConfig.getString(COURSE_TO_DISPLAY);
-                Common.courseHeadline = new StringUtilityClass(getApplicationContext())
+                Common.courseHeadline = new StringUtility(getApplicationContext())
                         .getSectionHeadline(remoteConfig.getString(COURSE_TO_DISPLAY));
             }
         }).start();

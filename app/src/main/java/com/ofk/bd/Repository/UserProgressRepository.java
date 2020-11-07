@@ -107,7 +107,11 @@ public class UserProgressRepository {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            dao.upDateVideoWatched(course);
+
+            if (dao.getTotalVideoCountForCurrentCourse(course) != dao.getCurrentVideoWatchCountForCurrentCourse(course)) {
+                // if total videos and currently watched videos are not equal then increase the video watch count
+                dao.upDateVideoWatched(course);
+            }
             return null;
         }
     }

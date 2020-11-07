@@ -1,5 +1,6 @@
 package com.ofk.bd.Adapter;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.ofk.bd.HelperClass.Course;
 import com.ofk.bd.R;
+import com.ofk.bd.Utility.DrawableUtility;
 
 import java.util.List;
 
@@ -19,19 +21,11 @@ public class CourseSliderListAdapter extends RecyclerView.Adapter<CourseSliderLi
     public static final int VIEW_PAGER_COURSE = 1;
     public static final int BLOG_ITEM = 3;
 
-    private String mSender;
+    private final String mSender;
+    private final Context mContext;
+    private final List<Course> courseList;
 
     private static final String TAG = "CourseSliderListAdapter";
-
-    private static final int[] sectionIcons = {R.drawable.art, R.drawable.calligraphy, R.drawable.case_solve, R.drawable.craft, R.drawable.critical, R.drawable.digital,
-            R.drawable.guitar, R.drawable.programming, R.drawable.robotics};
-    private static final int[] sectionGradients = {R.drawable.gradient_pink, R.drawable.gradient_cyan, R.drawable.gradient_purple,
-            R.drawable.gradient_blue, R.drawable.gradient_purple_pink, R.drawable.gradient_pink_yellow,
-            R.drawable.gradient_pink, R.drawable.gradient_cyan, R.drawable.gradient_purple};
-
-    private static int[] blogThumbs = {R.drawable.mental, R.drawable.story, R.drawable.video, R.drawable.skill, R.drawable.awarness, R.drawable.fiction};
-
-    private List<Course> courseList;
 
     private OnItemClickListener mListener;
 
@@ -43,9 +37,10 @@ public class CourseSliderListAdapter extends RecyclerView.Adapter<CourseSliderLi
         mListener = listener;
     }
 
-    public CourseSliderListAdapter(List<Course> courseList, String sender) {
+    public CourseSliderListAdapter(Context context, List<Course> courseList, String sender) {
         this.courseList = courseList;
         this.mSender = sender;
+        this.mContext = context;
     }
 
 
@@ -74,11 +69,11 @@ public class CourseSliderListAdapter extends RecyclerView.Adapter<CourseSliderLi
 
         if (mSender.equals("blog")) {
             holder.courseTitleTextView.setText(courseList.get(position).getCourseTitle());
-            holder.courseImageView.setBackgroundResource(blogThumbs[position]);
+            holder.courseImageView.setImageDrawable(DrawableUtility.getBlogThumb(mContext, position));
         } else if (mSender.equals("viewpager0")) {
             holder.courseTitleTextView.setText(courseList.get(position).getCourseSubtitle());
-            holder.courseImageView.setImageResource(sectionIcons[position]);
-            holder.gradientView.setBackgroundResource(sectionGradients[position]);
+            holder.courseImageView.setImageDrawable(DrawableUtility.getSectionIcon(mContext, position));
+            holder.gradientView.setBackground(DrawableUtility.getGradient(mContext, position));
         }
     }
 

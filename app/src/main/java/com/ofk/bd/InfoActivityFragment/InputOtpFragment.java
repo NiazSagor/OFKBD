@@ -3,6 +3,7 @@ package com.ofk.bd.InfoActivityFragment;
 import android.app.Service;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -28,6 +29,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.ofk.bd.R;
+import com.ofk.bd.Utility.AlertDialogUtility;
 import com.ofk.bd.ViewModel.InfoActivityViewModel;
 import com.ofk.bd.databinding.FragmentInputOtpBinding;
 
@@ -39,6 +41,8 @@ import com.ofk.bd.databinding.FragmentInputOtpBinding;
 public class InputOtpFragment extends Fragment {
 
     private static final String TAG = "InputOtpFragment";
+
+    private Handler handler;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -73,6 +77,11 @@ public class InputOtpFragment extends Fragment {
 
     private InfoActivityViewModel activityViewModel;
     private FirebaseAuth mAuth;
+    private AlertDialogUtility dialogUtility;
+
+    private FragmentInputOtpBinding binding;
+    private ViewPager2 viewPager2;
+    private KAlertDialog pDialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -83,11 +92,8 @@ public class InputOtpFragment extends Fragment {
         }
         mAuth = FirebaseAuth.getInstance();
         activityViewModel = ViewModelProviders.of(getActivity()).get(InfoActivityViewModel.class);
+        handler = new Handler();
     }
-
-    private FragmentInputOtpBinding binding;
-    private ViewPager2 viewPager2;
-    private KAlertDialog pDialog;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -95,6 +101,7 @@ public class InputOtpFragment extends Fragment {
         // Inflate the layout for this fragment
         binding = FragmentInputOtpBinding.inflate(getLayoutInflater());
         viewPager2 = getActivity().findViewById(R.id.viewpager);
+        dialogUtility = new AlertDialogUtility();
         return binding.getRoot();
     }
 
@@ -127,7 +134,7 @@ public class InputOtpFragment extends Fragment {
 
                 hideKeyboardFrom();
 
-                showAlertDialog("start");
+                dialogUtility.showAlertDialog(getContext(), "start");
 
                 String otp = binding.otpView.getText().toString();
 
@@ -153,45 +160,27 @@ public class InputOtpFragment extends Fragment {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
-                    showAlertDialog("done");
+
+                    dialogUtility.dismissAlertDialog();
+
+                    dialogUtility.showAlertDialog(getContext(), "verifyDone");
+
                     FirebaseUser user = mAuth.getCurrentUser();
                     assert user != null;
                     activityViewModel.getUserPhoneNumberLiveData().setValue(user.getPhoneNumber());
-                    viewPager2.setCurrentItem(2, true);
-                    //Toast.makeText(getContext(), "Successful" + user.getPhoneNumber(), Toast.LENGTH_SHORT).show();
+
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            dialogUtility.dismissAlertDialog();
+                            viewPager2.setCurrentItem(2, true);
+                        }
+                    }, 1500);
                 } else {
                     Toast.makeText(getContext(), "Not successful " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
         });
-    }
-
-    private void showAlertDialog(String command) {
-        switch (command) {
-            case "start":
-                pDialog = new KAlertDialog(getActivity(), KAlertDialog.PROGRESS_TYPE);
-                pDialog.getProgressHelper().setBarColor(Color.parseColor("#00c1c3"));
-                pDialog.setTitleText("অপেক্ষা করো");
-                pDialog.setCancelable(false);
-                pDialog.show();
-                break;
-            case "end":
-                pDialog.dismissWithAnimation();
-                break;
-            case "done":
-                pDialog.dismiss();
-                pDialog = new KAlertDialog(getActivity(), KAlertDialog.SUCCESS_TYPE);
-                pDialog.setTitleText("ভেরিফিকেশন সম্পন্ন হয়েছে")
-                        .setConfirmText("OK")
-                        .setConfirmClickListener(new KAlertDialog.KAlertClickListener() {
-                            @Override
-                            public void onClick(KAlertDialog kAlertDialog) {
-                                pDialog.dismissWithAnimation();
-                            }
-                        })
-                        .show();
-                break;
-        }
     }
 
     public void hideKeyboardFrom() {

@@ -15,7 +15,7 @@ import androidx.lifecycle.ViewModelProviders;
 import com.developer.kalert.KAlertDialog;
 import com.ofk.bd.CourseActivityAdapter.CourseSectionAdapter;
 import com.ofk.bd.HelperClass.Common;
-import com.ofk.bd.ViewModel.CourseActivityViewModel;
+import com.ofk.bd.ViewModel.VideoFromListViewModel;
 import com.ofk.bd.databinding.FragmentVideoBinding;
 
 /**
@@ -58,7 +58,7 @@ public class VideoFragment extends Fragment {
         return fragment;
     }
 
-    private CourseActivityViewModel courseActivityViewModel;
+    private VideoFromListViewModel videoFromListViewModel;
     private KAlertDialog pDialog;
     private Handler handler;
 
@@ -71,7 +71,7 @@ public class VideoFragment extends Fragment {
         }
 
         handler = new Handler();
-        courseActivityViewModel = ViewModelProviders.of(getActivity()).get(CourseActivityViewModel.class);
+        videoFromListViewModel = ViewModelProviders.of(getActivity()).get(VideoFromListViewModel.class);
     }
 
     private FragmentVideoBinding binding;
@@ -89,6 +89,7 @@ public class VideoFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         if (Common.sectionVideoList != null) {
+            videoFromListViewModel.getMutableLiveData().setValue(Common.sectionVideoList.get(0).getVideos().get(0).getVideoURL());
             CourseSectionAdapter adapter = new CourseSectionAdapter(getActivity(), Common.sectionVideoList);
             binding.sectionListRecyclerView.setAdapter(adapter);
         } else {

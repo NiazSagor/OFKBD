@@ -18,7 +18,7 @@
     <dimen name="badge_height">40dp</dimen>
 
     <!-- Edit Text-->
-    <dimen name="custom_editText_height">40dp</dimen>
+    <dimen name="custom_editText_height">30dp</dimen>
     <dimen name="custom_editText_text_size">12sp</dimen>
 
     <!-- Custom layout button -->
@@ -53,11 +53,16 @@
     <dimen name="current_badge_size">35dp</dimen>
     <dimen name="profile_box_height">90dp</dimen>
 
+    <!-- home section dimens -->
+    <dimen name="section_card_size">42dp</dimen>
+    <dimen name="section_card_radius">21dp</dimen>
+
     <!-- Card view corner radius-->
     <dimen name="corner_radius">10dp</dimen>
 
     <!-- Default margin and padding -->
-    <dimen name="default_gap">8dp</dimen>
-    <dimen name="default_gap_half">4dp</dimen>
+    <dimen name="default_gap">16dp</dimen>
+    <dimen name="default_double">16dp</dimen>
+    <dimen name="default_gap_half">8dp</dimen>
 
 </resources>

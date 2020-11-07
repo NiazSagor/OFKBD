@@ -47,7 +47,7 @@
                     android:layout_margin="16dp"
                     android:background="@drawable/input_number_edittext"
                     android:fontFamily="@font/solaimanlipi"
-                    android:hint="John Doe"
+                    android:hint="@string/first_last_name_only"
                     android:inputType="text"
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp"

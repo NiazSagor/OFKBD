@@ -4,8 +4,6 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
@@ -26,13 +24,13 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import com.developer.kalert.KAlertDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.ofk.bd.Adapter.AvatarListAdapter;
 import com.ofk.bd.HelperClass.UserForFirebase;
 import com.ofk.bd.HelperClass.UserInfo;
 import com.ofk.bd.MainActivity;
 import com.ofk.bd.R;
+import com.ofk.bd.Utility.AlertDialogUtility;
+import com.ofk.bd.Utility.FirebaseWriteUtility;
 import com.ofk.bd.ViewModel.InfoActivityViewModel;
 import com.ofk.bd.databinding.FragmentUserInfoBinding;
 
@@ -79,6 +77,111 @@ public class UserInfoFragment extends Fragment {
     private FirebaseAuth mAuth;
     private InfoActivityViewModel activityViewModel;
     private SharedPreferences sharedPreferences;
+    private static final String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
+    private final TextWatcher passwordTextWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            if (charSequence.length() == 6) {
+                hideKeyboardFrom();
+            }
+        }
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+
+        }
+    };
+
+    private FragmentUserInfoBinding binding;
+
+    private String userName = null;
+    private String userPassword = null;
+    private String userEmail = "";
+    private int userAvatar = 20;
+    private final AvatarListAdapter.OnItemClickListener avatarOnItemClickListener = new AvatarListAdapter.OnItemClickListener() {
+        @Override
+        public void onItemClick(int position, View view) {
+            if (avatarListAdapter.isClickable) {
+                userAvatar = position;
+                sharedPreferences.edit().putInt("avatarIndex", position).apply();
+                avatarListAdapter.isClickable = false;
+            } else {
+                Toast.makeText(getContext(), getResources().getString(R.string.avatarSelected), Toast.LENGTH_SHORT).show();
+            }
+        }
+    };
+
+    private AvatarListAdapter avatarListAdapter;
+    private Handler handler;
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        binding = FragmentUserInfoBinding.inflate(getLayoutInflater());
+
+        return binding.getRoot();
+    }
+
+    private AlertDialogUtility dialogUtility;
+    private final View.OnClickListener progressButtonListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if (mAuth.getCurrentUser() == null) {
+                Toast.makeText(getContext(), getResources().getString(R.string.notVerified), Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (!binding.yourEmailEditText.getText().toString().trim().isEmpty()) {
+                String email = binding.yourEmailEditText.getText().toString().trim();
+                if (email.matches(emailPattern)) {
+                    userEmail = email;
+                } else {
+                    binding.yourEmailEditText.setError("ইমেইল এড্রেসটি সঠিক হয় নি");
+                }
+            }
+
+            if (binding.yourNameEditText.getText().toString().trim().isEmpty()) {
+                binding.yourNameEditText.setError("তোমার নাম লেখো নি");
+            } else if (binding.password.getText().toString().trim().isEmpty()) {
+                binding.password.setError("পাসওয়ার্ড দাও নি");
+            } else {
+                userName = binding.yourNameEditText.getText().toString().trim();
+                userPassword = binding.password.getText().toString().trim();
+
+                Log.d(TAG, "onClick: " + userName);
+
+                if (userPassword != null && userAvatar >= 0 && userAvatar <= 10) {
+
+                    dialogUtility.showAlertDialog(getContext(), "wait");
+
+                    // inset user to db
+                    insertUser();
+
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            dialogUtility.dismissAlertDialog();
+
+                            getActivity().startActivity(new Intent(getActivity(), MainActivity.class)
+                                    .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP));
+
+                            getActivity().finish();
+                        }
+                    }, 2000);
+
+                } else {
+                    Toast.makeText(getContext(), "এভাটার সিলেক্ট করো", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -90,33 +193,13 @@ public class UserInfoFragment extends Fragment {
 
         mAuth = FirebaseAuth.getInstance();
 
+        handler = new Handler();
+
         sharedPreferences = getActivity().getSharedPreferences("userInfo", Context.MODE_PRIVATE);
 
         activityViewModel = ViewModelProviders.of(this).get(InfoActivityViewModel.class);
-    }
 
-    private FragmentUserInfoBinding binding;
-
-    private String userName = null;
-    private String userPassword = null;
-    private String userEmail = "";
-    private int userAvatar = 20;
-
-    private static String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
-
-    private AvatarListAdapter avatarListAdapter;
-    private KAlertDialog pDialog;
-    private Handler handler;
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        binding = FragmentUserInfoBinding.inflate(getLayoutInflater());
-
-        handler = new Handler();
-
-        return binding.getRoot();
+        dialogUtility = new AlertDialogUtility();
     }
 
     @Override
@@ -125,95 +208,15 @@ public class UserInfoFragment extends Fragment {
 
         binding.avatarRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 5));
 
-        avatarListAdapter = new AvatarListAdapter("choose_avatar");
+        avatarListAdapter = new AvatarListAdapter(getContext(), "choose_avatar");
 
         binding.avatarRecyclerView.setAdapter(avatarListAdapter);
 
-        binding.password.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        avatarListAdapter.setOnItemClickListener(avatarOnItemClickListener);
 
-            }
+        binding.password.addTextChangedListener(passwordTextWatcher);
 
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (charSequence.length() == 6) {
-                    hideKeyboardFrom();
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
-
-        binding.progressButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                if (mAuth.getCurrentUser() == null) {
-                    Toast.makeText(getContext(), getResources().getString(R.string.notVerified), Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                if (!binding.yourEmailEditText.getText().toString().trim().isEmpty()) {
-                    String email = binding.yourEmailEditText.getText().toString().trim();
-                    if (email.matches(emailPattern)) {
-                        userEmail = email;
-                    } else {
-                        binding.yourEmailEditText.setError("ইমেইল এড্রেসটি সঠিক হয় নি");
-                    }
-                }
-
-                if (binding.yourNameEditText.getText().toString().trim().isEmpty()) {
-                    binding.yourNameEditText.setError("তোমার নাম লেখো নি");
-                } else if (binding.password.getText().toString().trim().isEmpty()) {
-                    binding.password.setError("পাসওয়ার্ড দাও নি");
-                } else {
-                    userName = binding.yourNameEditText.getText().toString().trim();
-                    userPassword = binding.password.getText().toString().trim();
-
-                    Log.d(TAG, "onClick: " + userName);
-
-                    if (userPassword != null && userAvatar >= 0 && userAvatar <= 10) {
-
-                        showAlertDialog("start");
-                        // inset user to db
-                        insertUser();
-
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                showAlertDialog("end");
-
-                                getActivity().startActivity(new Intent(getActivity(), MainActivity.class)
-                                        .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP));
-
-                                getActivity().finish();
-                            }
-                        }, 2000);
-
-                    } else {
-                        Toast.makeText(getContext(), "এভাটার সিলেক্ট করো", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-        });
-
-        avatarListAdapter.setOnItemClickListener(new AvatarListAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(int position, View view) {
-                if (avatarListAdapter.isClickable) {
-                    userAvatar = position;
-                    Log.d(TAG, "onItemClick: " + userAvatar);
-                    sharedPreferences.edit().putInt("avatarIndex", position).apply();
-                    avatarListAdapter.isClickable = false;
-                } else {
-                    Toast.makeText(getContext(), getResources().getString(R.string.avatarSelected), Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+        binding.progressButton.setOnClickListener(progressButtonListener);
     }
 
     private void insertUser() {
@@ -228,54 +231,7 @@ public class UserInfoFragment extends Fragment {
 
         UserForFirebase user = new UserForFirebase(userEmail, userName, userPassword, firebaseUser.getPhoneNumber());
 
-        new InsertUserToDb(user).execute();
-    }
-
-    private static class InsertUserToDb extends AsyncTask<Void, Void, Void> {
-
-        UserForFirebase user;
-
-        DatabaseReference db = FirebaseDatabase.getInstance().getReference("User");
-
-        public InsertUserToDb(UserForFirebase user) {
-            this.user = user;
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-
-            db.child(user.getUserPhoneNumber()).setValue(user);
-
-            return null;
-        }
-    }
-
-    private void showAlertDialog(String command) {
-        switch (command) {
-            case "start":
-                pDialog = new KAlertDialog(getActivity(), KAlertDialog.PROGRESS_TYPE);
-                pDialog.getProgressHelper().setBarColor(Color.parseColor("#00c1c3"));
-                pDialog.setTitleText("অপেক্ষা করো");
-                pDialog.setCancelable(false);
-                pDialog.show();
-                break;
-            case "end":
-                pDialog.dismissWithAnimation();
-                break;
-            case "done":
-                pDialog.dismiss();
-                pDialog = new KAlertDialog(getActivity(), KAlertDialog.SUCCESS_TYPE);
-                pDialog.setTitleText("ভেরিফিকেশন সম্পন্ন হয়েছে")
-                        .setConfirmText("OK")
-                        .setConfirmClickListener(new KAlertDialog.KAlertClickListener() {
-                            @Override
-                            public void onClick(KAlertDialog kAlertDialog) {
-                                pDialog.dismissWithAnimation();
-                            }
-                        })
-                        .show();
-                break;
-        }
+        FirebaseWriteUtility.insertUser(user);
     }
 
     public void hideKeyboardFrom() {

@@ -33,7 +33,7 @@
     <string name="progress" translatable="false">প্রগ্রেস</string>
     <string name="earnedBadge" translatable="false">Earned Badges</string>
     <string name="subProgress" translatable="false">Course Progress</string>
-    <string name="more" translatable="false">আরো</string>
+    <string name="more" translatable="false">কার্যক্রম</string>
     <string name="ourWorks" translatable="false">আমাদের কার্যক্রম</string>
     <string name="profile" translatable="false">প্রোফাইল</string>
     <string name="profileEnglish" translatable="false">Profile Details</string>
@@ -74,6 +74,7 @@
     <string name="videoFinished" translatable="false">ভিডিও</string>
     <string name="courseFinished" translatable="false">কোর্স</string>
     <string name="quizFinished" translatable="false">কুইজ</string>
+    <string name="first_last_name_only" translatable="false">First &amp; Last Name Only</string>
 
     <string name="intro" translatable="false">শিখো, শেখাও, \nদেখাও তোমার প্রতিভা বিশ্বকে</string>
 

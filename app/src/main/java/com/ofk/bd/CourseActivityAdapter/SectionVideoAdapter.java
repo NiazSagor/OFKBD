@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.ofk.bd.HelperClass.Video;
 import com.ofk.bd.R;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -25,8 +27,6 @@ public class SectionVideoAdapter extends RecyclerView.Adapter<SectionVideoAdapte
     private Picasso mPicasso;
 
     private OnItemClickListener mListener;
-
-    int[] thumb_image = {R.drawable.kumra_thumb, R.drawable.banana_thumb, R.drawable.mango_thumb};
 
     public interface OnItemClickListener {
         void onItemClick(int position, View view);
@@ -65,7 +65,7 @@ public class SectionVideoAdapter extends RecyclerView.Adapter<SectionVideoAdapte
     @Override
     public void onBindViewHolder(@NonNull SectionVideoAdapter.SectionVideoListViewHolder holder, int position) {
         holder.videoTitle.setText(videoList.get(position).getVideoTitle());
-/*
+
         mPicasso.load(videoList.get(position).getVideoThumbNail())
                 .networkPolicy(NetworkPolicy.OFFLINE)
                 .into(holder.videoThumbNail, new Callback() {
@@ -91,10 +91,6 @@ public class SectionVideoAdapter extends RecyclerView.Adapter<SectionVideoAdapte
                                 });
                     }
                 });
-
-
- */
-        holder.videoThumbNail.setImageResource(thumb_image[position]);
     }
 
     @Override

@@ -42,7 +42,7 @@
             <EditText
                 android:id="@+id/phoneNumberEditText"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/custom_editText_height"
+                android:layout_height="40dp"
                 android:layout_margin="16dp"
                 android:background="@drawable/input_number_edittext"
                 android:gravity="center"

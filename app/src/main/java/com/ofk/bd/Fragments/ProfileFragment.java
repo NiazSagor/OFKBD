@@ -18,10 +18,10 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.ofk.bd.Adapter.ProfileListAdapter;
-import com.ofk.bd.HelperClass.StringUtilityClass;
 import com.ofk.bd.HelperClass.UserInfo;
 import com.ofk.bd.InfoActivity;
 import com.ofk.bd.R;
+import com.ofk.bd.Utility.StringUtility;
 import com.ofk.bd.ViewModel.MainActivityViewModel;
 import com.ofk.bd.databinding.FragmentProfileBinding;
 
@@ -110,23 +110,14 @@ public class ProfileFragment extends Fragment {
         return binding.getRoot();
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        int index = sharedPreferences.getInt("avatarIndex", 0);
-
-        binding.avatarImageView.setBackgroundResource(avatars[index]);
-
-        mainActivityViewModel.getCurrentIndexOnBadge().observe(this, new Observer<Integer>() {
-            @Override
-            public void onChanged(Integer integer) {
-                if (integer != null) {
-                    binding.currentBadgeImageViewTop.setImageResource(badge_icons[integer]);
-                }
+    private final Observer<Integer> currentBadgeIndex = new Observer<Integer>() {
+        @Override
+        public void onChanged(Integer integer) {
+            if (integer != null) {
+                binding.currentBadgeImageViewTop.setImageResource(badge_icons[integer]);
             }
-        });
-    }
+        }
+    };
 
     @Override
     public void onStart() {
@@ -141,6 +132,42 @@ public class ProfileFragment extends Fragment {
         }*/
     }
 
+    private final ProfileListAdapter.OnItemClickListener onItemClickListener = new ProfileListAdapter.OnItemClickListener() {
+        @Override
+        public void onItemClick(int position, View view) {
+            if (position == 7) {
+                FirebaseAuth.getInstance().signOut();
+
+                getActivity().startActivity(new Intent(getActivity(), InfoActivity.class)
+                        .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP));
+
+                getActivity().finish();
+            }
+        }
+    };
+    private final ProfileListAdapter.OnItemEditListener onItemEditListener = new ProfileListAdapter.OnItemEditListener() {
+
+        @Override
+        public void onItemClick(int position, View view, String text) {
+            if (position == 2) {
+                // email
+                mainActivityViewModel.updateUserInfo(text, "email");
+            } else if (position == 3) {
+                // class
+                mainActivityViewModel.updateUserInfo(text, "class");
+            } else if (position == 4) {
+                // institute
+                mainActivityViewModel.updateUserInfo(text, "institute");
+            } else if (position == 5) {
+                // dob
+                mainActivityViewModel.updateUserInfo(text, "dob");
+            } else if (position == 6) {
+                // gender
+                mainActivityViewModel.updateUserInfo(text, "gender");
+            }
+            hideKeyboardFrom();
+        }
+    };
     private final Observer<UserInfo> userInfoObserver = new Observer<UserInfo>() {
         @Override
         public void onChanged(UserInfo userInfo) {
@@ -148,14 +175,25 @@ public class ProfileFragment extends Fragment {
 
                 binding.userNameTextView.setText(userInfo.getUserName());
 
-                binding.totalCourseCompleted.setText(StringUtilityClass.getSting(userInfo.getCourseCompleted()));
-                binding.totalVideoCompleted.setText(StringUtilityClass.getSting(userInfo.getVideoCompleted()));
-                binding.totalQuizCompleted.setText(StringUtilityClass.getSting(userInfo.getQuizCompleted()));
+                binding.totalCourseCompleted.setText(StringUtility.getSting(userInfo.getCourseCompleted()));
+                binding.totalVideoCompleted.setText(StringUtility.getSting(userInfo.getVideoCompleted()));
+                binding.totalQuizCompleted.setText(StringUtility.getSting(userInfo.getQuizCompleted()));
 
                 populateUserInfoList(userInfo);
             }
         }
     };
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        int index = sharedPreferences.getInt("avatarIndex", 0);
+
+        binding.avatarImageView.setBackgroundResource(avatars[index]);
+
+        mainActivityViewModel.getCurrentIndexOnBadge().observe(this, currentBadgeIndex);
+    }
 
     private void populateUserInfoList(UserInfo userInfo) {
 
@@ -176,49 +214,13 @@ public class ProfileFragment extends Fragment {
             }
         }).start();
 
-        ProfileListAdapter adapter = new ProfileListAdapter(profileItemList);
+        ProfileListAdapter adapter = new ProfileListAdapter(profileItemList, getContext());
 
         binding.profileRecyclerView.setAdapter(adapter);
 
-        adapter.setOnItemClickListener(new ProfileListAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(int position, View view) {
-                if (position == 7) {
-                    FirebaseAuth.getInstance().signOut();
-
-                    getActivity().startActivity(new Intent(getActivity(), InfoActivity.class)
-                            .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP));
-
-                    getActivity().finish();
-                }
-            }
-        });
-
+        adapter.setOnItemClickListener(onItemClickListener);
         // editable fields in the list
-        adapter.setOnItemEditListener(new ProfileListAdapter.OnItemEditListener() {
-            @Override
-            public void onItemClick(int position, View view, String text) {
-
-                if (position == 2) {
-                    // email
-                    mainActivityViewModel.updateUserInfo(text, "email");
-                } else if (position == 3) {
-                    // class
-                    mainActivityViewModel.updateUserInfo(text, "class");
-                } else if (position == 4) {
-                    // institute
-                    mainActivityViewModel.updateUserInfo(text, "institute");
-                } else if (position == 5) {
-                    // dob
-                    mainActivityViewModel.updateUserInfo(text, "dob");
-                } else if (position == 6) {
-                    // gender
-                    mainActivityViewModel.updateUserInfo(text, "gender");
-                }
-
-                hideKeyboardFrom();
-            }
-        });
+        adapter.setOnItemEditListener(onItemEditListener);
     }
 
     public void hideKeyboardFrom() {

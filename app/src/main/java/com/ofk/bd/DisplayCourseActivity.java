@@ -3,7 +3,6 @@ package com.ofk.bd;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -21,7 +20,6 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
 
-import com.developer.kalert.KAlertDialog;
 import com.google.firebase.database.DataSnapshot;
 import com.ofk.bd.AsyncTasks.FirebaseQueryRandomCourse;
 import com.ofk.bd.AsyncTasks.FirebaseQuerySubSection;
@@ -32,6 +30,7 @@ import com.ofk.bd.HelperClass.SectionVideo;
 import com.ofk.bd.HelperClass.UserProgressClass;
 import com.ofk.bd.Interface.DisplayCourseLoadCallback;
 import com.ofk.bd.Interface.SectionVideoLoadCallback;
+import com.ofk.bd.Utility.AlertDialogUtility;
 import com.ofk.bd.ViewModel.DisplayCourseActivityViewModel;
 import com.ofk.bd.databinding.ActivityDisplayCourseBinding;
 
@@ -45,9 +44,7 @@ public class DisplayCourseActivity extends AppCompatActivity {
 
     private DisplayCourseActivityViewModel viewModel;
 
-    private List<DisplayCourse> availableCourses;
-
-    private KAlertDialog pDialog;
+    private AlertDialogUtility alertDialogUtility = new AlertDialogUtility();
 
     private final Handler handler = new Handler();
 
@@ -75,6 +72,8 @@ public class DisplayCourseActivity extends AppCompatActivity {
 
         String headline = getIntent().getStringExtra("section_name_bangla") + " কোর্স";
         binding.sectionHeadline.setText(headline);
+
+        alertDialogUtility.showAlertDialog(this, "start");
     }
 
     private void setUpViews() {
@@ -126,13 +125,11 @@ public class DisplayCourseActivity extends AppCompatActivity {
         setUpViews();
 
         if (!isConnected()) {
-            showAlertDialog("done");
+            alertDialogUtility.showAlertDialog(this, "noConnection");
             return;
         }
 
         binding.courseRecyclerView.setLayoutManager(new GridLayoutManager(DisplayCourseActivity.this, 2));
-
-        showAlertDialog("start");
 
         getData();
     }
@@ -184,7 +181,7 @@ public class DisplayCourseActivity extends AppCompatActivity {
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        showAlertDialog("end");
+                        alertDialogUtility.dismissAlertDialog();
                         binding.courseRecyclerView.setAdapter(adapter);
                         String count = adapter.getItemCount() + " টি কোর্স";
                         binding.courseCount.setText(count);
@@ -238,7 +235,9 @@ public class DisplayCourseActivity extends AppCompatActivity {
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
 
-                        showAlertDialog("start");
+                        dialog.cancel();
+
+                        alertDialogUtility.showAlertDialog(DisplayCourseActivity.this, "start");
 
                         Intent intent = new Intent(DisplayCourseActivity.this, CourseActivity.class);
                         intent.putExtra("section_name", sectionName);
@@ -262,8 +261,7 @@ public class DisplayCourseActivity extends AppCompatActivity {
                                 handler.postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
-                                        dialog.cancel();
-                                        showAlertDialog("end");
+                                        alertDialogUtility.dismissAlertDialog();
                                         startActivity(intent);
                                     }
                                 }, 2300);
@@ -289,7 +287,7 @@ public class DisplayCourseActivity extends AppCompatActivity {
 
     private void proceedNormally(String sectionName, String courseName, String courseNameEnglish) {
 
-        showAlertDialog("start");
+        alertDialogUtility.showAlertDialog(this, "start");
 
         Intent intent = new Intent(DisplayCourseActivity.this, CourseActivity.class);
         intent.putExtra("section_name", sectionName);
@@ -308,41 +306,12 @@ public class DisplayCourseActivity extends AppCompatActivity {
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        showAlertDialog("end");
+                        alertDialogUtility.dismissAlertDialog();
                         startActivity(intent);
                     }
                 }, 2300);
             }
         }, sectionName + " Section", courseNameEnglish).execute();
-    }
-
-    private void showAlertDialog(String command) {
-        switch (command) {
-            case "start":
-                pDialog = new KAlertDialog(this, KAlertDialog.PROGRESS_TYPE);
-                pDialog.getProgressHelper().setBarColor(Color.parseColor("#00c1c3"));
-                pDialog.setTitleText("লোড হচ্ছে");
-                pDialog.setCancelable(true);
-                pDialog.show();
-                break;
-            case "end":
-                //pDialog.dismissWithAnimation();
-                pDialog.dismiss();
-                break;
-            case "done":
-                pDialog.dismiss();
-                pDialog = new KAlertDialog(this, KAlertDialog.ERROR_TYPE);
-                pDialog.setTitleText("ইন্টারনেট সংযোগ নেই")
-                        .setConfirmText("OK")
-                        .setConfirmClickListener(new KAlertDialog.KAlertClickListener() {
-                            @Override
-                            public void onClick(KAlertDialog kAlertDialog) {
-                                pDialog.dismissWithAnimation();
-                            }
-                        })
-                        .show();
-                break;
-        }
     }
 
     private boolean isConnected() {

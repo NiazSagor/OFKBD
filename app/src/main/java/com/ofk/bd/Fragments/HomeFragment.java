@@ -3,7 +3,6 @@ package com.ofk.bd.Fragments;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,12 +20,9 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.developer.kalert.KAlertDialog;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.ofk.bd.Adapter.ActivitySliderAdapter;
 import com.ofk.bd.Adapter.CourseSliderListAdapter;
 import com.ofk.bd.Adapter.VideoSliderAdapter;
@@ -43,7 +38,8 @@ import com.ofk.bd.HelperClass.Video;
 import com.ofk.bd.Interface.SectionVideoLoadCallback;
 import com.ofk.bd.R;
 import com.ofk.bd.SearchResultActivity;
-import com.ofk.bd.SplashActivity;
+import com.ofk.bd.Utility.AlertDialogUtility;
+import com.ofk.bd.Utility.StringUtility;
 import com.ofk.bd.ViewModel.MainActivityViewModel;
 import com.ofk.bd.databinding.FragmentHomeBinding;
 
@@ -108,15 +104,137 @@ public class HomeFragment extends Fragment {
 
     private MainActivityViewModel mainActivityViewModel;
 
+    private final Observer<List<Course>> sectionListObserver = new Observer<List<Course>>() {
+        @Override
+        public void onChanged(List<Course> courses) {
+            if (courses != null) {
+                courseSliderListAdapter = new CourseSliderListAdapter(getContext(), courses, "viewpager0");
+
+                binding.courseRecyclerView.setAdapter(courseSliderListAdapter);
+
+                courseSliderListAdapter.setOnItemClickListener(new CourseSliderListAdapter.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(int position, View view) {
+                        Intent intent = new Intent(getActivity(), DisplayCourseActivity.class);
+                        intent.putExtra("section_name", courses.get(position).getCourseTitle());
+                        intent.putExtra("section_name_bangla", courses.get(position).getCourseSubtitle());
+                        getActivity().startActivity(intent);
+                        Log.d(TAG, "onItemClick: " + courses.get(position).getCourseTitle());
+                    }
+                });
+            }
+        }
+    };
+
+    private Handler handler;
+    private final Observer<UserInfo> userInfoObserver = new Observer<UserInfo>() {
+        @Override
+        public void onChanged(UserInfo userInfo) {
+            if (userInfo != null) {
+                binding.userNameTextView.setText(userInfo.getUserName());
+            }
+        }
+    };
+
+    // activity pics adapter
+    private ActivitySliderAdapter activityAdapter;
+    private final View.OnClickListener listener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if (view.getId() == binding.rateOFKView.getId()) {
+                Uri uri = Uri.parse("market://details?id=com.angik.duodevloopers.food");
+                Intent goToMarket = new Intent(Intent.ACTION_VIEW, uri);
+                goToMarket.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT)
+                        .addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+                try {
+                    startActivity(goToMarket);
+                } catch (ActivityNotFoundException e) {
+                    startActivity(new Intent(Intent.ACTION_VIEW,
+                            Uri.parse("http://play.google.com/store/apps/details?id=com.angik.duodevloopers.food")));// TODO ofk play store link
+                }
+            } else if (view.getId() == binding.shareOKFView.getId()) {
+                Intent i = new Intent(Intent.ACTION_SEND);
+                i.setType("text/plain");
+                i.putExtra(Intent.EXTRA_SUBJECT, "Share OFK");
+                i.putExtra(Intent.EXTRA_TEXT, "http://www.google.com");// TODO ofk play store link
+                startActivity(Intent.createChooser(i, "Share URL"));
+            } else if (view.getId() == binding.goUpFloatingButton.getId()) {
+                binding.parentScrollView.smoothScrollTo(0, 0);
+            } else if (view.getId() == binding.searchButtonCardView.getId()) {
+                if (!binding.searchEditText.getText().toString().equals("")) {
+                    Intent intent = new Intent(getActivity(), SearchResultActivity.class);
+                    intent.putExtra("searchQuery", binding.searchEditText.getText().toString().trim());
+                    startActivity(intent);
+                    binding.searchEditText.setText("");
+                } else {
+                    binding.searchEditText.setError("Please enter something");
+                }
+            }
+        }
+    };
+    private final CourseListAdapter.OnItemClickListener onItemClickListener = new CourseListAdapter.OnItemClickListener() {
+        @Override
+        public void onItemClick(int position, View view) {
+
+            AlertDialogUtility dialog = new AlertDialogUtility();
+
+            dialog.showAlertDialog(getContext(), "start");
+
+            Intent intent = new Intent(getActivity(), CourseActivity.class);
+
+            String courseName = recom_course_2.getCurrentCourse(position).getCourseTitleEnglish();
+
+            intent.putExtra("section_name", Common.courseToDisplay);
+            intent.putExtra("course_name", recom_course_2.getCurrentCourse(position).getCourseTitle());
+            intent.putExtra("course_name_english", recom_course_2.getCurrentCourse(position).getCourseTitleEnglish());
+            intent.putExtra("from", "home");
+
+            new FirebaseQuerySubSection(new SectionVideoLoadCallback() {
+                @Override
+                public void onSectionVideoLoadCallback(List<SectionVideo> sectionVideoList, int totalVideos) {
+
+                    if (sectionVideoList == null) {
+                        dialog.showAlertDialog(getContext(), "done");
+                        return;
+                    }
+
+                    Common.sectionVideoList = sectionVideoList;
+
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            dialog.dismissAlertDialog();
+                            startActivity(intent);
+                        }
+                    }, 2300);
+                }
+            }, Common.courseToDisplay, courseName).execute();
+        }
+    };
+    private final ViewPager2.OnPageChangeCallback onPageChangeCallback = new ViewPager2.OnPageChangeCallback() {
+        @Override
+        public void onPageSelected(int position) {
+            if (customPosition > activityAdapter.getItemCount() - 1) {
+                customPosition = 0;
+            }
+            changeIndicatorOnActivityViewPager(position++);
+        }
+    };
+
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         Log.d(TAG, "onAttach: ");
+
+        if (mainActivityViewModel == null) {
+            mainActivityViewModel = ViewModelProviders.of(getActivity()).get(MainActivityViewModel.class);
+        }
+
+        if (!mainActivityViewModel.getUserInfoLiveData2().hasObservers()) {
+            mainActivityViewModel.getUserInfoLiveData2().observe(this, userInfoObserver);
+        }
     }
-
-    private Handler handler;
-
-    private FirebaseRemoteConfig remoteConfig;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -127,169 +245,24 @@ public class HomeFragment extends Fragment {
         }
         Log.d(TAG, "onCreate: ");
 
-        remoteConfig = FirebaseRemoteConfig.getInstance();
+        handler = new Handler();
 
         if (videoList == null) {
             videoList = new ArrayList<>();
         }
 
-        if (mainActivityViewModel == null) {
-            mainActivityViewModel = ViewModelProviders.of(getActivity()).get(MainActivityViewModel.class);
-        }
-
-        handler = new Handler();
-
         if (!mainActivityViewModel.getListMutableLiveData().hasObservers()) {
             mainActivityViewModel.getListMutableLiveData().observe(this, sectionListObserver);
         }
-    }
 
-    // activity pics adapter
-    private ActivitySliderAdapter activityAdapter;
-
-    private KAlertDialog pDialog;
-
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        Log.d(TAG, "onCreateView: ");
-
-        binding = FragmentHomeBinding.inflate(getLayoutInflater());
-
-        binding.courseRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
-
-        // This is activity view pager where some pictures are loaded
-        binding.activityViewPager.setClipToPadding(false);
-        binding.activityViewPager.setPageTransformer(new MarginPageTransformer(40));
-
-        LinearLayoutManager manager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
-        manager.setItemPrefetchEnabled(true);
-        manager.setInitialPrefetchItemCount(3);
-
-        LinearLayoutManager manager2 = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
-        manager.setItemPrefetchEnabled(true);
-        manager.setInitialPrefetchItemCount(3);
-
-        // random course 1, 2
-        binding.randomCourseRecyclerView2.setLayoutManager(manager2);
-        binding.randomCourseRecyclerView2.setHasFixedSize(true);
-
-        // this is for activity videos view pager
-        binding.activityVideoViewPager.setClipToPadding(false);
-        binding.activityVideoViewPager.setPageMargin(30);
-
-        return binding.getRoot();
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        binding.recommendedCourseTextView2.setText(Common.courseHeadline);
 
         if (recom_course_2 == null) {
-            populateCourseList();
+            recom_course_2 = new CourseListAdapter(Common.randomCourses2, "home_page");
         }
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        binding.searchButtonCardView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!binding.searchEditText.getText().toString().equals("")) {
-                    Intent intent = new Intent(getActivity(), SearchResultActivity.class);
-                    intent.putExtra("searchQuery", binding.searchEditText.getText().toString().trim());
-                    startActivity(intent);
-                    binding.searchEditText.setText("");
-                } else {
-                    binding.searchEditText.setError("Please enter something");
-                }
-            }
-        });
-
-        binding.rateOFKView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Uri uri = Uri.parse("market://details?id=com.angik.duodevloopers.food");
-                Intent goToMarket = new Intent(Intent.ACTION_VIEW, uri);
-                goToMarket.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
-                        .addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT)
-                        .addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-                try {
-                    startActivity(goToMarket);
-                } catch (ActivityNotFoundException e) {
-                    startActivity(new Intent(Intent.ACTION_VIEW,
-                            Uri.parse("http://play.google.com/store/apps/details?id=com.angik.duodevloopers.food")));
-                }
-            }
-        });
-
-        binding.shareOKFView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(Intent.ACTION_SEND);
-                i.setType("text/plain");
-                i.putExtra(Intent.EXTRA_SUBJECT, "Share OFK");
-                i.putExtra(Intent.EXTRA_TEXT, "http://www.google.com");
-                startActivity(Intent.createChooser(i, "Share URL"));
-            }
-        });
-
-        binding.goUpFloatingButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                binding.parentScrollView.smoothScrollTo(0, 0);
-            }
-        });
-    }
-
-    // when fragment is visible
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        Log.d(TAG, "onStart: ");
-
-        mainActivityViewModel.getUserInfoLiveData2().observe(this, new Observer<UserInfo>() {
-            @Override
-            public void onChanged(UserInfo userInfo) {
-                if (userInfo != null) {
-                    binding.userNameTextView.setText(userInfo.getUserName());
-                }
-            }
-        });
 
         if (activityAdapter == null) {
             activityAdapter = new ActivitySliderAdapter(Common.activityList);
-            binding.activityViewPager.setAdapter(activityAdapter);
-            changeIndicatorOnActivityViewPager(0);
         }
-
-        binding.activityVideoViewPager.setAdapter(new VideoSliderAdapter(Common.activityVideoList, getContext(), getLifecycle()));
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        Log.d(TAG, "onResume: ");
-
-        binding.activityViewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
-            @Override
-            public void onPageSelected(int position) {
-                if (customPosition > activityAdapter.getItemCount() - 1) {
-                    customPosition = 0;
-                }
-                changeIndicatorOnActivityViewPager(position++);
-            }
-        });
-
-        // shows greeting message according to time from background thread
-        new Thread(new GreetingMessage()).start();
     }
 
     @Override
@@ -322,27 +295,45 @@ public class HomeFragment extends Fragment {
         Log.d(TAG, "onDestroy: ");
     }
 
-    private final Observer<List<Course>> sectionListObserver = new Observer<List<Course>>() {
-        @Override
-        public void onChanged(List<Course> courses) {
-            if (courses != null) {
-                courseSliderListAdapter = new CourseSliderListAdapter(courses, "viewpager0");
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateView: ");
 
-                binding.courseRecyclerView.setAdapter(courseSliderListAdapter);
+        binding = FragmentHomeBinding.inflate(getLayoutInflater());
 
-                courseSliderListAdapter.setOnItemClickListener(new CourseSliderListAdapter.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(int position, View view) {
-                        Intent intent = new Intent(getActivity(), DisplayCourseActivity.class);
-                        intent.putExtra("section_name", courses.get(position).getCourseTitle());
-                        intent.putExtra("section_name_bangla", courses.get(position).getCourseSubtitle());
-                        getActivity().startActivity(intent);
-                        Log.d(TAG, "onItemClick: " + courses.get(position).getCourseTitle());
-                    }
-                });
-            }
-        }
-    };
+        binding.courseRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
+
+        // This is activity view pager where some pictures are loaded
+        binding.activityViewPager.setClipToPadding(false);
+        binding.activityViewPager.setPageTransformer(new MarginPageTransformer(40));
+
+        LinearLayoutManager manager2 = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
+        manager2.setItemPrefetchEnabled(true);
+        manager2.setInitialPrefetchItemCount(3);
+
+        // random course 1, 2
+        binding.randomCourseRecyclerView2.setLayoutManager(manager2);
+        binding.randomCourseRecyclerView2.setHasFixedSize(true);
+
+        // this is for activity videos view pager
+        binding.activityVideoViewPager.setClipToPadding(false);
+        binding.activityVideoViewPager.setPageTransformer(new MarginPageTransformer(40));
+
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // after view is created we are showing ui elements
+        binding.recommendedCourseTextView2.setText(Common.courseHeadline);
+        binding.randomCourseRecyclerView2.setAdapter(recom_course_2);
+        binding.activityViewPager.setAdapter(activityAdapter);
+        VideoSliderAdapter adapter = new VideoSliderAdapter(getFragmentManager(), getLifecycle(), Common.activityVideoList);
+        binding.activityVideoViewPager.setAdapter(adapter);
+    }
 
     // handles indicator in activity view pager
     private void changeIndicatorOnActivityViewPager(int currentSlidePosition) {
@@ -372,105 +363,31 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    private void populateCourseList() {
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
-        recom_course_2 = new CourseListAdapter(Common.randomCourses2, "home_page");
-        binding.randomCourseRecyclerView2.setAdapter(recom_course_2);
-
-        recom_course_2.setOnItemClickListener(new CourseListAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(int position, View view) {
-
-                showAlertDialog("start");
-
-                Intent intent = new Intent(getActivity(), CourseActivity.class);
-
-                String courseName = recom_course_2.getCurrentCourse(position).getCourseTitleEnglish();
-
-                intent.putExtra("section_name", Common.courseToDisplay);
-                intent.putExtra("course_name", recom_course_2.getCurrentCourse(position).getCourseTitle());
-                intent.putExtra("course_name_english", recom_course_2.getCurrentCourse(position).getCourseTitleEnglish());
-                intent.putExtra("from", "home");
-
-                new FirebaseQuerySubSection(new SectionVideoLoadCallback() {
-                    @Override
-                    public void onSectionVideoLoadCallback(List<SectionVideo> sectionVideoList, int totalVideos) {
-
-                        if(sectionVideoList == null){
-                            showAlertDialog("done");
-                            return;
-                        }
-
-                        Common.sectionVideoList = sectionVideoList;
-
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                showAlertDialog("end");
-                                startActivity(intent);
-                            }
-                        }, 2300);
-                    }
-                }, Common.courseToDisplay, courseName).execute();
-            }
-        });
+        binding.rateOFKView.setOnClickListener(listener);
+        binding.shareOKFView.setOnClickListener(listener);
+        binding.goUpFloatingButton.setOnClickListener(listener);
+        binding.searchButtonCardView.setOnClickListener(listener);
     }
 
-    private class GreetingMessage implements Runnable {
+    // when fragment is visible
+    @Override
+    public void onStart() {
+        super.onStart();
 
-        @Override
-        public void run() {
-            Calendar c = Calendar.getInstance();
-
-            int timeOfDay = c.get(Calendar.HOUR_OF_DAY);
-
-            if (timeOfDay >= 0 && timeOfDay < 12) {
-                showOnUi("Good Morning");
-            } else if (timeOfDay >= 12 && timeOfDay < 16) {
-                showOnUi("Good Afternoon");
-            } else if (timeOfDay >= 16 && timeOfDay < 21) {
-                showOnUi("Good Evening");
-            } else if (timeOfDay >= 21 && timeOfDay < 24) {
-                showOnUi("Good Night");
-            }
-        }
-
-        private void showOnUi(String message) {
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    binding.geetingMessage.setText(message);
-                }
-            });
-        }
+        binding.geetingMessage.setText(StringUtility.getGreetingMessage(Calendar.getInstance().get(Calendar.HOUR_OF_DAY)));
+        // fragment is visible, now we attach interaction listeners
+        recom_course_2.setOnItemClickListener(onItemClickListener);
+        changeIndicatorOnActivityViewPager(0);
     }
 
-    private void showAlertDialog(String command) {
-        switch (command) {
-            case "start":
-                pDialog = new KAlertDialog(getContext(), KAlertDialog.PROGRESS_TYPE);
-                pDialog.getProgressHelper().setBarColor(Color.parseColor("#00c1c3"));
-                pDialog.setTitleText("লোড হচ্ছে");
-                pDialog.setCancelable(true);
-                pDialog.show();
-                break;
-            case "end":
-                //pDialog.dismissWithAnimation();
-                pDialog.dismiss();
-                break;
-            case "done":
-                pDialog.dismiss();
-                pDialog = new KAlertDialog(getContext(), KAlertDialog.ERROR_TYPE);
-                pDialog.setTitleText(getResources().getString(R.string.notFoundVideo))
-                        .setConfirmText("OK")
-                        .setConfirmClickListener(new KAlertDialog.KAlertClickListener() {
-                            @Override
-                            public void onClick(KAlertDialog kAlertDialog) {
-                                pDialog.dismissWithAnimation();
-                            }
-                        })
-                        .show();
-                break;
-        }
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        binding.activityViewPager.registerOnPageChangeCallback(onPageChangeCallback);
     }
 }

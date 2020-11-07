@@ -71,7 +71,7 @@
                             android:layout_height="wrap_content"
                             android:paddingStart="8dp"
                             android:paddingEnd="0dp"
-                            android:text="Current Level :"
+                            android:text="Current Level : "
                             android:textColor="@android:color/black"
                             android:textSize="@dimen/inner_body_text_size"
                             android:textStyle="bold" />
@@ -123,6 +123,7 @@
                         </LinearLayout>
 
                         <View
+                            android:id="@+id/lineMiddle"
                             android:layout_width="0dp"
                             android:layout_height="3dp"
                             android:layout_gravity="center_vertical"

@@ -1,7 +1,6 @@
 package com.ofk.bd.ViewModel;
 
 import android.app.Application;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -24,11 +23,6 @@ import java.util.List;
 
 public class MainActivityViewModel extends AndroidViewModel {
     private static final String TAG = "MainActivityViewModel";
-    /*
-     *
-     * User progress table
-     *
-     * */
 
     // sql lite repo
     UserProgressRepository repository;
@@ -78,6 +72,8 @@ public class MainActivityViewModel extends AndroidViewModel {
 
     MutableLiveData<Integer> currentIndexOnBadge = new MutableLiveData<>();
 
+    MutableLiveData<String> currentVideoURL = new MutableLiveData<>();
+
     public MainActivityViewModel(@NonNull Application application) {
         super(application);
 
@@ -122,15 +118,20 @@ public class MainActivityViewModel extends AndroidViewModel {
     private void createCourseList() {
         List<Course> list = new ArrayList<>();
 
-        list.add(new Course("Arts", "আর্টস"));
-        list.add(new Course("Calligraphy", "ক্যালিগ্রাফি"));
-        list.add(new Course("Case Solving", "কেইস সল্ভিং"));
-        list.add(new Course("Craft", "ক্রাফট"));
-        list.add(new Course("Critical Thinking", "ক্রিটিকাল থিংকিং"));
-        list.add(new Course("Digital Painting", "ডিজিটাল পেইন্টিং"));
-        list.add(new Course("Guitar", "গিটার"));
-        list.add(new Course("Programming", "প্রোগ্রামিং"));
-        list.add(new Course("Robotics", "রোবোটিক্স"));
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                list.add(new Course("Arts", "আর্টস"));
+                list.add(new Course("Calligraphy", "ক্যালিগ্রাফি"));
+                list.add(new Course("Case Solving", "কেইস সল্ভিং"));
+                list.add(new Course("Craft", "ক্রাফট"));
+                list.add(new Course("Critical Thinking", "ক্রিটিকাল থিংকিং"));
+                list.add(new Course("Digital Painting", "ডিজিটাল পেইন্টিং"));
+                list.add(new Course("Guitar", "গিটার"));
+                list.add(new Course("Programming", "প্রোগ্রামিং"));
+                list.add(new Course("Robotics", "রোবোটিক্স"));
+            }
+        }).start();
 
         listMutableLiveData.setValue(list);
     }
@@ -143,12 +144,17 @@ public class MainActivityViewModel extends AndroidViewModel {
     private void createBlogList() {
         List<Course> blogList = new ArrayList<>();
 
-        blogList.add(new Course("অনুপ্রেরণামূলক"));
-        blogList.add(new Course("গল্প"));
-        blogList.add(new Course("টিপস এন্ড ট্রিকস"));
-        blogList.add(new Course("দক্ষতা উন্নয়নমূলক"));
-        blogList.add(new Course("সচেতনতামূলক"));
-        blogList.add(new Course("ইংরেজি"));
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                blogList.add(new Course("অনুপ্রেরণামূলক"));
+                blogList.add(new Course("গল্প"));
+                blogList.add(new Course("টিপস এন্ড ট্রিকস"));
+                blogList.add(new Course("দক্ষতা উন্নয়নমূলক"));
+                blogList.add(new Course("সচেতনতামূলক"));
+                blogList.add(new Course("ইংরেজি"));
+            }
+        }).start();
 
         blogListMutableLiveData.setValue(blogList);
     }
@@ -166,6 +172,9 @@ public class MainActivityViewModel extends AndroidViewModel {
         return enrolledCoursesFromOfflineDb;
     }
 
+    public MutableLiveData<String> getCurrentVideoURL() {
+        return currentVideoURL;
+    }
 
     /*******************UPDATE VIDEO COUNT IN USER PROGRESS TABLE**********************/
 
@@ -182,7 +191,7 @@ public class MainActivityViewModel extends AndroidViewModel {
      * */
 
 
-    public void updateUserInfo(String text, String entry){
+    public void updateUserInfo(String text, String entry) {
         userInfoRepository.updateUserInfo(text, entry);
     }
 

@@ -110,6 +110,7 @@ public class MainActivity extends FragmentActivity implements ServiceResultRecei
         if(remoteConfig.getBoolean(IS_COURSE_UPDATED)){
             //true
             setupService();
+            Log.d(TAG, "onStart: " + remoteConfig.getBoolean(IS_COURSE_UPDATED));
         }
     }
 
@@ -144,8 +145,6 @@ public class MainActivity extends FragmentActivity implements ServiceResultRecei
             @Override
             public void onChanged(List<SectionCourseNameTuple> sectionCourseNameTuples) {
                 //enrolledCourse = sectionCourseNameTuples;
-
-                Log.d(TAG, "onChanged: ");
 
                 for (SectionCourseNameTuple object : sectionCourseNameTuples) {
                     sectionNameList.add(object.getSectionName());

@@ -52,4 +52,7 @@
     <dimen name="current_badge_size">48dp</dimen>
     <dimen name="profile_box_height">120dp</dimen>
 
+    <!-- Profile pic dimens -->
+    <dimen name="profile_item_image_size">40dp</dimen>
+
 </resources>

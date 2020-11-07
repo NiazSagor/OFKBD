@@ -3,17 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="8dp"
-    android:layout_marginEnd="8dp"
-    android:layout_marginBottom="8dp"
-    app:cardCornerRadius="16dp">
+    android:layout_marginStart="@dimen/default_gap_half"
+    android:layout_marginEnd="@dimen/default_gap_half"
+    android:layout_marginBottom="@dimen/default_gap_half">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/imageCardView"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="@dimen/section_card_size"
+        android:layout_height="@dimen/section_card_size"
         android:layout_centerHorizontal="true"
-        app:cardCornerRadius="25dp"
+        app:cardCornerRadius="@dimen/section_card_radius"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -33,7 +32,7 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_centerInParent="true"
-                android:padding="8dp" />
+                android:padding="@dimen/default_gap_half" />
 
         </RelativeLayout>
 
@@ -46,7 +45,7 @@
         android:layout_below="@id/imageCardView"
         android:layout_centerHorizontal="true"
         android:fontFamily="@font/solaimanlipi"
-        android:padding="8dp"
+        android:padding="@dimen/default_gap_half"
         android:text="@string/member"
         android:textAlignment="center"
         android:textSize="@dimen/inner_body_text_size"

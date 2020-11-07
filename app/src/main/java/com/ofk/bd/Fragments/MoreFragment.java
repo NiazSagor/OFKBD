@@ -17,12 +17,12 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.developer.kalert.KAlertDialog;
 import com.ofk.bd.Adapter.ActivitySliderAdapter;
 import com.ofk.bd.Adapter.CourseSliderListAdapter;
 import com.ofk.bd.HelperClass.Common;
 import com.ofk.bd.HelperClass.Course;
 import com.ofk.bd.R;
+import com.ofk.bd.Utility.AlertDialogUtility;
 import com.ofk.bd.ViewModel.MainActivityViewModel;
 import com.ofk.bd.databinding.FragmentMoreBinding;
 import com.thefinestartist.finestwebview.FinestWebView;
@@ -71,28 +71,45 @@ public class MoreFragment extends Fragment {
 
     private MainActivityViewModel mainActivityViewModel;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+    private final CourseSliderListAdapter.OnItemClickListener onItemClickListener = new CourseSliderListAdapter.OnItemClickListener() {
+        @Override
+        public void onItemClick(int position, View view) {
+            if (!isConnected()) {
+                new AlertDialogUtility().showAlertDialog(getContext(), "noConnection");
+                return;
+            }
+
+            if (position == 0) {
+                new FinestWebView.Builder(getActivity()).show("https://ofkbd.com/inspirational/");
+            } else if (position == 1) {
+                new FinestWebView.Builder(getActivity()).show("https://ofkbd.com/story/");
+            } else if (position == 2) {
+                new FinestWebView.Builder(getActivity()).show("https://ofkbd.com/tips-and-tricks/");
+            } else if (position == 3) {
+                new FinestWebView.Builder(getActivity()).show("https://ofkbd.com/skill-development/");
+            } else if (position == 4) {
+                new FinestWebView.Builder(getActivity()).show("https://ofkbd.com/awarness/");
+            } else if (position == 5) {
+                new FinestWebView.Builder(getActivity()).show("https://ofkbd.com/english-article/");
+            }
         }
-        mainActivityViewModel = ViewModelProviders.of(getActivity()).get(MainActivityViewModel.class);
-    }
+    };
+    private final Observer<List<Course>> blogListObserver = new Observer<List<Course>>() {
+        @Override
+        public void onChanged(List<Course> courses) {
+            CourseSliderListAdapter adapter = new CourseSliderListAdapter(getContext(), courses, "blog");
+
+            binding.blogRecyclerView.setAdapter(adapter);
+
+            adapter.setOnItemClickListener(onItemClickListener);
+        }
+    };
 
     private FragmentMoreBinding binding;
 
     private int customPosition = 0;
 
     private static final int[] indicator = {R.drawable.dot, R.drawable.inactivedot};
-
-    // activity pics adapter
-    private ActivitySliderAdapter activityAdapter;
-
-    private CourseSliderListAdapter adapter;
-
-    private KAlertDialog pDialog;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -117,7 +134,6 @@ public class MoreFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        activityAdapter = new ActivitySliderAdapter(Common.fieldActivityList);
         binding.activityViewPager.setAdapter(activityAdapter);
         changeIndicator(0);
 
@@ -126,56 +142,21 @@ public class MoreFragment extends Fragment {
         }
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        binding.activityViewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
-            @Override
-            public void onPageSelected(int position) {
-                if (customPosition > activityAdapter.getItemCount() - 1) {
-                    customPosition = 0;
-                }
-                changeIndicator(position++);
-            }
-        });
-    }
+    // activity pics adapter
+    private ActivitySliderAdapter activityAdapter;
 
     @Override
     public void onDestroy() {
         super.onDestroy();
     }
 
-    private final Observer<List<Course>> blogListObserver = new Observer<List<Course>>() {
+    private final ViewPager2.OnPageChangeCallback onPageChangeCallback = new ViewPager2.OnPageChangeCallback() {
         @Override
-        public void onChanged(List<Course> courses) {
-            adapter = new CourseSliderListAdapter(courses, "blog");
-            binding.blogRecyclerView.setAdapter(adapter);
-
-            adapter.setOnItemClickListener(new CourseSliderListAdapter.OnItemClickListener() {
-                @Override
-                public void onItemClick(int position, View view) {
-
-                    if (!isConnected()) {
-                        showAlertDialog("done");
-                        return;
-                    }
-
-                    if (position == 0) {
-                        new FinestWebView.Builder(getActivity()).show("https://ofkbd.com/inspirational/");
-                    } else if (position == 1) {
-                        new FinestWebView.Builder(getActivity()).show("https://ofkbd.com/story/");
-                    } else if (position == 2) {
-                        new FinestWebView.Builder(getActivity()).show("https://ofkbd.com/tips-and-tricks/");
-                    } else if (position == 3) {
-                        new FinestWebView.Builder(getActivity()).show("https://ofkbd.com/skill-development/");
-                    } else if (position == 4) {
-                        new FinestWebView.Builder(getActivity()).show("https://ofkbd.com/awarness/");
-                    } else if (position == 5) {
-                        new FinestWebView.Builder(getActivity()).show("https://ofkbd.com/english-article/");
-                    }
-                }
-            });
+        public void onPageSelected(int position) {
+            if (customPosition > activityAdapter.getItemCount() - 1) {
+                customPosition = 0;
+            }
+            changeIndicator(position++);
         }
     };
 
@@ -206,19 +187,23 @@ public class MoreFragment extends Fragment {
         }
     }
 
-    private void showAlertDialog(String command) {
-        if ("done".equals(command)) {
-            pDialog = new KAlertDialog(getActivity(), KAlertDialog.ERROR_TYPE);
-            pDialog.setTitleText("ইন্টারনেট সংযোগ নেই")
-                    .setConfirmText("OK")
-                    .setConfirmClickListener(new KAlertDialog.KAlertClickListener() {
-                        @Override
-                        public void onClick(KAlertDialog kAlertDialog) {
-                            pDialog.dismissWithAnimation();
-                        }
-                    })
-                    .show();
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            mParam1 = getArguments().getString(ARG_PARAM1);
+            mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        mainActivityViewModel = ViewModelProviders.of(getActivity()).get(MainActivityViewModel.class);
+
+        activityAdapter = new ActivitySliderAdapter(Common.fieldActivityList);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        binding.activityViewPager.registerOnPageChangeCallback(onPageChangeCallback);
     }
 
     private boolean isConnected() {

@@ -32,17 +32,20 @@
         </activity>
         <activity
             android:name=".DisplayCourseActivity"
+            android:documentLaunchMode="none"
             android:launchMode="standard"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.Transparent" />
         <activity
             android:name=".CourseActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
+            android:documentLaunchMode="none"
             android:hardwareAccelerated="true"
             android:launchMode="singleTop"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".InfoActivity"
+            android:documentLaunchMode="none"
             android:fitsSystemWindows="true"
             android:theme="@style/AppTheme.Transparent"
             android:windowSoftInputMode="adjustPan|adjustUnspecified">
@@ -57,8 +60,9 @@
 
         <activity
             android:name=".MainActivity"
+            android:documentLaunchMode="none"
             android:fitsSystemWindows="true"
-            android:hardwareAccelerated="true"
+            android:largeHeap="true"
             android:launchMode="standard"
             android:theme="@style/AppTheme.Transparent"
             android:windowSoftInputMode="adjustPan|adjustUnspecified">

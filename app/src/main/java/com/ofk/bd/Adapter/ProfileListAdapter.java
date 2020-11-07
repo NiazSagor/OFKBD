@@ -1,5 +1,6 @@
 package com.ofk.bd.Adapter;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.text.Editable;
@@ -17,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ofk.bd.R;
+import com.ofk.bd.Utility.DrawableUtility;
 
 import java.util.List;
 
@@ -24,9 +26,9 @@ public class ProfileListAdapter extends RecyclerView.Adapter<ProfileListAdapter.
 
     private static final String TAG = "ProfileListAdapter";
 
-    private static final int[] avatars = {R.drawable.ic_profile, R.drawable.ic_phone, R.drawable.ic_mail, R.drawable.ic_logout, R.drawable.contact, R.drawable.ic_birthday, R.drawable.ic_gender, R.drawable.ic_logout};
-
     private final List<String> profileItems;
+
+    private final Context mContext;
 
     private OnItemClickListener mListener;
     private OnItemEditListener mEditListener;
@@ -47,8 +49,9 @@ public class ProfileListAdapter extends RecyclerView.Adapter<ProfileListAdapter.
         mEditListener = listener;
     }
 
-    public ProfileListAdapter(List<String> list) {
-        profileItems = list;
+    public ProfileListAdapter(List<String> list, Context mContext) {
+        this.profileItems = list;
+        this.mContext = mContext;
     }
 
     @NonNull
@@ -84,7 +87,7 @@ public class ProfileListAdapter extends RecyclerView.Adapter<ProfileListAdapter.
         } else {
             holder.profileItemTextView.setText(profileItems.get(position));
         }
-        holder.profileItemImage.setImageResource(avatars[position]);
+        holder.profileItemImage.setImageDrawable(DrawableUtility.getProfileItemDrawable(mContext, position));
     }
 
     @Override

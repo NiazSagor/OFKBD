@@ -46,11 +46,11 @@
                 <EditText
                     android:id="@+id/yourNameEditText"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/custom_editText_height"
+                    android:layout_height="40dp"
                     android:layout_margin="16dp"
                     android:background="@drawable/input_number_edittext"
                     android:fontFamily="@font/solaimanlipi"
-                    android:hint="John Doe"
+                    android:hint="@string/first_last_name_only"
                     android:inputType="text"
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp"
@@ -70,7 +70,7 @@
                 <EditText
                     android:id="@+id/password"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/custom_editText_height"
+                    android:layout_height="40dp"
                     android:layout_margin="16dp"
                     android:background="@drawable/input_number_edittext"
                     android:fontFamily="@font/solaimanlipi"
@@ -95,7 +95,7 @@
                 <EditText
                     android:id="@+id/yourEmailEditText"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/custom_editText_height"
+                    android:layout_height="40dp"
                     android:layout_margin="16dp"
                     android:background="@drawable/input_number_edittext"
                     android:fontFamily="@font/solaimanlipi"

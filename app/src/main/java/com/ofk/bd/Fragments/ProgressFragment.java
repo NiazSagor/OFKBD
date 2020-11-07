@@ -16,6 +16,8 @@ import com.ofk.bd.HelperClass.BadgeUtilityClass;
 import com.ofk.bd.HelperClass.EnrolledCourse;
 import com.ofk.bd.HelperClass.SectionCourseTuple;
 import com.ofk.bd.R;
+import com.ofk.bd.Utility.DrawableUtility;
+import com.ofk.bd.Utility.StringUtility;
 import com.ofk.bd.ViewModel.MainActivityViewModel;
 import com.ofk.bd.databinding.FragmentProgressBinding;
 
@@ -135,32 +137,14 @@ public class ProgressFragment extends Fragment {
 
                 setUpcomingBadgeList(currentBadgeIconIndex);
 
-                int nextBadgeIconIndex = currentBadgeIconIndex + 1;
-
                 mainActivityViewModel.getCurrentIndexOnBadge().setValue(currentBadgeIconIndex);
 
-                String currentLevelExtended = " " + level_names[currentBadgeIconIndex];
+                binding.currentLevelTextViewTop.setText(StringUtility.getCurrentLevelName(currentBadgeIconIndex));
+                binding.currentLevelTextViewBelow.setText(StringUtility.getCurrentLevelName(currentBadgeIconIndex));
+                binding.nextLevelTextViewBelow.setText(StringUtility.getCurrentLevelName(currentBadgeIconIndex + 1));
 
-                String currentLevelOnly = level_names[currentBadgeIconIndex];
-                String nextLevelOnly = level_names[nextBadgeIconIndex];
-
-                binding.currentLevelTextViewTop.setText(currentLevelExtended);
-                binding.currentLevelTextViewBelow.setText(currentLevelOnly);
-                binding.nextLevelTextViewBelow.setText(nextLevelOnly);
-
-                binding.currentBadge.setImageResource(badge_icons[currentBadgeIconIndex]);
-                binding.nextBadge.setImageResource(badge_icons[nextBadgeIconIndex]);
-
-                if (level_names[currentBadgeIconIndex].contains("Apprentice")) {
-
-                } else if (level_names[currentBadgeIconIndex].contains("Journeyman")) {
-
-                } else if (level_names[currentBadgeIconIndex].contains("Master")) {
-
-                } else if (level_names[currentBadgeIconIndex].contains("Grandmaster")) {
-                } else if (level_names[currentBadgeIconIndex].contains("Super Kids")) {
-                }
-
+                binding.currentBadge.setImageDrawable(DrawableUtility.getDrawable(getContext(), currentBadgeIconIndex));
+                binding.nextBadge.setImageDrawable(DrawableUtility.getDrawable(getContext(), currentBadgeIconIndex + 1));
             } else if (current == 38) {
                 String currentLevel = " Super Kids 3";
 
@@ -168,6 +152,13 @@ public class ProgressFragment extends Fragment {
 
                 binding.currentBadge.setImageResource(badge_icons[14]);
 
+                binding.nextLevelTextViewBelow.setVisibility(View.GONE);
+
+                binding.gotoNextLevel.setVisibility(View.GONE);
+
+                binding.lineMiddle.setVisibility(View.GONE);
+
+                binding.nextBadge.setVisibility(View.GONE);
             } else if (current == 0) {
                 binding.line1.setVisibility(View.GONE);
                 binding.earnedBadgeTextView.setVisibility(View.GONE);
@@ -181,24 +172,25 @@ public class ProgressFragment extends Fragment {
             }
         }
     };
-
-    private void setUpcomingBadgeList(int currentBadgeIconIndex) {
-        AvatarListAdapter adapter = new AvatarListAdapter("view_badge");
-        adapter.setCurrentBadgeIndex(currentBadgeIconIndex);
-        binding.upcomingBadgesRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-        binding.upcomingBadgesRecyclerView.setAdapter(adapter);
-    }
-
     private final Observer<List<SectionCourseTuple>> listObserver = new Observer<List<SectionCourseTuple>>() {
         @Override
         public void onChanged(List<SectionCourseTuple> sectionCourseTuples) {
-            if (sectionCourseTuples != null) {
+            if (sectionCourseTuples.size() >= 1) {
                 binding.courseProgressTextView.setVisibility(View.VISIBLE);
+                binding.subjectProgressRecyclerView.setVisibility(View.VISIBLE);
                 binding.subjectProgressRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
                 binding.subjectProgressRecyclerView.setAdapter(new ProgressListAdapter(sectionCourseTuples));
             } else {
                 binding.courseProgressTextView.setVisibility(View.GONE);
+                binding.subjectProgressRecyclerView.setVisibility(View.GONE);
             }
         }
     };
+
+    private void setUpcomingBadgeList(int currentBadgeIconIndex) {
+        AvatarListAdapter adapter = new AvatarListAdapter(getContext(), "view_badge");
+        adapter.setCurrentBadgeIndex(currentBadgeIconIndex);
+        binding.upcomingBadgesRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+        binding.upcomingBadgesRecyclerView.setAdapter(adapter);
+    }
 }
