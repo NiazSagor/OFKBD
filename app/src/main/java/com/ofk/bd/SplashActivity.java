@@ -2,6 +2,7 @@ package com.ofk.bd;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -21,11 +22,11 @@ import com.ofk.bd.AsyncTasks.FirebaseQueryVideo;
 import com.ofk.bd.HelperClass.Activity;
 import com.ofk.bd.HelperClass.Common;
 import com.ofk.bd.HelperClass.DisplayCourse;
-import com.ofk.bd.Utility.StringUtility;
 import com.ofk.bd.HelperClass.Video;
 import com.ofk.bd.Interface.ActivityPicLoadCallback;
 import com.ofk.bd.Interface.DisplayCourseLoadCallback;
 import com.ofk.bd.Interface.VideoLoadCallback;
+import com.ofk.bd.Utility.StringUtility;
 import com.ofk.bd.databinding.ActivitySplashBinding;
 
 import java.util.List;
@@ -44,11 +45,15 @@ public class SplashActivity extends AppCompatActivity {
 
     private KAlertDialog pDialog;
 
+    private SharedPreferences sharedPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivitySplashBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        sharedPreferences = getSharedPreferences("isVerified", MODE_PRIVATE);
 
         mAuth = FirebaseAuth.getInstance();
         remoteConfig = FirebaseRemoteConfig.getInstance();
@@ -107,8 +112,14 @@ public class SplashActivity extends AppCompatActivity {
                 binding.progressBar.setVisibility(View.GONE);
 
                 if (mAuth.getCurrentUser() == null) {
-                    startActivity(new Intent(SplashActivity.this, InfoActivity.class)
-                            .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP));
+
+                    if (sharedPreferences.getBoolean("isVerified", false)) {
+                        startActivity(new Intent(SplashActivity.this, MainActivity.class)
+                                .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                    } else {
+                        startActivity(new Intent(SplashActivity.this, InfoActivity.class)
+                                .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                    }
 
                 } else {
                     startActivity(new Intent(SplashActivity.this, MainActivity.class)

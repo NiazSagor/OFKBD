@@ -9,12 +9,36 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
-            android:id="@+id/youtube_player_view"
-            app:showFullScreenButton="false"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:autoPlay="false" />
+            android:layout_height="wrap_content">
+
+            <com.google.android.exoplayer2.ui.PlayerView
+                android:id="@+id/video_player_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:auto_show="false"
+                app:controller_layout_id="@layout/player_control_view"
+                app:fastforward_increment="10000"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:rewind_increment="10000"
+                app:surface_type="surface_view"
+                app:use_controller="true" />
+
+            <ProgressBar
+                android:id="@+id/progress_circular"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/video_player_view"
+                app:layout_constraintEnd_toEndOf="@id/video_player_view"
+                app:layout_constraintStart_toStartOf="@id/video_player_view"
+                app:layout_constraintTop_toTopOf="@id/video_player_view" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <ImageView
             android:id="@+id/videoThumbNail"
@@ -23,14 +47,13 @@
             android:scaleType="fitXY" />
 
         <ProgressBar
-            android:visibility="gone"
             android:id="@+id/progressBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true" />
+            android:layout_centerInParent="true"
+            android:visibility="gone" />
 
         <LinearLayout
-            android:visibility="visible"
             android:id="@+id/videoPlayLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -40,7 +63,8 @@
             android:focusable="true"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:padding="16dp">
+            android:padding="16dp"
+            android:visibility="visible">
 
             <ImageView
                 android:layout_width="48dp"

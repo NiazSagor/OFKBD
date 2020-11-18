@@ -47,10 +47,12 @@
                 android:layout_margin="16dp"
                 android:background="@drawable/input_number_edittext"
                 android:fontFamily="@font/solaimanlipi"
+                android:hint="@string/youNumberExample"
                 android:inputType="phone"
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
-                android:textColor="@android:color/black" />
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/inner_body_text_size" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -69,11 +71,13 @@
                 android:layout_margin="16dp"
                 android:background="@drawable/input_number_edittext"
                 android:fontFamily="@font/solaimanlipi"
+                android:hint="@string/yourPasswordLimit"
                 android:inputType="numberPassword"
                 android:maxLength="6"
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
-                android:textColor="@android:color/black" />
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/inner_body_text_size" />
 
             <RelativeLayout
                 android:id="@+id/nextButton"

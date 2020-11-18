@@ -28,7 +28,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.ofk.bd.HelperClass.UserForFirebase;
+import com.ofk.bd.Interface.CheckUserCallback;
 import com.ofk.bd.R;
+import com.ofk.bd.Utility.CheckUserDatabase;
 import com.ofk.bd.ViewModel.InfoActivityViewModel;
 import com.ofk.bd.databinding.FragmentInputNumberBinding;
 
@@ -125,10 +128,34 @@ public class InputNumberFragment extends Fragment {
                         binding.phoneNumberEditText.setError("সঠিক নাম্বার দাও নি");
                     } else {
                         userPhoneNumber = binding.phoneNumberEditText.getText().toString().trim();
-                        Log.d(TAG, "onClick: " + userPhoneNumber);
+
                         hideKeyboardFrom();
-                        sendVerificationCode("+88" + userPhoneNumber);
+
                         showAlertDialog("start");
+
+                        // check if user is present
+                        new CheckUserDatabase(new CheckUserCallback() {
+                            @Override
+                            public void onUserCheckCallback(boolean isExist, String message) {
+                                if (isExist) {
+                                    // user has already an account
+                                    showAlertDialog("end");
+                                    Log.d(TAG, "onUserCheckCallback: ");
+                                    activityViewModel.getUserPhoneNumberLiveData().setValue("+88" + userPhoneNumber);
+                                    viewPager2.setCurrentItem(3, true);
+                                    Toast.makeText(getActivity(), "Welcome Back!", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    // user does not have an account then we send verification code
+                                    sendVerificationCode("+88" + userPhoneNumber);
+                                    showAlertDialog("start");
+                                }
+                            }
+
+                            @Override
+                            public void onUserFoundCallback(UserForFirebase user) {
+                                //
+                            }
+                        }, "+88" + userPhoneNumber, "").execute();
                     }
 
                 } else {

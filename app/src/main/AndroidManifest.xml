@@ -11,6 +11,7 @@
     <application
         android:name=".HelperClass.MyApp"
         android:allowBackup="false"
+        android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -32,20 +33,15 @@
         </activity>
         <activity
             android:name=".DisplayCourseActivity"
-            android:documentLaunchMode="none"
-            android:launchMode="standard"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.Transparent" />
         <activity
             android:name=".CourseActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
-            android:documentLaunchMode="none"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleTop"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:launchMode="singleInstance"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".InfoActivity"
-            android:documentLaunchMode="none"
             android:fitsSystemWindows="true"
             android:theme="@style/AppTheme.Transparent"
             android:windowSoftInputMode="adjustPan|adjustUnspecified">
@@ -60,10 +56,8 @@
 
         <activity
             android:name=".MainActivity"
-            android:documentLaunchMode="none"
             android:fitsSystemWindows="true"
             android:largeHeap="true"
-            android:launchMode="standard"
             android:theme="@style/AppTheme.Transparent"
             android:windowSoftInputMode="adjustPan|adjustUnspecified">
 

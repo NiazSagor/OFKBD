@@ -1,9 +1,11 @@
 package com.ofk.bd.CourseActivityAdapter;
 
 import android.app.Activity;
+import android.graphics.drawable.AnimatedVectorDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -11,6 +13,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
 import com.ofk.bd.HelperClass.Section;
 import com.ofk.bd.HelperClass.SectionVideo;
@@ -21,6 +24,11 @@ import com.ofk.bd.ViewModel.VideoFromListViewModel;
 import java.util.List;
 
 public class CourseSectionAdapter extends RecyclerView.Adapter<CourseSectionAdapter.CourseSectionListViewHolder> {
+
+    int switchNumber = 0;
+
+    private AnimatedVectorDrawableCompat drawableCompat;
+    private AnimatedVectorDrawable animatedVectorDrawable;
 
     private static final String TAG = "CourseSectionAdapter";
 
@@ -72,31 +80,22 @@ public class CourseSectionAdapter extends RecyclerView.Adapter<CourseSectionAdap
         return sectionVideoList.size();
     }
 
+
     public class CourseSectionListViewHolder extends RecyclerView.ViewHolder {
 
         TextView sectionName;
-        View dropDownArrowView;
         RecyclerView sectionVideoListRecyclerView;
-        ConstraintLayout layout;
+        ConstraintLayout layout, expandLayout;
 
         public CourseSectionListViewHolder(@NonNull View itemView, final List<SectionVideo> sections) {
             super(itemView);
 
             sectionName = itemView.findViewById(R.id.sectionName);
-            dropDownArrowView = itemView.findViewById(R.id.dropDownArrow);
             sectionVideoListRecyclerView = itemView.findViewById(R.id.sectionVideoListRecyclerView);
             layout = itemView.findViewById(R.id.constraintLayout);
+            expandLayout = itemView.findViewById(R.id.expandList);
 
-            sectionName.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Section section = sections.get(getAdapterPosition()).getSectionName();
-                    section.setExpanded(!section.isExpanded());
-                    notifyItemChanged(getAdapterPosition());
-                }
-            });
-
-            dropDownArrowView.setOnClickListener(new View.OnClickListener() {
+            expandLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Section section = sections.get(getAdapterPosition()).getSectionName();

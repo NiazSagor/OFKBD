@@ -16,8 +16,9 @@ public class UserProgressClass {
     private String courseThumbnailURL;
     private int totalVideos;
     private int videoWatched;
+    private long currentVideoPosition;
 
-    public UserProgressClass(String sectionName, String sectionNameBangla, String courseEnrolled, String courseNameEnglish, boolean isFinished, String courseThumbnailURL, int totalVideos, int videoWatched) {
+    public UserProgressClass(String sectionName, String sectionNameBangla, String courseEnrolled, String courseNameEnglish, boolean isFinished, String courseThumbnailURL, int totalVideos, int videoWatched, long currentVideoPosition) {
         this.sectionName = sectionName;
         this.sectionNameBangla = sectionNameBangla;
         this.courseEnrolled = courseEnrolled;
@@ -26,6 +27,7 @@ public class UserProgressClass {
         this.courseThumbnailURL = courseThumbnailURL;
         this.totalVideos = totalVideos;
         this.videoWatched = videoWatched;
+        this.currentVideoPosition = currentVideoPosition;
     }
 
     public int getId() {
@@ -98,5 +100,13 @@ public class UserProgressClass {
 
     public void setFinished(boolean finished) {
         isFinished = finished;
+    }
+
+    public long getCurrentVideoPosition() {
+        return currentVideoPosition;
+    }
+
+    public void setCurrentVideoPosition(long currentVideoPosition) {
+        this.currentVideoPosition = currentVideoPosition;
     }
 }

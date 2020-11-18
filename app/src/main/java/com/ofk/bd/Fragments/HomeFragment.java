@@ -67,7 +67,7 @@ public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;
 
-    private static int[] indicator = {R.drawable.dot, R.drawable.inactivedot};
+    private static final int[] indicator = {R.drawable.dot, R.drawable.inactivedot};
 
     private CourseSliderListAdapter courseSliderListAdapter;
 
@@ -207,7 +207,7 @@ public class HomeFragment extends Fragment {
                             dialog.dismissAlertDialog();
                             startActivity(intent);
                         }
-                    }, 2300);
+                    }, 1000);
                 }
             }, Common.courseToDisplay, courseName).execute();
         }

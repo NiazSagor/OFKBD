@@ -1,24 +1,42 @@
 package com.ofk.bd.Fragments;
 
+import android.graphics.drawable.AnimatedVectorDrawable;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
+import com.google.android.exoplayer2.Player;
+import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.ProgressiveMediaSource;
+import com.google.android.exoplayer2.ui.PlayerView;
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.util.Util;
+import com.ofk.bd.Model.YTMedia;
+import com.ofk.bd.Model.YTSubtitles;
+import com.ofk.bd.Model.YoutubeMeta;
+import com.ofk.bd.R;
 import com.ofk.bd.Utility.AnimationUtility;
-import com.ofk.bd.Utility.StringUtility;
+import com.ofk.bd.Utility.ExtractorException;
+import com.ofk.bd.Utility.YoutubeStreamExtractor;
 import com.ofk.bd.ViewModel.MainActivityViewModel;
 import com.ofk.bd.databinding.FragmentActivityVideoBinding;
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants;
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer;
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerListener;
 import com.squareup.picasso.Picasso;
+
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -37,6 +55,20 @@ public class ActivityVideoFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    private AnimatedVectorDrawableCompat drawableCompat;
+    private AnimatedVectorDrawable animatedVectorDrawable;
+
+    private SimpleExoPlayer player;
+    private PlayerView playerView;
+    private boolean playWhenReady = true;
+    private int currentWindow = 0;
+    private long playbackPosition = 0;
+    boolean fullscreen = false;
+    int switchNumber = 0;
+
+    private ProgressBar progressBar;
+    private ImageButton playPause;
 
     public ActivityVideoFragment() {
         // Required empty public constructor
@@ -83,8 +115,16 @@ public class ActivityVideoFragment extends Fragment {
 
         // Inflate the layout for this fragment
         binding = FragmentActivityVideoBinding.inflate(getLayoutInflater());
-        this.getLifecycle().addObserver(binding.youtubePlayer);
-        binding.youtubePlayer.addYouTubePlayerListener(youTubePlayerListener);
+
+        playerView = binding.getRoot().findViewById(R.id.video_player_view);
+        progressBar = binding.getRoot().findViewById(R.id.progress_circular);
+        playPause = binding.getRoot().findViewById(R.id.exo_play_pause);
+        AppCompatTextView headerTextView = binding.getRoot().findViewById(R.id.header_tv);
+        headerTextView.setVisibility(View.INVISIBLE);
+        ImageButton fullScreenButton = binding.getRoot().findViewById(R.id.exo_fullscreen);
+        fullScreenButton.setVisibility(View.INVISIBLE);
+        playPause.setOnClickListener(playButtonClickListener);
+
         return binding.getRoot();
     }
 
@@ -98,72 +138,129 @@ public class ActivityVideoFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+
+        if (Util.SDK_INT >= 24) {
+            initializePlayer();
+        }
+
         Picasso.get().load(getArguments().getString("videoThumb")).into(binding.videoThumbNail);
         binding.videoTitle.setText(getArguments().getString("videoTitle"));
     }
 
-    private final YouTubePlayerListener youTubePlayerListener = new YouTubePlayerListener() {
-        @Override
-        public void onReady(YouTubePlayer youTubePlayer) {
-            viewModel.getCurrentVideoURL().observe(getActivity(), new Observer<String>() {
-                @Override
-                public void onChanged(String s) {
-                    youTubePlayer.loadVideo(s, 0);
-                }
-            });
-        }
+    @Override
+    public void onResume() {
+        super.onResume();
 
+        if ((Util.SDK_INT < 24 || player == null)) {
+            initializePlayer();
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (Util.SDK_INT >= 24) {
+            releasePlayer();
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (Util.SDK_INT >= 24) {
+            releasePlayer();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (Util.SDK_INT < 24) {
+            releasePlayer();
+        }
+    }
+
+    private void initializePlayer() {
+        player = new SimpleExoPlayer.Builder(getContext()).build();
+        playerView.setPlayer(player);
+        player.addListener(playerEventListener);
+        player.setPlayWhenReady(playWhenReady);
+        player.seekTo(currentWindow, playbackPosition);
+    }
+
+    private void releasePlayer() {
+        if (player != null) {
+            playWhenReady = player.getPlayWhenReady();
+            playbackPosition = player.getCurrentPosition();
+            currentWindow = player.getCurrentWindowIndex();
+            player.release();
+            player = null;
+        }
+    }
+
+    private final Player.EventListener playerEventListener = new Player.EventListener() {
         @Override
-        public void onStateChange(YouTubePlayer youTubePlayer, PlayerConstants.PlayerState playerState) {
-            String state = StringUtility.playerStateToString(playerState);
-            if (state.equals("ENDED")) {
-                AnimationUtility.endAnimation(getContext(), binding.playImage);
-                AnimationUtility.endAnimation(getContext(), binding.videoThumbNail);
-                AnimationUtility.endAnimation(getContext(), binding.videoTitle);
-                AnimationUtility.endAnimation(getContext(), binding.gradientView);
+        public void onPlaybackStateChanged(int state) {
+
+            switch (state) {
+                case Player.STATE_BUFFERING:
+                    progressBar.setVisibility(View.VISIBLE);
+                    playPause.setVisibility(View.GONE);
+                    break;
+                case Player.STATE_READY:
+                    progressBar.setVisibility(View.GONE);
+                    playerView.showController();
+                    playPause.setVisibility(View.VISIBLE);
+                    break;
+                case Player.STATE_ENDED:
+                    progressBar.setVisibility(View.GONE);
+                    AnimationUtility.endAnimation(getContext(), binding.playImage);
+                    AnimationUtility.endAnimation(getContext(), binding.videoThumbNail);
+                    AnimationUtility.endAnimation(getContext(), binding.videoTitle);
+                    AnimationUtility.endAnimation(getContext(), binding.gradientView);
+                    break;
+                case Player.STATE_IDLE:
+                    progressBar.setVisibility(View.GONE);
+                    break;
             }
         }
+    };
 
+    private final View.OnClickListener playButtonClickListener = new View.OnClickListener() {
         @Override
-        public void onPlaybackQualityChange(YouTubePlayer youTubePlayer, PlayerConstants.PlaybackQuality playbackQuality) {
+        public void onClick(View view) {
 
-        }
+            if (switchNumber == 0) {
+                playPause.setImageDrawable(getResources().getDrawable(R.drawable.pause_to_play));
+                Drawable drawable = playPause.getDrawable();
 
-        @Override
-        public void onPlaybackRateChange(YouTubePlayer youTubePlayer, PlayerConstants.PlaybackRate playbackRate) {
+                if (drawable instanceof AnimatedVectorDrawableCompat) {
+                    drawableCompat = (AnimatedVectorDrawableCompat) drawable;
+                    drawableCompat.start();
 
-        }
+                } else if (drawable instanceof AnimatedVectorDrawable) {
+                    animatedVectorDrawable = (AnimatedVectorDrawable) drawable;
+                    animatedVectorDrawable.start();
+                }
+                player.pause();
+                switchNumber++;
+            } else {
+                playPause.setImageDrawable(getResources().getDrawable(R.drawable.play_to_pause));
+                Drawable drawable = playPause.getDrawable();
 
-        @Override
-        public void onError(YouTubePlayer youTubePlayer, PlayerConstants.PlayerError playerError) {
-
-        }
-
-        @Override
-        public void onCurrentSecond(YouTubePlayer youTubePlayer, float v) {
-
-        }
-
-        @Override
-        public void onVideoDuration(YouTubePlayer youTubePlayer, float v) {
-
-        }
-
-        @Override
-        public void onVideoLoadedFraction(YouTubePlayer youTubePlayer, float v) {
-
-        }
-
-        @Override
-        public void onVideoId(YouTubePlayer youTubePlayer, String s) {
-
-        }
-
-        @Override
-        public void onApiChange(YouTubePlayer youTubePlayer) {
-
+                if (drawable instanceof AnimatedVectorDrawableCompat) {
+                    drawableCompat = (AnimatedVectorDrawableCompat) drawable;
+                    drawableCompat.start();
+                } else if (drawable instanceof AnimatedVectorDrawable) {
+                    animatedVectorDrawable = (AnimatedVectorDrawable) drawable;
+                    animatedVectorDrawable.start();
+                }
+                player.play();
+                switchNumber--;
+            }
         }
     };
+
 
     private final View.OnClickListener listener = new View.OnClickListener() {
         @Override
@@ -175,7 +272,25 @@ public class ActivityVideoFragment extends Fragment {
                 AnimationUtility.startAnimation(getContext(), binding.videoTitle);
                 AnimationUtility.startAnimation(getContext(), binding.gradientView);
 
-                viewModel.getCurrentVideoURL().postValue(getArguments() != null ? getArguments().getString("videoId") : null);
+                new YoutubeStreamExtractor(new YoutubeStreamExtractor.ExtractorListner() {
+                    @Override
+                    public void onExtractionDone(List<YTMedia> adaptiveStream, final List<YTMedia> mixedStream, List<YTSubtitles> subtitles, YoutubeMeta meta) {
+                        //url to get subtitle
+                        DefaultDataSourceFactory dataSourceFactory = new DefaultDataSourceFactory(getContext(), getResources().getString(R.string.app_name));
+                        MediaSource mediaSource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(mixedStream.get(0).getUrl()));
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                player.prepare(mediaSource);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onExtractionGoesWrong(final ExtractorException e) {
+                        Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                }).Extract(getArguments().getString("videoId"));
             }
         }
     };

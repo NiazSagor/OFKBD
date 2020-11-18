@@ -72,12 +72,16 @@ public class ProfileListAdapter extends RecyclerView.Adapter<ProfileListAdapter.
         } else if (position == 2 && profileItems.get(2).equals("")) {
             holder.profileItemTextView.setText("Add your email");
             holder.editImageView.setVisibility(View.VISIBLE);
-        } else if (position == 3 && profileItems.get(3).equals("")) {
-            holder.profileItemTextView.setText("Add your class");
+        } else if (position == 3) {
+
+            holder.profileItemTextView.setText(profileItems.get(3).equals("") ? "Add your class" : profileItems.get(position));
             holder.editImageView.setVisibility(View.VISIBLE);
-        } else if (position == 4 && profileItems.get(4).equals("")) {
-            holder.profileItemTextView.setText("Add your institute");
+
+        } else if (position == 4) {
+
+            holder.profileItemTextView.setText(profileItems.get(4).equals("") ? "Add your institute" : profileItems.get(position));
             holder.editImageView.setVisibility(View.VISIBLE);
+
         } else if (position == 5 && profileItems.get(5).equals("")) {
             holder.profileItemTextView.setText("Add your date of birth");
             holder.editImageView.setVisibility(View.VISIBLE);

@@ -1,27 +1,32 @@
 package com.ofk.bd.InfoActivityFragment;
 
+import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.ofk.bd.HelperClass.Common;
 import com.ofk.bd.HelperClass.UserForFirebase;
+import com.ofk.bd.HelperClass.UserInfo;
+import com.ofk.bd.Interface.CheckUserCallback;
 import com.ofk.bd.MainActivity;
 import com.ofk.bd.Utility.AlertDialogUtility;
+import com.ofk.bd.Utility.CheckUserDatabase;
 import com.ofk.bd.ViewModel.InfoActivityViewModel;
 import com.ofk.bd.databinding.FragmentLogInBinding;
 
@@ -33,6 +38,8 @@ import com.ofk.bd.databinding.FragmentLogInBinding;
 public class LogInFragment extends Fragment {
 
     private static final String TAG = "LogInFragment";
+
+    private SharedPreferences sharedPreferences;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -74,7 +81,10 @@ public class LogInFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-        activityViewModel = ViewModelProviders.of(this).get(InfoActivityViewModel.class);
+
+        sharedPreferences = getActivity().getSharedPreferences("isVerified", Context.MODE_PRIVATE);
+
+        activityViewModel = ViewModelProviders.of(getActivity()).get(InfoActivityViewModel.class);
     }
 
     private FragmentLogInBinding binding;
@@ -89,12 +99,25 @@ public class LogInFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = FragmentLogInBinding.inflate(getLayoutInflater());
+
         return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        activityViewModel.getUserPhoneNumberLiveData().observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                if (s != null) {
+                    Log.d(TAG, "onChanged: " + s);
+                    binding.phoneNumberEditText.setText(s);
+                }
+            }
+        });
+
+        binding.passwordEditText.addTextChangedListener(watcher);
 
         binding.nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -138,65 +161,64 @@ public class LogInFragment extends Fragment {
     }
 
     private void checkDatabase(String userPhoneNumber, String userPassword) {
-        new CheckUserDatabase(userPhoneNumber, userPassword).execute();
+        new CheckUserDatabase(new CheckUserCallback() {
+            @Override
+            public void onUserCheckCallback(boolean isExist, String message) {
+                if (isExist && message.equals("match")) {
+                    dialogUtility.dismissAlertDialog();
+
+                    sharedPreferences.edit().putBoolean("isVerified", true).apply();
+
+                    getActivity().startActivity(new Intent(getActivity(), MainActivity.class)
+                            .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                    getActivity().finish();
+                } else if (isExist && message.equals("misMatch")) {
+                    dialogUtility.dismissAlertDialog();
+                    Toast.makeText(getContext(), "পাসওয়ার্ড সঠিক হয় নি", Toast.LENGTH_SHORT).show();
+                } else {
+                    dialogUtility.dismissAlertDialog();
+                    Toast.makeText(getContext(), "ইউজার একাউন্ট নেই", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onUserFoundCallback(UserForFirebase user) {
+
+                Toast.makeText(getActivity(), "Welcome Back!", Toast.LENGTH_SHORT).show();
+
+                if (user != null) {
+                    //activityViewModel.updateUserInfo(new UserInfo(user.getUserName(), user.getUserPhoneNumber(), user.)user.getUserName(), user.getUserEmail(), user.getUserPhoneNumber());
+                }
+            }
+        }, userPhoneNumber, userPassword).execute();
     }
 
-    private class CheckUserDatabase extends AsyncTask<Void, Void, Void> {
+    private final TextWatcher watcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-        private String userPhoneNumber, userPassword;
-
-        public CheckUserDatabase(String userPhoneNumber, String userPassword) {
-            this.userPhoneNumber = userPhoneNumber;
-            this.userPassword = userPassword;
         }
 
         @Override
-        protected Void doInBackground(Void... voids) {
-
-            DatabaseReference db = FirebaseDatabase.getInstance().getReference("User");
-
-            db.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.exists()) {
-                        if (dataSnapshot.child(userPhoneNumber).exists()) {
-
-                            String pass = dataSnapshot.child(userPhoneNumber).child("userPassword").getValue(String.class);
-
-                            Log.d(TAG, "onDataChange: db" + pass);
-                            Log.d(TAG, "onDataChange: user" + userPassword);
-
-                            if (pass.equals(userPassword)) {
-
-                                dialogUtility.dismissAlertDialog();
-
-                                UserForFirebase user = dataSnapshot.child(userPhoneNumber).getValue(UserForFirebase.class);
-                                assert user != null;
-                                activityViewModel.updateUserInfo(user.getUserName(), user.getUserEmail(), user.getUserPhoneNumber());
-
-                                Toast.makeText(getActivity(), "Welcome Back!", Toast.LENGTH_SHORT).show();
-
-                                getActivity().startActivity(new Intent(getActivity(), MainActivity.class)
-                                        .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP));
-                                getActivity().finish();
-                            } else {
-                                dialogUtility.dismissAlertDialog();
-                                Toast.makeText(getContext(), "পাসওয়ার্ড সঠিক হয় নি", Toast.LENGTH_SHORT).show();
-                            }
-                        } else {
-                            dialogUtility.dismissAlertDialog();
-                            Toast.makeText(getContext(), "ইউজার একাউন্ট নেই", Toast.LENGTH_SHORT).show();
-                        }
-
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
-            return null;
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            if (charSequence.length() == 6) {
+                hideKeyboardFrom();
+            }
         }
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+
+        }
+    };
+
+    public void hideKeyboardFrom() {
+        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Service.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(binding.phoneNumberEditText.getWindowToken(), 0);
     }
+
+    /* allowBackUp will be true so we don't need to fetch user data from firebase//TODO
+    UserForFirebase user = dataSnapshot.child(userPhoneNumber).getValue(UserForFirebase.class);
+    assert user != null;
+                    activityViewModel.updateUserInfo(user.getUserName(), user.getUserEmail(), user.getUserPhoneNumber());*/
 }

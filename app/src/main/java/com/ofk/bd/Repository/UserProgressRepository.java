@@ -1,15 +1,26 @@
 package com.ofk.bd.Repository;
 
 import android.app.Application;
+import android.content.Context;
+import android.net.Uri;
 import android.os.AsyncTask;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
+import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.ProgressiveMediaSource;
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.ofk.bd.Dao.UserProgressDao;
 import com.ofk.bd.Database.UserProgressDatabase;
 import com.ofk.bd.HelperClass.SectionCourseNameTuple;
 import com.ofk.bd.HelperClass.SectionCourseTuple;
 import com.ofk.bd.HelperClass.UserProgressClass;
+import com.ofk.bd.Model.YTMedia;
+import com.ofk.bd.Model.YTSubtitles;
+import com.ofk.bd.Model.YoutubeMeta;
+import com.ofk.bd.Utility.ExtractorException;
+import com.ofk.bd.Utility.YoutubeStreamExtractor;
 
 import java.util.List;
 
@@ -27,7 +38,8 @@ public class UserProgressRepository {
     private LiveData<List<UserProgressClass>> allProgress;// all progress
     private LiveData<List<SectionCourseNameTuple>> courseEnrolled;// already enrolled courses
     private LiveData<List<SectionCourseTuple>> combinedSectionCourseList;//section name and course name combined list
-    private int videoWatchedPerCourse;// video watched course wise
+    private LiveData<Long> currentVideoPosition = new MutableLiveData<>();
+    private static MutableLiveData<MediaSource> videoSource = new MutableLiveData<>();
 
 
     public UserProgressRepository(Application application) {
@@ -37,6 +49,7 @@ public class UserProgressRepository {
         courseEnrolled = userProgressDao.getAllEnrolledCourses();
         enrolledCourseOnly = userProgressDao.getAllEnrolledCoursesOnly();
         combinedSectionCourseList = userProgressDao.loadFullName();
+        currentVideoPosition = userProgressDao.getCurrentVideoPosition();
     }
 
     /**************************User progress table*********************************/
@@ -55,6 +68,15 @@ public class UserProgressRepository {
     public LiveData<List<SectionCourseTuple>> getCombinedSectionCourseList() {
         return combinedSectionCourseList;
     }
+
+    public LiveData<Long> getCurrentVideoPosition() {
+        return currentVideoPosition;
+    }
+
+    public void insertCurrentVideoPosition(long videoPos) {
+        new InsertCurrentVideoPositionAsyncTask(userProgressDao, videoPos).execute();
+    }
+
 
     public void insert(UserProgressClass progressClass) {
         new InsertUserProgressAsyncTask(userProgressDao).execute(progressClass);
@@ -85,6 +107,24 @@ public class UserProgressRepository {
         @Override
         protected Void doInBackground(Void... voids) {
             dao.upDateTotalVideo(course, count);
+            return null;
+        }
+    }
+
+
+    public static class InsertCurrentVideoPositionAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        UserProgressDao dao;
+        long pos;
+
+        public InsertCurrentVideoPositionAsyncTask(UserProgressDao dao, long pos) {
+            this.dao = dao;
+            this.pos = pos;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            dao.setCurrentVideoPosition(pos);
             return null;
         }
     }

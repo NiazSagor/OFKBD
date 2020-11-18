@@ -47,4 +47,12 @@
     <color name="profileDarkBlue">#2c3e50</color>
     <color name="profileLightBlue">#3498db</color>
 
+    <color name="white">#FFFFFFFF</color>
+    <color name="white_50">#80FFFFFF</color>
+    <color name="white_20">#33FFFFFF</color>
+
+    <color name="black_5">#0D000000</color>
+    <color name="black_10">#1A000000</color>
+    <color name="live_red">#ff0000</color>
+
 </resources>

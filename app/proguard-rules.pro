@@ -21,3 +21,4 @@
 #-renamesourcefileattribute SourceFile
 
 -keepnames class com.pierfrancescosoffritti.youtubeplayer.*
+-keep class org.mozilla.javascript. *

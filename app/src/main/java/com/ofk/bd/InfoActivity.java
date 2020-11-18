@@ -12,19 +12,13 @@ import com.ofk.bd.databinding.ActivityInfoBinding;
 
 public class InfoActivity extends AppCompatActivity {
 
-    private ActivityInfoBinding binding;
-
-    private ViewPager2 viewPager2;
-
-    private InfoActivityViewModel activityViewModel;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityInfoBinding.inflate(getLayoutInflater());
+        com.ofk.bd.databinding.ActivityInfoBinding binding = ActivityInfoBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        activityViewModel = ViewModelProviders.of(this).get(InfoActivityViewModel.class);
+        InfoActivityViewModel activityViewModel = ViewModelProviders.of(this).get(InfoActivityViewModel.class);
 
         binding.viewpager.setUserInputEnabled(false);
         binding.viewpager.setAdapter(new InfoActivityViewPagerAdapter(this));

@@ -22,9 +22,9 @@ public class SectionVideoAdapter extends RecyclerView.Adapter<SectionVideoAdapte
     public static final int SECTION = 1;
     public static final int SEARCH = 2;
 
-    private List<Video> videoList;
-    private String mSender;
-    private Picasso mPicasso;
+    private final List<Video> videoList;
+    private final String mSender;
+    private final Picasso mPicasso;
 
     private OnItemClickListener mListener;
 
@@ -50,47 +50,50 @@ public class SectionVideoAdapter extends RecyclerView.Adapter<SectionVideoAdapte
         switch (viewType) {
             case 1:
                 View sectionVideoView = inflater.inflate(R.layout.section_video_item_layout, parent, false);
-                return new SectionVideoListViewHolder(sectionVideoView, mListener);
+                return new SectionVideoListViewHolder(sectionVideoView, mListener, mSender);
 
             case 2:
                 View searchVideoView = inflater.inflate(R.layout.search_video_layout, parent, false);
-                return new SectionVideoListViewHolder(searchVideoView, mListener);
+                return new SectionVideoListViewHolder(searchVideoView, mListener, mSender);
 
             default:
                 View view = inflater.inflate(R.layout.recom_course_home_layout, parent, false);
-                return new SectionVideoListViewHolder(view, mListener);
+                return new SectionVideoListViewHolder(view, mListener, mSender);
         }
     }
 
     @Override
     public void onBindViewHolder(@NonNull SectionVideoAdapter.SectionVideoListViewHolder holder, int position) {
+
         holder.videoTitle.setText(videoList.get(position).getVideoTitle());
 
-        mPicasso.load(videoList.get(position).getVideoThumbNail())
-                .networkPolicy(NetworkPolicy.OFFLINE)
-                .into(holder.videoThumbNail, new Callback() {
-                    @Override
-                    public void onSuccess() {
+        if (mSender.equals("videoSearch")) {
+            mPicasso.load(videoList.get(position).getVideoThumbNail())
+                    .networkPolicy(NetworkPolicy.OFFLINE)
+                    .into(holder.videoThumbNail, new Callback() {
+                        @Override
+                        public void onSuccess() {
 
-                    }
+                        }
 
-                    @Override
-                    public void onError(Exception e) {
-                        mPicasso.load(videoList.get(position).getVideoThumbNail())
-                                .error(R.drawable.ofklogo)
-                                .into(holder.videoThumbNail, new Callback() {
-                                    @Override
-                                    public void onSuccess() {
+                        @Override
+                        public void onError(Exception e) {
+                            mPicasso.load(videoList.get(position).getVideoThumbNail())
+                                    .error(R.drawable.ofklogo)
+                                    .into(holder.videoThumbNail, new Callback() {
+                                        @Override
+                                        public void onSuccess() {
 
-                                    }
+                                        }
 
-                                    @Override
-                                    public void onError(Exception e) {
+                                        @Override
+                                        public void onError(Exception e) {
 
-                                    }
-                                });
-                    }
-                });
+                                        }
+                                    });
+                        }
+                    });
+        }
     }
 
     @Override
@@ -103,12 +106,11 @@ public class SectionVideoAdapter extends RecyclerView.Adapter<SectionVideoAdapte
         ImageView videoThumbNail;
         TextView videoTitle;
 
-        public SectionVideoListViewHolder(@NonNull View itemView, final OnItemClickListener listener) {
+        public SectionVideoListViewHolder(@NonNull View itemView, final OnItemClickListener listener, String sender) {
             super(itemView);
 
             videoThumbNail = itemView.findViewById(R.id.videoThumbNail);
             videoTitle = itemView.findViewById(R.id.videoTitle);
-
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -116,7 +118,7 @@ public class SectionVideoAdapter extends RecyclerView.Adapter<SectionVideoAdapte
 
                     int position = getAdapterPosition();
 
-                    if (listener != null) {
+                    if (listener != null && sender.equals("sectionVideo")) {
                         if (position != RecyclerView.NO_POSITION) {
                             listener.onItemClick(position, view);
                         }

@@ -11,4 +11,8 @@ public class Common {
     public static List<Activity> fieldActivityList = new ArrayList<>();
     public static List<Video> activityVideoList = new ArrayList<>();
     public static List<SectionVideo> sectionVideoList = new ArrayList<>();
+    public static List<String> videoWatchList = new ArrayList<>();
+    public static Long videoPos = 0L;
+    public static float ratio = 0;
+    public static UserForFirebase user;
 }

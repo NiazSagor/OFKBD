@@ -1,7 +1,7 @@
 package com.ofk.bd;
 
+import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -11,7 +11,6 @@ import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.LifecycleOwner;
@@ -24,6 +23,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.ofk.bd.AsyncTasks.FirebaseQueryRandomCourse;
 import com.ofk.bd.AsyncTasks.FirebaseQuerySubSection;
 import com.ofk.bd.DisplayCourseActivityAdapter.CourseListAdapter;
+import com.ofk.bd.Fragments.BottomDialog;
 import com.ofk.bd.HelperClass.Common;
 import com.ofk.bd.HelperClass.DisplayCourse;
 import com.ofk.bd.HelperClass.SectionVideo;
@@ -36,13 +36,15 @@ import com.ofk.bd.databinding.ActivityDisplayCourseBinding;
 
 import java.util.List;
 
-public class DisplayCourseActivity extends AppCompatActivity {
+public class DisplayCourseActivity extends AppCompatActivity implements BottomDialog.BottomSheetListener {
 
     private static final String TAG = "DisplayCourseActivity";
 
     private ActivityDisplayCourseBinding binding;
 
     private DisplayCourseActivityViewModel viewModel;
+
+    private static DisplayCourse selectedCourse;
 
     private AlertDialogUtility alertDialogUtility = new AlertDialogUtility();
 
@@ -186,17 +188,19 @@ public class DisplayCourseActivity extends AppCompatActivity {
                         String count = adapter.getItemCount() + " টি কোর্স";
                         binding.courseCount.setText(count);
                     }
-                }, 2200);
+                }, 1500);
 
                 adapter.setOnItemClickListener(new CourseListAdapter.OnItemClickListener() {
                     @Override
                     public void onItemClick(int position, View view) {
 
+
+                        selectedCourse = courses.get(position);
+
+
                         String sectionName = getIntent().getStringExtra("section_name");
-                        String sectionNameBangla = getIntent().getStringExtra("section_name_bangla");
                         String courseName = courses.get(position).getCourseTitle();
                         String courseNameEnglish = courses.get(position).getCourseTitleEnglish();
-                        String thumbNailURL = courses.get(position).getThumbnailURL();
 
                         enrolledCourseLiveData = viewModel.getCourseEnrolled();
 
@@ -208,7 +212,9 @@ public class DisplayCourseActivity extends AppCompatActivity {
                                         // if not in db from before
                                         Log.d(TAG, "onChanged: course is not in db");
                                         enrolledCourseLiveData.removeObservers(DisplayCourseActivity.this);
-                                        showAlertDialog(sectionName, sectionNameBangla, courseName, courseNameEnglish, thumbNailURL);
+
+                                        BottomDialog bottomSheet = new BottomDialog();
+                                        bottomSheet.show(getSupportFragmentManager(), "");
                                     } else {
                                         // if is in db from before
                                         Log.d(TAG, "onChanged: course is in db");
@@ -222,67 +228,6 @@ public class DisplayCourseActivity extends AppCompatActivity {
                 });
             }
         }, node).execute();
-    }
-
-    private void showAlertDialog(String sectionName, String sectionNameBangla, String courseName, String courseNameEnglish, String thumbnailURL) {
-
-        AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
-        builder1.setMessage("কোর্সটি শুরু করতে চাও?");
-        builder1.setCancelable(true);
-
-        builder1.setPositiveButton(
-                "হ্যা",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-
-                        dialog.cancel();
-
-                        alertDialogUtility.showAlertDialog(DisplayCourseActivity.this, "start");
-
-                        Intent intent = new Intent(DisplayCourseActivity.this, CourseActivity.class);
-                        intent.putExtra("section_name", sectionName);
-                        intent.putExtra("course_name", courseName);
-                        intent.putExtra("course_name_english", courseNameEnglish);
-                        intent.putExtra("from", "display");
-
-                        // inserts selected course to database
-                        viewModel.insert(new UserProgressClass(sectionName, sectionNameBangla, courseName, courseNameEnglish, false, thumbnailURL, 0, 0));
-
-                        new FirebaseQuerySubSection(new SectionVideoLoadCallback() {
-                            @Override
-                            public void onSectionVideoLoadCallback(List<SectionVideo> sectionVideoList, int totalVideos) {
-
-                                Common.sectionVideoList = sectionVideoList;
-
-                                Log.d(TAG, "onSectionVideoLoadCallback: " + totalVideos);
-
-                                viewModel.updateTotalVideoCourse(courseNameEnglish, totalVideos);
-
-                                handler.postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        alertDialogUtility.dismissAlertDialog();
-                                        startActivity(intent);
-                                    }
-                                }, 2300);
-                            }
-                        }, sectionName + " Section", courseNameEnglish).execute();
-                    }
-                });
-
-        builder1.setNegativeButton(
-                "না",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        startActivity(new Intent(DisplayCourseActivity.this, DisplayCourseActivity.class)
-                                .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP));
-                        finish();
-                        dialog.cancel();
-                    }
-                });
-
-        AlertDialog alert11 = builder1.create();
-        alert11.show();
     }
 
     private void proceedNormally(String sectionName, String courseName, String courseNameEnglish) {
@@ -309,7 +254,7 @@ public class DisplayCourseActivity extends AppCompatActivity {
                         alertDialogUtility.dismissAlertDialog();
                         startActivity(intent);
                     }
-                }, 2300);
+                }, 1000);
             }
         }, sectionName + " Section", courseNameEnglish).execute();
     }
@@ -321,5 +266,65 @@ public class DisplayCourseActivity extends AppCompatActivity {
 
         return activeNetwork != null &&
                 activeNetwork.isConnectedOrConnecting();
+    }
+
+    @Override
+    public void onButtonClicked(int isInterested) {
+        if (isInterested == 0) {
+
+            alertDialogUtility.showAlertDialog(this, "start");
+
+            String sectionName = getIntent().getStringExtra("section_name");
+            String sectionNameBangla = getIntent().getStringExtra("section_name_bangla");
+
+            String courseName = selectedCourse.getCourseTitle();
+            String courseNameEnglish = selectedCourse.getCourseTitleEnglish();
+            String thumbNailURL = selectedCourse.getThumbnailURL();
+
+
+            viewModel.insert(new UserProgressClass(sectionName, sectionNameBangla, courseName, courseNameEnglish, false, thumbNailURL, 0, 0, 0));
+
+
+            Intent intent = new Intent(DisplayCourseActivity.this, CourseActivity.class);
+            intent.putExtra("section_name", sectionName);
+            intent.putExtra("course_name", courseName);
+            intent.putExtra("course_name_english", courseNameEnglish);
+            intent.putExtra("from", "display");
+
+
+            new FirebaseQuerySubSection(new SectionVideoLoadCallback() {
+                @Override
+                public void onSectionVideoLoadCallback(List<SectionVideo> sectionVideoList, int totalVideos) {
+
+                    Common.sectionVideoList = sectionVideoList;
+
+                    Log.d(TAG, "onSectionVideoLoadCallback: " + totalVideos);
+
+                    viewModel.updateTotalVideoCourse(courseNameEnglish, totalVideos);
+
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            alertDialogUtility.dismissAlertDialog();
+                            startActivity(intent);
+                        }
+                    }, 1000);
+                }
+            }, sectionName + " Section", courseNameEnglish).execute();
+
+        } else if (isInterested == 1) {
+
+            // if user wants to buy
+
+        } else {
+            showDialog();
+        }
+    }
+
+    public void showDialog() {
+        final Dialog dialog = new Dialog(this);
+        dialog.setCancelable(true);
+        dialog.setContentView(R.layout.age_layout);
+        dialog.show();
     }
 }

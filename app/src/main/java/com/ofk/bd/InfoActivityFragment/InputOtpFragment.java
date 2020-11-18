@@ -1,7 +1,6 @@
 package com.ofk.bd.InfoActivityFragment;
 
 import android.app.Service;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
@@ -11,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -177,7 +175,10 @@ public class InputOtpFragment extends Fragment {
                         }
                     }, 1500);
                 } else {
-                    Toast.makeText(getContext(), "Not successful " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                    dialogUtility.dismissAlertDialog();
+                    dialogUtility.showAlertDialog(getContext(), "misMatchOtp");
+                    binding.otpView.setText("");
+                    //Toast.makeText(getContext(), "Not successful " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
         });

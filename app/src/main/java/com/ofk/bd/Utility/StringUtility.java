@@ -2,8 +2,8 @@ package com.ofk.bd.Utility;
 
 import android.content.Context;
 
+import com.ofk.bd.HelperClass.Common;
 import com.ofk.bd.R;
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants;
 
 public class StringUtility {
 
@@ -50,26 +50,6 @@ public class StringUtility {
         }
     }
 
-    public static String playerStateToString(PlayerConstants.PlayerState state) {
-        switch (state) {
-            case UNKNOWN:
-                return "UNKNOWN";
-            case UNSTARTED:
-                return "UNSTARTED";
-            case ENDED:
-                return "ENDED";
-            case PLAYING:
-                return "PLAYING";
-            case PAUSED:
-                return "PAUSED";
-            case BUFFERING:
-                return "BUFFERING";
-            case VIDEO_CUED:
-                return "VIDEO_CUED";
-            default:
-                return "status unknown";
-        }
-    }
 
     public static String getCurrentLevelName(int index) {
         return level_names[index];

@@ -9,9 +9,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -32,7 +32,7 @@ import java.util.List;
 
 import static com.ofk.bd.JobIntentService.UpdateVideoCountService.RECEIVER;
 
-public class MainActivity extends FragmentActivity implements ServiceResultReceiver.Receiver {
+public class MainActivity extends AppCompatActivity implements ServiceResultReceiver.Receiver {
 
     // our result receiver from job intent
     private ServiceResultReceiver mReceiver;
@@ -107,7 +107,7 @@ public class MainActivity extends FragmentActivity implements ServiceResultRecei
             return;
         }
 
-        if(remoteConfig.getBoolean(IS_COURSE_UPDATED)){
+        if (remoteConfig.getBoolean(IS_COURSE_UPDATED)) {
             //true
             setupService();
             Log.d(TAG, "onStart: " + remoteConfig.getBoolean(IS_COURSE_UPDATED));
@@ -115,7 +115,7 @@ public class MainActivity extends FragmentActivity implements ServiceResultRecei
     }
 
     public void setupViewPager() {
-        MainActivityViewPager adapter = new MainActivityViewPager(this);
+        MainActivityViewPager adapter = new MainActivityViewPager(getSupportFragmentManager(), getLifecycle());
 
         binding.viewpager.setUserInputEnabled(false);
 

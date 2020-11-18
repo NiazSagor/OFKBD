@@ -5,7 +5,6 @@ import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
-import androidx.room.RoomWarnings;
 import androidx.room.Update;
 
 import com.ofk.bd.HelperClass.SectionCourseNameTuple;
@@ -38,6 +37,12 @@ public interface UserProgressDao {
 
     @Query("SELECT videoWatched FROM user_progress WHERE courseNameEnglish = :courseName")
     int getCurrentVideoWatchCountForCurrentCourse(String courseName);
+
+    @Query("SELECT currentVideoPosition FROM user_progress WHERE id = 1")
+    LiveData<Long> getCurrentVideoPosition();
+
+    @Query("UPDATE user_progress  SET currentVideoPosition = :pos WHERE id = 1")
+    void setCurrentVideoPosition(long pos);
 
     @Query("SELECT totalVideos FROM user_progress WHERE courseNameEnglish = :courseName")
     int getTotalVideoCountForCurrentCourse(String courseName);

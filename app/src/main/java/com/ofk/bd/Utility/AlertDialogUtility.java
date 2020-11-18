@@ -50,10 +50,10 @@ public class AlertDialogUtility {
                 pDialog.show();
                 break;
 
-                case "wait":
+            case "wait":
                 pDialog = new KAlertDialog(context, KAlertDialog.PROGRESS_TYPE);
                 pDialog.getProgressHelper().setBarColor(Color.parseColor("#00c1c3"));
-                    pDialog.setTitleText("অপেক্ষা করো");
+                pDialog.setTitleText("অপেক্ষা করো");
                 pDialog.setCancelable(false);
                 pDialog.show();
                 break;
@@ -62,6 +62,20 @@ public class AlertDialogUtility {
                 pDialog = new KAlertDialog(context, KAlertDialog.ERROR_TYPE);
                 pDialog.setCancelable(true);
                 pDialog.setTitleText("ইন্টারনেট সংযোগ নেই")
+                        .setConfirmText("OK")
+                        .setConfirmClickListener(new KAlertDialog.KAlertClickListener() {
+                            @Override
+                            public void onClick(KAlertDialog kAlertDialog) {
+                                pDialog.dismissWithAnimation();
+                            }
+                        })
+                        .show();
+                break;
+
+            case "misMatchOtp":
+                pDialog = new KAlertDialog(context, KAlertDialog.ERROR_TYPE);
+                pDialog.setCancelable(true);
+                pDialog.setTitleText("OTP সঠিক হয় নি")
                         .setConfirmText("OK")
                         .setConfirmClickListener(new KAlertDialog.KAlertClickListener() {
                             @Override

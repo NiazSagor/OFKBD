@@ -21,7 +21,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
 
-import com.developer.kalert.KAlertDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.ofk.bd.Adapter.AvatarListAdapter;
@@ -39,7 +38,7 @@ import com.ofk.bd.databinding.FragmentUserInfoBinding;
  * Use the {@link UserInfoFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class UserInfoFragment extends Fragment {
+public class UserInfoFragment extends Fragment implements View.OnFocusChangeListener {
 
     private static final String TAG = "UserInfoFragment";
 
@@ -124,7 +123,7 @@ public class UserInfoFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = FragmentUserInfoBinding.inflate(getLayoutInflater());
-
+        binding.yourEmailEditText.setOnFocusChangeListener(this);
         return binding.getRoot();
     }
 
@@ -237,5 +236,12 @@ public class UserInfoFragment extends Fragment {
     public void hideKeyboardFrom() {
         InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Service.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(binding.password.getWindowToken(), 0);
+    }
+
+    @Override
+    public void onFocusChange(View view, boolean b) {
+        if (!b) {
+            hideKeyboardFrom();
+        }
     }
 }

@@ -3,28 +3,23 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
+    android:layout_marginStart="8dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginEnd="8dp"
+    android:background="@drawable/background1"
     android:paddingStart="16dp"
-    android:paddingTop="8dp"
-    android:paddingEnd="16dp"
-    android:paddingBottom="8dp">
+    android:paddingEnd="16dp">
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:cardElevation="4dp"
+    <ImageView
+        android:id="@+id/videoThumbNail"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/ic_play_button_outline"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:id="@+id/videoThumbNail"
-            android:layout_width="64dp"
-            android:layout_height="38dp"
-            android:scaleType="fitXY"
-            android:src="@color/colorPrimary" />
-
-    </androidx.cardview.widget.CardView>
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/red" />
 
     <TextView
         android:id="@+id/videoTitle"
@@ -32,13 +27,13 @@
         android:layout_height="wrap_content"
         android:ellipsize="end"
         android:gravity="center_vertical"
-        android:maxLines="1"
+        android:maxLines="3"
         android:padding="16dp"
         android:text="Video Title"
-        android:textColor="@android:color/black"
-        android:textSize="@dimen/blog_text_size"
-        app:layout_constraintBottom_toBottomOf="@+id/cardView"
-        app:layout_constraintStart_toEndOf="@id/cardView"
-        app:layout_constraintTop_toTopOf="@+id/cardView" />
+        android:textSize="@dimen/inner_body_text_size"
+        app:layout_constraintBottom_toBottomOf="@+id/videoThumbNail"
+        app:layout_constraintStart_toEndOf="@+id/videoThumbNail"
+        app:layout_constraintTop_toTopOf="@+id/videoThumbNail" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
