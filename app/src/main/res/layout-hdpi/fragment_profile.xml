@@ -128,7 +128,7 @@
                                 android:id="@+id/totalVideoCompleted"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="5"
+                                android:text="0"
                                 android:textColor="@android:color/white"
                                 android:textSize="@dimen/stats_text_size" />
 
@@ -155,7 +155,7 @@
                                 android:id="@+id/totalCourseCompleted"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="5"
+                                android:text="0"
                                 android:textColor="@android:color/white"
                                 android:textSize="@dimen/stats_text_size" />
 
@@ -182,7 +182,7 @@
                                 android:id="@+id/totalQuizCompleted"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="5"
+                                android:text="0"
                                 android:textColor="@android:color/white"
                                 android:textSize="@dimen/stats_text_size" />
 

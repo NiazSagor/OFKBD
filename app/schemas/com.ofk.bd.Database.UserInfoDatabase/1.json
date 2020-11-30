@@ -2,17 +2,23 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "c1e569e88abd011c5e311210f705abf2",
+    "identityHash": "9687ffc3c79635f907b87a4588cc9d60",
     "entities": [
       {
         "tableName": "user_info",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `userName` TEXT, `userPhoneNumber` TEXT, `userEmail` TEXT, `userClass` TEXT, `userSchool` TEXT, `userDOB` TEXT, `userGender` TEXT, `videoCompleted` INTEGER NOT NULL, `courseCompleted` INTEGER NOT NULL, `quizCompleted` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `firebaseUid` TEXT, `userName` TEXT, `userPhoneNumber` TEXT, `userPassword` TEXT, `userEmail` TEXT, `userClass` TEXT, `userSchool` TEXT, `userDOB` TEXT, `userGender` TEXT, `videoCompleted` INTEGER NOT NULL, `courseCompleted` INTEGER NOT NULL, `quizCompleted` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
             "columnName": "id",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "firebaseUid",
+            "columnName": "firebaseUid",
+            "affinity": "TEXT",
+            "notNull": false
           },
           {
             "fieldPath": "userName",
@@ -23,6 +29,12 @@
           {
             "fieldPath": "userPhoneNumber",
             "columnName": "userPhoneNumber",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "userPassword",
+            "columnName": "userPassword",
             "affinity": "TEXT",
             "notNull": false
           },
@@ -88,7 +100,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c1e569e88abd011c5e311210f705abf2')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9687ffc3c79635f907b87a4588cc9d60')"
     ]
   }
 }

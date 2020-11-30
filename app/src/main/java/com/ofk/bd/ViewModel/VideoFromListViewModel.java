@@ -10,7 +10,7 @@ import androidx.lifecycle.MutableLiveData;
 public class VideoFromListViewModel extends AndroidViewModel {
     private static final String TAG = "VideoFromListViewModel";
 
-    MutableLiveData<String> mutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<String> mutableLiveData = new MutableLiveData<>();
 
     public VideoFromListViewModel(@NonNull Application application) {
         super(application);

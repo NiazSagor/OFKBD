@@ -1,30 +1,30 @@
 package com.ofk.bd.Repository;
 
 import android.app.Application;
-import android.content.Context;
-import android.net.Uri;
 import android.os.AsyncTask;
+import android.util.Log;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
-import com.google.android.exoplayer2.source.MediaSource;
-import com.google.android.exoplayer2.source.ProgressiveMediaSource;
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 import com.ofk.bd.Dao.UserProgressDao;
 import com.ofk.bd.Database.UserProgressDatabase;
 import com.ofk.bd.HelperClass.SectionCourseNameTuple;
 import com.ofk.bd.HelperClass.SectionCourseTuple;
 import com.ofk.bd.HelperClass.UserProgressClass;
-import com.ofk.bd.Model.YTMedia;
-import com.ofk.bd.Model.YTSubtitles;
-import com.ofk.bd.Model.YoutubeMeta;
-import com.ofk.bd.Utility.ExtractorException;
-import com.ofk.bd.Utility.YoutubeStreamExtractor;
 
 import java.util.List;
 
 public class UserProgressRepository {
+    private static final DatabaseReference USER_PROGRESS_REF = FirebaseDatabase.getInstance().getReference("User Progress");
     private static final String TAG = "UserProgressRepository";
     private UserProgressDao userProgressDao;
 
@@ -35,26 +35,16 @@ public class UserProgressRepository {
      * */
 
     private LiveData<List<String>> enrolledCourseOnly;
-    private LiveData<List<UserProgressClass>> allProgress;// all progress
     private LiveData<List<SectionCourseNameTuple>> courseEnrolled;// already enrolled courses
     private LiveData<List<SectionCourseTuple>> combinedSectionCourseList;//section name and course name combined list
-    private LiveData<Long> currentVideoPosition = new MutableLiveData<>();
-    private static MutableLiveData<MediaSource> videoSource = new MutableLiveData<>();
 
 
     public UserProgressRepository(Application application) {
         UserProgressDatabase database = UserProgressDatabase.getInstance(application);
         userProgressDao = database.userProgressDao();
-        allProgress = userProgressDao.getAllProgress();
         courseEnrolled = userProgressDao.getAllEnrolledCourses();
         enrolledCourseOnly = userProgressDao.getAllEnrolledCoursesOnly();
         combinedSectionCourseList = userProgressDao.loadFullName();
-        currentVideoPosition = userProgressDao.getCurrentVideoPosition();
-    }
-
-    /**************************User progress table*********************************/
-    public LiveData<List<UserProgressClass>> getAllProgress() {
-        return allProgress;
     }
 
     public LiveData<List<SectionCourseNameTuple>> getCourseEnrolled() {
@@ -69,22 +59,11 @@ public class UserProgressRepository {
         return combinedSectionCourseList;
     }
 
-    public LiveData<Long> getCurrentVideoPosition() {
-        return currentVideoPosition;
-    }
-
-    public void insertCurrentVideoPosition(long videoPos) {
-        new InsertCurrentVideoPositionAsyncTask(userProgressDao, videoPos).execute();
-    }
-
-
+    // insert new course to local and cloud db
     public void insert(UserProgressClass progressClass) {
         new InsertUserProgressAsyncTask(userProgressDao).execute(progressClass);
     }
 
-    public void update(UserProgressClass progressClass) {
-        new UpdateUserProgressAsyncTask(userProgressDao).execute(progressClass);
-    }
 
     // update total video of a course method
     public void updateVideoCount(int videoCount, String courseName) {
@@ -94,9 +73,10 @@ public class UserProgressRepository {
     // update total video count of a course
     private static class UpdateVideoCountAsyncTask extends AsyncTask<Void, Void, Void> {
 
-        UserProgressDao dao;
-        String course;
-        int count;
+        private UserProgressDao dao;
+        private String course;
+        private int count;
+        private static final DatabaseReference USER_REF = FirebaseDatabase.getInstance().getReference("User Progress");
 
         public UpdateVideoCountAsyncTask(UserProgressDao dao, String course, int count) {
             this.dao = dao;
@@ -107,24 +87,9 @@ public class UserProgressRepository {
         @Override
         protected Void doInBackground(Void... voids) {
             dao.upDateTotalVideo(course, count);
-            return null;
-        }
-    }
-
-
-    public static class InsertCurrentVideoPositionAsyncTask extends AsyncTask<Void, Void, Void> {
-
-        UserProgressDao dao;
-        long pos;
-
-        public InsertCurrentVideoPositionAsyncTask(UserProgressDao dao, long pos) {
-            this.dao = dao;
-            this.pos = pos;
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            dao.setCurrentVideoPosition(pos);
+            USER_REF.child(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber())
+                    .child(course).child("totalVideos")
+                    .setValue(count);
             return null;
         }
     }
@@ -137,8 +102,8 @@ public class UserProgressRepository {
     // update video watch count on a specific course
     private static class UpdateVideoWatched extends AsyncTask<Void, Void, Void> {
 
-        UserProgressDao dao;
-        String course;
+        private final UserProgressDao dao;
+        private final String course;
 
         public UpdateVideoWatched(UserProgressDao dao, String course) {
             this.dao = dao;
@@ -151,6 +116,27 @@ public class UserProgressRepository {
             if (dao.getTotalVideoCountForCurrentCourse(course) != dao.getCurrentVideoWatchCountForCurrentCourse(course)) {
                 // if total videos and currently watched videos are not equal then increase the video watch count
                 dao.upDateVideoWatched(course);
+
+                USER_PROGRESS_REF.child(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber())
+                        .child(course)
+                        .child("videoWatched")
+                        .runTransaction(new Transaction.Handler() {
+                            @NonNull
+                            @Override
+                            public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
+
+                                long currentCount = (long) mutableData.getValue();
+                                currentCount++;
+                                mutableData.setValue(currentCount);
+
+                                return Transaction.success(mutableData);
+                            }
+
+                            @Override
+                            public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
+                                Log.d(TAG, "onComplete: " + databaseError.getMessage());
+                            }
+                        });
             }
             return null;
         }
@@ -159,7 +145,7 @@ public class UserProgressRepository {
     // insert
     private static class InsertUserProgressAsyncTask extends AsyncTask<UserProgressClass, Void, Void> {
 
-        UserProgressDao dao;
+        private final UserProgressDao dao;
 
         public InsertUserProgressAsyncTask(UserProgressDao dao) {
             this.dao = dao;
@@ -168,22 +154,9 @@ public class UserProgressRepository {
         @Override
         protected Void doInBackground(UserProgressClass... userProgressClasses) {
             dao.insert(userProgressClasses[0]);
-            return null;
-        }
-    }
-
-    // update
-    private static class UpdateUserProgressAsyncTask extends AsyncTask<UserProgressClass, Void, Void> {
-
-        UserProgressDao dao;
-
-        public UpdateUserProgressAsyncTask(UserProgressDao dao) {
-            this.dao = dao;
-        }
-
-        @Override
-        protected Void doInBackground(UserProgressClass... userProgressClasses) {
-            dao.update(userProgressClasses[0]);
+            USER_PROGRESS_REF.child(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber())
+                    .child(userProgressClasses[0].getCourseNameEnglish())
+                    .setValue(userProgressClasses[0]);
             return null;
         }
     }

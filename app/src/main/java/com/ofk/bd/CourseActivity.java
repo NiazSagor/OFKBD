@@ -1,5 +1,6 @@
 package com.ofk.bd;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
@@ -8,11 +9,11 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -36,16 +37,13 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.ofk.bd.CourseActivityAdapter.CourseViewPager;
 import com.ofk.bd.HelperClass.Common;
 import com.ofk.bd.HelperClass.FullScreenHelper;
-import com.ofk.bd.Model.YTMedia;
-import com.ofk.bd.Model.YTSubtitles;
-import com.ofk.bd.Model.YoutubeMeta;
-import com.ofk.bd.Utility.ExtractorException;
-import com.ofk.bd.Utility.YoutubeStreamExtractor;
 import com.ofk.bd.ViewModel.CourseActivityViewModel;
 import com.ofk.bd.ViewModel.VideoFromListViewModel;
 import com.ofk.bd.databinding.ActivityCourseBinding;
 
-import java.util.List;
+import at.huber.youtubeExtractor.VideoMeta;
+import at.huber.youtubeExtractor.YouTubeExtractor;
+import at.huber.youtubeExtractor.YtFile;
 
 public class CourseActivity extends AppCompatActivity {
 
@@ -107,8 +105,6 @@ public class CourseActivity extends AppCompatActivity {
         binding.bottomNavigation.setOnNavigationItemSelectedListener(mNavListener);
 
         videoFromListViewModel.getMutableLiveData().observe(CourseActivity.this, observer);
-
-        Log.d(TAG, "onCreate: ");
     }
 
     // Bottom navigation listener
@@ -167,6 +163,9 @@ public class CourseActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "onDestroy: ");
+
+        Common.videoId = "";
+        Common.sectionVideoList.clear();
     }
 
     private void releasePlayer() {
@@ -269,7 +268,8 @@ public class CourseActivity extends AppCompatActivity {
                     break;
                 case Player.STATE_ENDED:
                     progressBar.setVisibility(View.GONE);
-                    courseActivityViewModel.updateVideoWatched(getIntent().getStringExtra("course_name"));
+                    courseActivityViewModel.updateTotalVideoWatched();
+                    courseActivityViewModel.updateVideoWatched(getIntent().getStringExtra("course_name_english"));
                     break;
                 case Player.STATE_IDLE:
                     progressBar.setVisibility(View.GONE);
@@ -319,34 +319,32 @@ public class CourseActivity extends AppCompatActivity {
     };
 
     private final Observer<String> observer = new Observer<String>() {
+        @SuppressLint("StaticFieldLeak")
         @Override
         public void onChanged(String s) {
             if (s != null) {
-                new YoutubeStreamExtractor(new YoutubeStreamExtractor.ExtractorListner() {
+
+                new YouTubeExtractor(CourseActivity.this) {
                     @Override
-                    public void onExtractionDone(List<YTMedia> adaptiveStream, final List<YTMedia> mixedStream, List<YTSubtitles> subtitles, YoutubeMeta meta) {
+                    protected void onExtractionComplete(SparseArray<YtFile> ytFiles, VideoMeta videoMeta) {
+                        if (ytFiles != null) {
+                            int itag = 22;
+                            String downloadUrl = ytFiles.get(itag).getUrl();
 
-                        YTMedia ytMedia = mixedStream.get(0);
+                            titleTextView.setText(videoMeta.getTitle());
 
-                        Common.ratio = (float) ytMedia.getWidth() / ytMedia.getHeight();
+                            DefaultDataSourceFactory dataSourceFactory = new DefaultDataSourceFactory(CourseActivity.this, getResources().getString(R.string.app_name));
+                            MediaSource mediaSource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(downloadUrl));
 
-                        titleTextView.setText(meta.getTitle());
-                        DefaultDataSourceFactory dataSourceFactory = new DefaultDataSourceFactory(CourseActivity.this, getResources().getString(R.string.app_name));
-                        MediaSource mediaSource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(mixedStream.get(0).getUrl()));
-
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                player.prepare(mediaSource);
-                            }
-                        });
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    player.prepare(mediaSource);
+                                }
+                            });
+                        }
                     }
-
-                    @Override
-                    public void onExtractionGoesWrong(final ExtractorException e) {
-                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-                    }
-                }).Extract(s);
+                }.extract(s, true, false);
             }
         }
     };

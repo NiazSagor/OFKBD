@@ -47,8 +47,8 @@
             android:fontFamily="@font/solaimanlipi"
             android:padding="@dimen/inner_body_text_padding"
             android:text="Course Name"
-            android:textColor="@android:color/white"
-            android:textSize="@dimen/inner_body_text_size" />
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="@android:color/white" />
 
     </LinearLayout>
 

@@ -20,7 +20,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
-import com.ofk.bd.HelperClass.Common;
 import com.ofk.bd.HelperClass.UserForFirebase;
 import com.ofk.bd.HelperClass.UserInfo;
 import com.ofk.bd.Interface.CheckUserCallback;
@@ -28,6 +27,7 @@ import com.ofk.bd.MainActivity;
 import com.ofk.bd.Utility.AlertDialogUtility;
 import com.ofk.bd.Utility.CheckUserDatabase;
 import com.ofk.bd.ViewModel.InfoActivityViewModel;
+import com.ofk.bd.ViewModel.MainActivityViewModel;
 import com.ofk.bd.databinding.FragmentLogInBinding;
 
 /**
@@ -73,6 +73,7 @@ public class LogInFragment extends Fragment {
     }
 
     private InfoActivityViewModel activityViewModel;
+    private MainActivityViewModel mainActivityViewModel;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -187,6 +188,19 @@ public class LogInFragment extends Fragment {
                 Toast.makeText(getActivity(), "Welcome Back!", Toast.LENGTH_SHORT).show();
 
                 if (user != null) {
+
+                    activityViewModel.getUserInfoMutableLiveData().observe(getActivity(), new Observer<UserInfo>() {
+                        @Override
+                        public void onChanged(UserInfo userInfo) {
+                            if (userInfo != null) {
+                                // if local database is empty
+                                Log.d(TAG, "onChanged: null");
+                            } else {
+                                Log.d(TAG, "onChanged: not null");
+                            }
+                        }
+                    });
+
                     //activityViewModel.updateUserInfo(new UserInfo(user.getUserName(), user.getUserPhoneNumber(), user.)user.getUserName(), user.getUserEmail(), user.getUserPhoneNumber());
                 }
             }

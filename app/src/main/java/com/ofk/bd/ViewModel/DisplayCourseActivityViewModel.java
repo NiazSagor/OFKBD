@@ -30,15 +30,11 @@ public class DisplayCourseActivityViewModel extends AndroidViewModel {
 
     /*******************************************************************************/
 
-    // sql lite insert
+    // add new course to local db
     public void insert(UserProgressClass userProgressClass) {
         repository.insert(userProgressClass);
     }
 
-    // sql lite update
-    public void update(UserProgressClass userProgressClass) {
-        repository.update(userProgressClass);
-    }
 
     // updates total videos of a particular course
     public void updateTotalVideoCourse(String courseName, int count){

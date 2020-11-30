@@ -23,13 +23,13 @@ public class SectionCourseTuple {
     String courseThumbnailURL;
 
     @ColumnInfo(name = "totalVideos")
-    int totalVideos;
+    long totalVideos;
 
     @ColumnInfo(name = "videoWatched")
-    int videoWatched;
+    long videoWatched;
 
 
-    public SectionCourseTuple(String sectionName, String sectionNameBangla, String courseEnrolled, String courseNameEnglish, boolean isFinished, String courseThumbnailURL, int totalVideos, int videoWatched) {
+    public SectionCourseTuple(String sectionName, String sectionNameBangla, String courseEnrolled, String courseNameEnglish, boolean isFinished, String courseThumbnailURL, long totalVideos, long videoWatched) {
         this.sectionName = sectionName;
         this.sectionNameBangla = sectionNameBangla;
         this.courseEnrolled = courseEnrolled;
@@ -80,19 +80,19 @@ public class SectionCourseTuple {
         this.courseThumbnailURL = courseThumbnailURL;
     }
 
-    public int getTotalVideos() {
+    public long getTotalVideos() {
         return totalVideos;
     }
 
-    public void setTotalVideos(int totalVideos) {
+    public void setTotalVideos(long totalVideos) {
         this.totalVideos = totalVideos;
     }
 
-    public int getVideoWatched() {
+    public long getVideoWatched() {
         return videoWatched;
     }
 
-    public void setVideoWatched(int videoWatched) {
+    public void setVideoWatched(long videoWatched) {
         this.videoWatched = videoWatched;
     }
 

@@ -59,7 +59,7 @@ public class ProfileListAdapter extends RecyclerView.Adapter<ProfileListAdapter.
     public ProfileListAdapter.ProfileListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view = inflater.inflate(R.layout.profile_item_layout, parent, false);
-        return new ProfileListViewHolder(view, mListener, mEditListener);
+        return new ProfileListViewHolder(view, mListener, mEditListener, mContext);
     }
 
     @Override
@@ -107,7 +107,7 @@ public class ProfileListAdapter extends RecyclerView.Adapter<ProfileListAdapter.
         EditText editText;
         ImageView editImageView;
 
-        public ProfileListViewHolder(@NonNull View itemView, final OnItemClickListener listener, final OnItemEditListener editListener) {
+        public ProfileListViewHolder(@NonNull View itemView, final OnItemClickListener listener, final OnItemEditListener editListener, Context mContext) {
             super(itemView);
 
             profileItemImage = itemView.findViewById(R.id.profileItemImage);
@@ -124,24 +124,15 @@ public class ProfileListAdapter extends RecyclerView.Adapter<ProfileListAdapter.
                     if (listener != null) {
                         if (position != RecyclerView.NO_POSITION) {
 
-                            editText.setVisibility(View.VISIBLE);
-
                             editText.requestFocus();
 
                             if (position == 2) {
                                 profileItemTextView.setVisibility(View.INVISIBLE);
+                                editText.setVisibility(View.VISIBLE);
                                 editText.setInputType(InputType.TYPE_TEXT_VARIATION_WEB_EMAIL_ADDRESS);
-                            } else if (position == 3) {
-                                profileItemTextView.setVisibility(View.INVISIBLE);
-                                editText.setInputType(InputType.TYPE_CLASS_NUMBER);
                             } else if (position == 4) {
                                 profileItemTextView.setVisibility(View.INVISIBLE);
-                                editText.setInputType(InputType.TYPE_CLASS_TEXT);
-                            } else if (position == 5) {
-                                profileItemTextView.setVisibility(View.INVISIBLE);
-                                editText.setInputType(InputType.TYPE_CLASS_DATETIME);
-                            } else if (position == 6) {
-                                profileItemTextView.setVisibility(View.INVISIBLE);
+                                editText.setVisibility(View.VISIBLE);
                                 editText.setInputType(InputType.TYPE_CLASS_TEXT);
                             }
 

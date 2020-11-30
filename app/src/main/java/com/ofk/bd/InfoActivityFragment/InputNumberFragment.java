@@ -133,29 +133,7 @@ public class InputNumberFragment extends Fragment {
 
                         showAlertDialog("start");
 
-                        // check if user is present
-                        new CheckUserDatabase(new CheckUserCallback() {
-                            @Override
-                            public void onUserCheckCallback(boolean isExist, String message) {
-                                if (isExist) {
-                                    // user has already an account
-                                    showAlertDialog("end");
-                                    Log.d(TAG, "onUserCheckCallback: ");
-                                    activityViewModel.getUserPhoneNumberLiveData().setValue("+88" + userPhoneNumber);
-                                    viewPager2.setCurrentItem(3, true);
-                                    Toast.makeText(getActivity(), "Welcome Back!", Toast.LENGTH_SHORT).show();
-                                } else {
-                                    // user does not have an account then we send verification code
-                                    sendVerificationCode("+88" + userPhoneNumber);
-                                    showAlertDialog("start");
-                                }
-                            }
-
-                            @Override
-                            public void onUserFoundCallback(UserForFirebase user) {
-                                //
-                            }
-                        }, "+88" + userPhoneNumber, "").execute();
+                        sendVerificationCode("+88" + userPhoneNumber);
                     }
 
                 } else {
@@ -206,7 +184,7 @@ public class InputNumberFragment extends Fragment {
             mCallback = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
         @Override
         public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
-            signInWithCredential(phoneAuthCredential);
+            signInWithCredential(phoneAuthCredential);//TODO research
             Log.d(TAG, "onVerificationCompleted: ");
         }
 
@@ -234,10 +212,7 @@ public class InputNumberFragment extends Fragment {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     showAlertDialog("done");
-                    FirebaseUser user = mAuth.getCurrentUser();
-                    assert user != null;
-                    activityViewModel.getUserPhoneNumberLiveData().setValue(user.getPhoneNumber());
-                    viewPager2.setCurrentItem(2, true);
+                    viewPager2.setCurrentItem(1, true);
                     //Toast.makeText(getContext(), "Successful" + user.getPhoneNumber(), Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(getContext(), "Not successful " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();

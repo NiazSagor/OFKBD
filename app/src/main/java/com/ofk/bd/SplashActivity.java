@@ -37,6 +37,8 @@ public class SplashActivity extends AppCompatActivity {
 
     public static final String COURSE_TO_DISPLAY = "course_to_display";
 
+    public static final int FETCH_INTERVAL = 172800;
+
     private FirebaseAuth mAuth;
 
     private ActivitySplashBinding binding;
@@ -59,7 +61,7 @@ public class SplashActivity extends AppCompatActivity {
         remoteConfig = FirebaseRemoteConfig.getInstance();
 
         // activating previously saved config
-        //remoteConfig.activate();
+        remoteConfig.activate();
 
         initRemoteConfig();
 
@@ -133,18 +135,19 @@ public class SplashActivity extends AppCompatActivity {
 
     private void initRemoteConfig() {
         FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
-                .setMinimumFetchIntervalInSeconds(3)
+                .setMinimumFetchIntervalInSeconds(FETCH_INTERVAL)
                 .build();
 
         remoteConfig.setConfigSettingsAsync(configSettings);
         remoteConfig.setDefaultsAsync(R.xml.remote_default_values);
 
-        //remoteConfig.fetch();
+        remoteConfig.fetch();
 
         // getting the course name from server
         new Thread(new Runnable() {
             @Override
             public void run() {
+                Log.d(TAG, "run: " + remoteConfig.getString(COURSE_TO_DISPLAY));
                 Common.courseToDisplay = remoteConfig.getString(COURSE_TO_DISPLAY);
                 Common.courseHeadline = new StringUtility(getApplicationContext())
                         .getSectionHeadline(remoteConfig.getString(COURSE_TO_DISPLAY));

@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/parentLayout"
-    android:background="@android:color/black"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/black"
     tools:context=".CourseActivity">
 
     <com.google.android.exoplayer2.ui.AspectRatioFrameLayout
@@ -47,8 +47,8 @@
             android:fontFamily="@font/solaimanlipi"
             android:padding="@dimen/inner_body_text_padding"
             android:text="Course Name"
-            android:textColor="@android:color/white"
-            android:textSize="@dimen/inner_body_text_size" />
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="@android:color/white" />
 
     </LinearLayout>
 

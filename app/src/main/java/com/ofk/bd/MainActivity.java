@@ -12,7 +12,6 @@ import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager2.widget.ViewPager2;
@@ -21,8 +20,10 @@ import com.developer.kalert.KAlertDialog;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.ofk.bd.Adapter.MainActivityViewPager;
+import com.ofk.bd.Fragments.ProfileBottomSheet;
 import com.ofk.bd.HelperClass.SectionCourseNameTuple;
 import com.ofk.bd.HelperClass.ServiceResultReceiver;
+import com.ofk.bd.HelperClass.UserInfo;
 import com.ofk.bd.JobIntentService.UpdateVideoCountService;
 import com.ofk.bd.ViewModel.MainActivityViewModel;
 import com.ofk.bd.databinding.ActivityMainBinding;
@@ -32,7 +33,7 @@ import java.util.List;
 
 import static com.ofk.bd.JobIntentService.UpdateVideoCountService.RECEIVER;
 
-public class MainActivity extends AppCompatActivity implements ServiceResultReceiver.Receiver {
+public class MainActivity extends AppCompatActivity implements ServiceResultReceiver.Receiver, ProfileBottomSheet.BottomSheetListener {
 
     // our result receiver from job intent
     private ServiceResultReceiver mReceiver;
@@ -108,10 +109,12 @@ public class MainActivity extends AppCompatActivity implements ServiceResultRece
         }
 
         if (remoteConfig.getBoolean(IS_COURSE_UPDATED)) {
-            //true
+            // if true then fetch the new count for videos of courses
             setupService();
             Log.d(TAG, "onStart: " + remoteConfig.getBoolean(IS_COURSE_UPDATED));
         }
+
+        viewModel.getUserInfoLiveData().observe(this, userInfoObserver);
     }
 
     public void setupViewPager() {
@@ -180,10 +183,7 @@ public class MainActivity extends AppCompatActivity implements ServiceResultRece
                 ArrayList<String> courseName = resultData.getStringArrayList("courseName");
                 ArrayList<Integer> videoCount = resultData.getIntegerArrayList("count");
 
-                Log.d(TAG, "onReceiveResult: " + courseName.toString());
-                Log.d(TAG, "onReceiveResult: " + videoCount.toString());
-
-                for (int i = 0; i < courseName.size(); i++) {
+                for (int i = 0; i < (courseName != null ? courseName.size() : 0); i++) {
                     String course = courseName.get(i);
                     int count = videoCount.get(i);
                     viewModel.updateTotalVideoCourse(course, count);
@@ -215,4 +215,30 @@ public class MainActivity extends AppCompatActivity implements ServiceResultRece
         return activeNetwork != null &&
                 activeNetwork.isConnectedOrConnecting();
     }
+
+    @Override
+    public void onButtonClicked(String text) {
+
+        if (text.length() == 7 || text.length() == 8) {
+
+            //class
+            viewModel.updateUserInfo(text, "class");
+        } else if (text.length() == 4 || text.length() == 6) {
+
+            // gender
+            viewModel.updateUserInfo(text, "gender");
+        } else {
+            //dob
+            viewModel.updateUserInfo(text, "dob");
+        }
+    }
+
+    private final Observer<UserInfo> userInfoObserver = new Observer<UserInfo>() {
+        @Override
+        public void onChanged(UserInfo userInfo) {
+            if(userInfo != null){
+                Log.d(TAG, "onChanged: not null");
+            }
+        }
+    };
 }

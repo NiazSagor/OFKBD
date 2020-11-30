@@ -8,22 +8,26 @@ public class UserInfo {
     @PrimaryKey(autoGenerate = true)//id is primary key
     private int id;
 
+    protected String firebaseUid;
+
     String userName;
     String userPhoneNumber;
+    String userPassword;
     String userEmail;
     String userClass;
     String userSchool;
     String userDOB;
     String userGender;
 
-    int videoCompleted;
-    int courseCompleted;
-    int quizCompleted;
+    long videoCompleted;
+    long courseCompleted;
+    long quizCompleted;
 
 
-    public UserInfo(String userName, String userPhoneNumber, String userEmail, String userClass, String userSchool, String userDOB, String userGender, int videoCompleted, int courseCompleted, int quizCompleted) {
+    public UserInfo(long courseCompleted, long quizCompleted, String userClass, String userDOB, String userEmail, String userGender, String userName, String userPassword, String userPhoneNumber, String userSchool, long videoCompleted) {
         this.userName = userName;
         this.userPhoneNumber = userPhoneNumber;
+        this.userPassword = userPassword;
         this.userEmail = userEmail;
         this.userClass = userClass;
         this.userSchool = userSchool;
@@ -66,27 +70,27 @@ public class UserInfo {
         this.userEmail = userEmail;
     }
 
-    public int getVideoCompleted() {
+    public long getVideoCompleted() {
         return videoCompleted;
     }
 
-    public void setVideoCompleted(int videoCompleted) {
+    public void setVideoCompleted(long videoCompleted) {
         this.videoCompleted = videoCompleted;
     }
 
-    public int getCourseCompleted() {
+    public long getCourseCompleted() {
         return courseCompleted;
     }
 
-    public void setCourseCompleted(int courseCompleted) {
+    public void setCourseCompleted(long courseCompleted) {
         this.courseCompleted = courseCompleted;
     }
 
-    public int getQuizCompleted() {
+    public long getQuizCompleted() {
         return quizCompleted;
     }
 
-    public void setQuizCompleted(int quizCompleted) {
+    public void setQuizCompleted(long quizCompleted) {
         this.quizCompleted = quizCompleted;
     }
 
@@ -120,5 +124,21 @@ public class UserInfo {
 
     public void setUserGender(String userGender) {
         this.userGender = userGender;
+    }
+
+    public String getFirebaseUid() {
+        return firebaseUid;
+    }
+
+    public void setFirebaseUid(String firebaseUid) {
+        this.firebaseUid = firebaseUid;
+    }
+
+    public String getUserPassword() {
+        return userPassword;
+    }
+
+    public void setUserPassword(String userPassword) {
+        this.userPassword = userPassword;
     }
 }

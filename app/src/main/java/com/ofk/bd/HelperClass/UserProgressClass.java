@@ -14,11 +14,10 @@ public class UserProgressClass {
     private String courseNameEnglish;
     private boolean isFinished;
     private String courseThumbnailURL;
-    private int totalVideos;
-    private int videoWatched;
-    private long currentVideoPosition;
+    private long totalVideos;
+    private long videoWatched;
 
-    public UserProgressClass(String sectionName, String sectionNameBangla, String courseEnrolled, String courseNameEnglish, boolean isFinished, String courseThumbnailURL, int totalVideos, int videoWatched, long currentVideoPosition) {
+    public UserProgressClass(String courseEnrolled, String courseNameEnglish, String courseThumbnailURL, boolean isFinished, String sectionName, String sectionNameBangla, long totalVideos, long videoWatched) {
         this.sectionName = sectionName;
         this.sectionNameBangla = sectionNameBangla;
         this.courseEnrolled = courseEnrolled;
@@ -27,7 +26,6 @@ public class UserProgressClass {
         this.courseThumbnailURL = courseThumbnailURL;
         this.totalVideos = totalVideos;
         this.videoWatched = videoWatched;
-        this.currentVideoPosition = currentVideoPosition;
     }
 
     public int getId() {
@@ -78,19 +76,19 @@ public class UserProgressClass {
         this.courseThumbnailURL = courseThumbnailURL;
     }
 
-    public int getTotalVideos() {
+    public long getTotalVideos() {
         return totalVideos;
     }
 
-    public void setTotalVideos(int totalVideos) {
+    public void setTotalVideos(long totalVideos) {
         this.totalVideos = totalVideos;
     }
 
-    public int getVideoWatched() {
+    public long getVideoWatched() {
         return videoWatched;
     }
 
-    public void setVideoWatched(int videoWatched) {
+    public void setVideoWatched(long videoWatched) {
         this.videoWatched = videoWatched;
     }
 
@@ -100,13 +98,5 @@ public class UserProgressClass {
 
     public void setFinished(boolean finished) {
         isFinished = finished;
-    }
-
-    public long getCurrentVideoPosition() {
-        return currentVideoPosition;
-    }
-
-    public void setCurrentVideoPosition(long currentVideoPosition) {
-        this.currentVideoPosition = currentVideoPosition;
     }
 }

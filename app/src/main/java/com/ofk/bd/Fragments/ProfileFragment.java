@@ -5,10 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,7 +22,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.ofk.bd.Adapter.ProfileListAdapter;
 import com.ofk.bd.HelperClass.UserInfo;
 import com.ofk.bd.InfoActivity;
-import com.ofk.bd.R;
+import com.ofk.bd.Utility.DrawableUtility;
 import com.ofk.bd.Utility.StringUtility;
 import com.ofk.bd.ViewModel.MainActivityViewModel;
 import com.ofk.bd.databinding.FragmentProfileBinding;
@@ -33,24 +35,22 @@ import java.util.List;
  * Use the {@link ProfileFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ProfileFragment extends Fragment {
+public class ProfileFragment extends Fragment implements ProfileBottomSheet.BottomSheetListener {
     private static final String TAG = "ProfileFragment";
 
-    private static final int[] avatars = {R.drawable.ic_dog, R.drawable.ic_duck, R.drawable.ic_fox, R.drawable.ic_lion, R.drawable.ic_cat, R.drawable.ic_tiger, R.drawable.ic_squirrel, R.drawable.ic_giraffe, R.drawable.ic_elephant, R.drawable.ic_parrot};
 
-    private static final int[] badge_icons = {R.drawable.apprentice_1, R.drawable.apprentice_2, R.drawable.apprentice_3,
-            R.drawable.journeyman_1, R.drawable.journeyman_2, R.drawable.journeyman_3,
-            R.drawable.master_1, R.drawable.master_2, R.drawable.master_3,
-            R.drawable.grand_master_1, R.drawable.grand_master_2, R.drawable.grand_master_3,
-            R.drawable.super_kids_1, R.drawable.super_kids_2, R.drawable.super_kids_3};
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
+    private final ProfileBottomSheet bottomSheet = new ProfileBottomSheet();
+
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    private int mYear, mMonth, mDay;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -114,7 +114,7 @@ public class ProfileFragment extends Fragment {
         @Override
         public void onChanged(Integer integer) {
             if (integer != null) {
-                binding.currentBadgeImageViewTop.setImageResource(badge_icons[integer]);
+                binding.currentBadgeImageViewTop.setImageDrawable(DrawableUtility.getDrawable(getContext(), integer));
             }
         }
     };
@@ -142,6 +142,23 @@ public class ProfileFragment extends Fragment {
                         .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP));
 
                 getActivity().finish();
+            } else if (position == 5) {
+                //dob
+                Bundle bundle = new Bundle();
+                bundle.putString("type", "date");
+                bottomSheet.setArguments(bundle);
+                bottomSheet.show(getFragmentManager(), "");
+            } else if (position == 3) {
+                //class
+                Bundle bundle = new Bundle();
+                bundle.putString("type", "class");
+                bottomSheet.setArguments(bundle);
+                bottomSheet.show(getFragmentManager(), "");
+            } else if (position == 6) {
+                Bundle bundle = new Bundle();
+                bundle.putString("type", "gender");
+                bottomSheet.setArguments(bundle);
+                bottomSheet.show(getFragmentManager(), "");
             }
         }
     };
@@ -152,18 +169,9 @@ public class ProfileFragment extends Fragment {
             if (position == 2) {
                 // email
                 mainActivityViewModel.updateUserInfo(text, "email");
-            } else if (position == 3) {
-                // class
-                mainActivityViewModel.updateUserInfo(text, "class");
             } else if (position == 4) {
                 // institute
                 mainActivityViewModel.updateUserInfo(text, "institute");
-            } else if (position == 5) {
-                // dob
-                mainActivityViewModel.updateUserInfo(text, "dob");
-            } else if (position == 6) {
-                // gender
-                mainActivityViewModel.updateUserInfo(text, "gender");
             }
             hideKeyboardFrom();
         }
@@ -175,11 +183,18 @@ public class ProfileFragment extends Fragment {
 
                 binding.userNameTextView.setText(userInfo.getUserName());
 
-                binding.totalCourseCompleted.setText(StringUtility.getSting(userInfo.getCourseCompleted()));
-                binding.totalVideoCompleted.setText(StringUtility.getSting(userInfo.getVideoCompleted()));
-                binding.totalQuizCompleted.setText(StringUtility.getSting(userInfo.getQuizCompleted()));
+                binding.totalCourseCompleted.setText(StringUtility.getString(userInfo.getCourseCompleted()));
+                binding.totalVideoCompleted.setText(StringUtility.getString(userInfo.getVideoCompleted()));
+                binding.totalQuizCompleted.setText(StringUtility.getString(userInfo.getQuizCompleted()));
 
                 populateUserInfoList(userInfo);
+
+                if(StringUtility.isUserInfoComplete(userInfo) && !sharedPreferences.getBoolean("isPosted", false)){
+                    // call to api to push data to google sheets
+                    userInfo.setFirebaseUid(FirebaseAuth.getInstance().getUid());
+                    mainActivityViewModel.postData(userInfo);
+                    sharedPreferences.edit().putBoolean("isPosted", true).apply();
+                }
             }
         }
     };
@@ -190,7 +205,7 @@ public class ProfileFragment extends Fragment {
 
         int index = sharedPreferences.getInt("avatarIndex", 0);
 
-        binding.avatarImageView.setBackgroundResource(avatars[index]);
+        binding.avatarImageView.setImageDrawable(DrawableUtility.getAvatarDrawable(getContext(), index));
 
         mainActivityViewModel.getCurrentIndexOnBadge().observe(this, currentBadgeIndex);
     }
@@ -227,5 +242,27 @@ public class ProfileFragment extends Fragment {
         InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Service.INPUT_METHOD_SERVICE);
         View view = getActivity().getCurrentFocus();
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+    @Override
+    public void onButtonClicked(String text) {
+        Log.d(TAG, "onButtonClicked: ");
+        switch (bottomSheet.getArguments().getString("type")) {
+            case "gender":
+                // gender
+                Toast.makeText(getContext(), "" + text, Toast.LENGTH_SHORT).show();
+                //mainActivityViewModel.updateUserInfo(text, "gender");
+                break;
+            case "date":
+                //dob
+                Toast.makeText(getContext(), "" + text, Toast.LENGTH_SHORT).show();
+                //mainActivityViewModel.updateUserInfo(text, "dob");
+                break;
+            case "class":
+                //class
+                Toast.makeText(getContext(), "" + text, Toast.LENGTH_SHORT).show();
+                //mainActivityViewModel.updateUserInfo(text, "class");
+                break;
+        }
     }
 }

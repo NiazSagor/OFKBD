@@ -48,6 +48,8 @@ public class DisplayCourseActivity extends AppCompatActivity implements BottomDi
 
     private AlertDialogUtility alertDialogUtility = new AlertDialogUtility();
 
+    private BottomDialog bottomSheet = new BottomDialog();
+
     private final Handler handler = new Handler();
 
     private LiveData<List<String>> enrolledCourseLiveData = new LiveData<List<String>>() {
@@ -213,7 +215,6 @@ public class DisplayCourseActivity extends AppCompatActivity implements BottomDi
                                         Log.d(TAG, "onChanged: course is not in db");
                                         enrolledCourseLiveData.removeObservers(DisplayCourseActivity.this);
 
-                                        BottomDialog bottomSheet = new BottomDialog();
                                         bottomSheet.show(getSupportFragmentManager(), "");
                                     } else {
                                         // if is in db from before
@@ -282,7 +283,7 @@ public class DisplayCourseActivity extends AppCompatActivity implements BottomDi
             String thumbNailURL = selectedCourse.getThumbnailURL();
 
 
-            viewModel.insert(new UserProgressClass(sectionName, sectionNameBangla, courseName, courseNameEnglish, false, thumbNailURL, 0, 0, 0));
+            viewModel.insert(new UserProgressClass(courseName, courseNameEnglish, thumbNailURL, false, sectionName, sectionNameBangla, 0 ,0));
 
 
             Intent intent = new Intent(DisplayCourseActivity.this, CourseActivity.class);
@@ -305,6 +306,7 @@ public class DisplayCourseActivity extends AppCompatActivity implements BottomDi
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
+                            bottomSheet.dismiss();
                             alertDialogUtility.dismissAlertDialog();
                             startActivity(intent);
                         }

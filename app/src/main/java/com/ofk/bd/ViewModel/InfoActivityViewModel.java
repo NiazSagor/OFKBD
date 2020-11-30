@@ -4,6 +4,7 @@ import android.app.Application;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.ofk.bd.HelperClass.UserInfo;
@@ -11,14 +12,17 @@ import com.ofk.bd.Repository.UserInfoRepository;
 
 public class InfoActivityViewModel extends AndroidViewModel {
 
-    private MutableLiveData<String> userPhoneNumberLiveData = new MutableLiveData<>();
-    private MutableLiveData<String> verificationCode = new MutableLiveData<>();
+    private final MutableLiveData<String> userPhoneNumberLiveData = new MutableLiveData<>();
+    private final MutableLiveData<String> verificationCode = new MutableLiveData<>();
 
-    private UserInfoRepository repository;
+    private final UserInfoRepository repository;
+
+    private LiveData<UserInfo> userInfoMutableLiveData = new MutableLiveData<>();
 
     public InfoActivityViewModel(@NonNull Application application) {
         super(application);
         repository = new UserInfoRepository(application);
+        userInfoMutableLiveData = repository.getUserInfoLiveData();
     }
 
     public MutableLiveData<String> getUserPhoneNumberLiveData() {
@@ -29,11 +33,12 @@ public class InfoActivityViewModel extends AndroidViewModel {
         return verificationCode;
     }
 
-    public void updateUserInfo(String userName, String userEmail, String userPhoneNumber) {
-        repository.updateUser(userName, userEmail, userPhoneNumber);
+    // insert new user to local db
+    public void insert(UserInfo userInfo) {
+        repository.insert(userInfo);
     }
 
-    public void insert(UserInfo userInfo){
-        repository.insert(userInfo);
+    public LiveData<UserInfo> getUserInfoMutableLiveData() {
+        return userInfoMutableLiveData;
     }
 }

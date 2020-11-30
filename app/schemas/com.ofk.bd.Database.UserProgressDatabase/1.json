@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "a40e9e3d7aea275aff92295391f9a4c3",
+    "identityHash": "469e0db005991780b9b994a0a25b6fdb",
     "entities": [
       {
         "tableName": "user_progress",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `sectionName` TEXT, `sectionNameBangla` TEXT, `courseEnrolled` TEXT, `courseNameEnglish` TEXT, `isFinished` INTEGER NOT NULL, `courseThumbnailURL` TEXT, `totalVideos` INTEGER NOT NULL, `videoWatched` INTEGER NOT NULL, `currentVideoPosition` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `sectionName` TEXT, `sectionNameBangla` TEXT, `courseEnrolled` TEXT, `courseNameEnglish` TEXT, `isFinished` INTEGER NOT NULL, `courseThumbnailURL` TEXT, `totalVideos` INTEGER NOT NULL, `videoWatched` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -61,12 +61,6 @@
             "columnName": "videoWatched",
             "affinity": "INTEGER",
             "notNull": true
-          },
-          {
-            "fieldPath": "currentVideoPosition",
-            "columnName": "currentVideoPosition",
-            "affinity": "INTEGER",
-            "notNull": true
           }
         ],
         "primaryKey": {
@@ -82,7 +76,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a40e9e3d7aea275aff92295391f9a4c3')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '469e0db005991780b9b994a0a25b6fdb')"
     ]
   }
 }

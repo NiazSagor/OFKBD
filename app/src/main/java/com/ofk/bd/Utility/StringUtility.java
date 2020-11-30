@@ -2,7 +2,7 @@ package com.ofk.bd.Utility;
 
 import android.content.Context;
 
-import com.ofk.bd.HelperClass.Common;
+import com.ofk.bd.HelperClass.UserInfo;
 import com.ofk.bd.R;
 
 public class StringUtility {
@@ -15,11 +15,13 @@ public class StringUtility {
             "Grand Master 1", "Grand Master 2", "Grand Master 3",
             "Super Kids 1", "Super Kids 2", "Super Kids 3"};
 
+    private static final String[] months = {"Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"};
+
     public StringUtility(Context context) {
         this.context = context;
     }
 
-    public static String getSting(int number) {
+    public static String getString(long number) {
         return "" + number;
     }
 
@@ -68,9 +70,51 @@ public class StringUtility {
         return "How are you";
     }
 
-    public static String getCourseCompletionPercentage(int videoWatched, int totalVideo) {
+    public static String getCourseCompletionPercentage(long videoWatched, long totalVideo) {
         double amount = (double) videoWatched / totalVideo;
         double res = amount * 100;
         return (int) res + "%";
+    }
+
+    public static String getFormattedDob(int year, int month, int day) {
+
+        StringBuilder stringBuilder = new StringBuilder();
+
+        stringBuilder.append(day);
+
+        if (day >= 10) {
+            if (day % 10 == 1) {
+                stringBuilder.append("st ");
+            } else if (day % 10 == 2) {
+                stringBuilder.append("nd ");
+            } else if (day % 10 == 3) {
+                stringBuilder.append("rd ");
+            } else {
+                stringBuilder.append("th ");
+            }
+        } else {
+            if (day == 1) {
+                stringBuilder.append("st ");
+            } else if (day == 2) {
+                stringBuilder.append("nd ");
+            } else if (day == 3) {
+                stringBuilder.append("rd ");
+            } else {
+                stringBuilder.append("th ");
+            }
+        }
+
+        stringBuilder.append(months[month]);
+        stringBuilder.append(" ");
+        stringBuilder.append(year);
+
+        return stringBuilder.toString();
+    }
+
+    public static boolean isUserInfoComplete(UserInfo userInfo) {
+        if (userInfo != null) {
+            return !userInfo.getUserEmail().equals("") && !userInfo.getUserClass().equals("") && !userInfo.getUserSchool().equals("") && !userInfo.getUserDOB().equals("") && !userInfo.getUserGender().equals("");
+        }
+        return false;
     }
 }

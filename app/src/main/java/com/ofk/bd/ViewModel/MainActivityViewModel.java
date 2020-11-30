@@ -214,4 +214,8 @@ public class MainActivityViewModel extends AndroidViewModel {
     public MutableLiveData<Integer> getCurrentIndexOnBadge() {
         return currentIndexOnBadge;
     }
+
+    public void postData(UserInfo userInfo){
+        userInfoRepository.postData(userInfo);
+    }
 }

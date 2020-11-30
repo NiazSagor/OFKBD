@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="spinnerItems">
-        <item>প্রথম শ্রেণি</item>
-        <item>দ্বিতীয় শ্রেণি</item>
-        <item>তৃতীয় শ্রেণি</item>
-        <item>চতুর্থ শ্রেণি</item>
-        <item>পঞ্চম শ্রেণি</item>
+    <string-array name="classes">
+        <item>Class 1</item>
+        <item>Class 2</item>
+        <item>Class 3</item>
+        <item>Class 4</item>
+        <item>Class 5</item>
+        <item>Class 6</item>
+        <item>Class 7</item>
+        <item>Class 8</item>
+        <item>Class 9</item>
+        <item>Class 10</item>
     </string-array>
 
     <array name="artsCourse">
@@ -14,4 +19,9 @@
         <item name="রোবটিক্সের হাতেখড়ি ( আর্ডুইনো )" />
         <item name="হাত দিয়ে যায় আঁকা ( Hand Shape Art )" />
     </array>
+
+    <string-array name="gender">
+        <item>Male</item>
+        <item>Female</item>
+    </string-array>
 </resources>

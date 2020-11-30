@@ -36,8 +36,8 @@ public class ProgressListAdapter extends RecyclerView.Adapter<ProgressListAdapte
     @Override
     public void onBindViewHolder(@NonNull ProgressListViewHolder holder, int position) {
         holder.subjectTitle.setText(progressList.get(position).getCourseEnrolled());
-        holder.progressBar.setMax(progressList.get(position).getTotalVideos());
-        holder.progressBar.setProgress(progressList.get(position).getVideoWatched());
+        holder.progressBar.setMax((int)progressList.get(position).getTotalVideos());
+        holder.progressBar.setProgress((int)progressList.get(position).getVideoWatched());
         holder.progressPercentage.setText(StringUtility.getCourseCompletionPercentage(progressList.get(position).getVideoWatched(), progressList.get(position).getTotalVideos()));
     }
 

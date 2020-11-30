@@ -26,8 +26,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.ofk.bd.HelperClass.UserForFirebase;
+import com.ofk.bd.Interface.CheckUserCallback;
 import com.ofk.bd.R;
 import com.ofk.bd.Utility.AlertDialogUtility;
+import com.ofk.bd.Utility.CheckUserDatabase;
 import com.ofk.bd.ViewModel.InfoActivityViewModel;
 import com.ofk.bd.databinding.FragmentInputOtpBinding;
 
@@ -167,13 +170,36 @@ public class InputOtpFragment extends Fragment {
                     assert user != null;
                     activityViewModel.getUserPhoneNumberLiveData().setValue(user.getPhoneNumber());
 
-                    handler.postDelayed(new Runnable() {
+                    new CheckUserDatabase(new CheckUserCallback() {
                         @Override
-                        public void run() {
-                            dialogUtility.dismissAlertDialog();
-                            viewPager2.setCurrentItem(2, true);
+                        public void onUserCheckCallback(boolean isExist, String message) {
+                            if (isExist) {
+                                // user has already an account take to login fragment
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        dialogUtility.dismissAlertDialog();
+                                        viewPager2.setCurrentItem(3, true);
+                                    }
+                                }, 1500);
+                            } else {
+                                // user does not have an account take to user info fragment
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        dialogUtility.dismissAlertDialog();
+                                        viewPager2.setCurrentItem(2, true);
+                                    }
+                                }, 1500);
+                            }
                         }
-                    }, 1500);
+
+                        @Override
+                        public void onUserFoundCallback(UserForFirebase user) {
+                            //
+                        }
+                    }, user.getPhoneNumber(), "").execute();
+
                 } else {
                     dialogUtility.dismissAlertDialog();
                     dialogUtility.showAlertDialog(getContext(), "misMatchOtp");

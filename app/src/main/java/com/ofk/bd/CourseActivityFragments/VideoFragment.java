@@ -3,6 +3,7 @@ package com.ofk.bd.CourseActivityFragments;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -88,12 +89,17 @@ public class VideoFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        if (Common.sectionVideoList != null) {
+        if (Common.sectionVideoList != null && Common.sectionVideoList.size() != 0) {
+            Log.d(TAG, "onViewCreated: section");
             videoFromListViewModel.getMutableLiveData().setValue(Common.sectionVideoList.get(0).getVideos().get(0).getVideoURL());
             CourseSectionAdapter adapter = new CourseSectionAdapter(getActivity(), Common.sectionVideoList);
             binding.sectionListRecyclerView.setAdapter(adapter);
-        } else {
-            showAlertDialog("done");
+        }
+
+        if (Common.videoId != null && !Common.videoId.equals("")) {
+            videoFromListViewModel.getMutableLiveData().setValue(Common.videoId);
+            Log.d(TAG, "onViewCreated: " + Common.videoId);
+            //showAlertDialog("done");
         }
     }
 

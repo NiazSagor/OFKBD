@@ -1,15 +1,14 @@
 package com.ofk.bd.Fragments;
 
+import android.content.Intent;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,23 +19,15 @@ import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.source.MediaSource;
-import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.ui.PlayerView;
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
-import com.ofk.bd.Model.YTMedia;
-import com.ofk.bd.Model.YTSubtitles;
-import com.ofk.bd.Model.YoutubeMeta;
+import com.ofk.bd.CourseActivity;
+import com.ofk.bd.HelperClass.Common;
 import com.ofk.bd.R;
 import com.ofk.bd.Utility.AnimationUtility;
-import com.ofk.bd.Utility.ExtractorException;
-import com.ofk.bd.Utility.YoutubeStreamExtractor;
 import com.ofk.bd.ViewModel.MainActivityViewModel;
 import com.ofk.bd.databinding.FragmentActivityVideoBinding;
 import com.squareup.picasso.Picasso;
-
-import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -272,25 +263,9 @@ public class ActivityVideoFragment extends Fragment {
                 AnimationUtility.startAnimation(getContext(), binding.videoTitle);
                 AnimationUtility.startAnimation(getContext(), binding.gradientView);
 
-                new YoutubeStreamExtractor(new YoutubeStreamExtractor.ExtractorListner() {
-                    @Override
-                    public void onExtractionDone(List<YTMedia> adaptiveStream, final List<YTMedia> mixedStream, List<YTSubtitles> subtitles, YoutubeMeta meta) {
-                        //url to get subtitle
-                        DefaultDataSourceFactory dataSourceFactory = new DefaultDataSourceFactory(getContext(), getResources().getString(R.string.app_name));
-                        MediaSource mediaSource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(mixedStream.get(0).getUrl()));
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                player.prepare(mediaSource);
-                            }
-                        });
-                    }
+                Common.videoId = getArguments().getString("videoId");
 
-                    @Override
-                    public void onExtractionGoesWrong(final ExtractorException e) {
-                        Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-                    }
-                }).Extract(getArguments().getString("videoId"));
+                getActivity().startActivity(new Intent(getActivity(), CourseActivity.class).putExtra("from", "home"));
             }
         }
     };

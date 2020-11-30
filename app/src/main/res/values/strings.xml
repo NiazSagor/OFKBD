@@ -87,6 +87,7 @@
     <string name="avatarSelected" translatable="false">এভাটার সিলেক্ট করা হয়েছে</string>
     <string name="interested_text" translatable="false">সার্টিফিকেট সহ কোর্সে আগ্রহী</string>
     <string name="not_interested_text" translatable="false">কোর্সে আগ্রহী</string>
+    <string name="set" translatable="false">সেট করো</string>
 
 
     <string name="premium_course_detail_text_1" translatable="false">

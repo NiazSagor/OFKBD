@@ -10,7 +10,7 @@ android {
         minSdkVersion 23
         targetSdkVersion 30
         versionCode 1
-        versionName "1.0"
+        versionName "2020.11.28"
 
         testInstrumentationRunner "androidx.fragment_profile.runner.AndroidJUnitRunner"
 
@@ -99,4 +99,11 @@ dependencies {
     // This library also uses Rhino and Gson
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation  'org.mozilla:rhino:1.7.12'
+
+    // retrofit
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+
+    // yt extractor
+    implementation 'com.github.HaarigerHarald:android-youtubeExtractor:2.1.0'
 }

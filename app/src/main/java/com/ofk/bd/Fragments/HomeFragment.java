@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -132,6 +133,9 @@ public class HomeFragment extends Fragment {
         public void onChanged(UserInfo userInfo) {
             if (userInfo != null) {
                 binding.userNameTextView.setText(userInfo.getUserName());
+                Log.d(TAG, "onChanged: not null" + userInfo.getUserName());
+            }else{
+                Log.d(TAG, "onChanged: null");
             }
         }
     };
@@ -142,7 +146,7 @@ public class HomeFragment extends Fragment {
         @Override
         public void onClick(View view) {
             if (view.getId() == binding.rateOFKView.getId()) {
-                Uri uri = Uri.parse("market://details?id=com.angik.duodevloopers.food");
+                Uri uri = Uri.parse("market://details?id=com.ofk.bd");
                 Intent goToMarket = new Intent(Intent.ACTION_VIEW, uri);
                 goToMarket.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
                         .addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT)
@@ -150,14 +154,13 @@ public class HomeFragment extends Fragment {
                 try {
                     startActivity(goToMarket);
                 } catch (ActivityNotFoundException e) {
-                    startActivity(new Intent(Intent.ACTION_VIEW,
-                            Uri.parse("http://play.google.com/store/apps/details?id=com.angik.duodevloopers.food")));// TODO ofk play store link
+                    Toast.makeText(getContext(), "" + e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             } else if (view.getId() == binding.shareOKFView.getId()) {
                 Intent i = new Intent(Intent.ACTION_SEND);
                 i.setType("text/plain");
                 i.putExtra(Intent.EXTRA_SUBJECT, "Share OFK");
-                i.putExtra(Intent.EXTRA_TEXT, "http://www.google.com");// TODO ofk play store link
+                i.putExtra(Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=com.ofk.bd");// TODO ofk play store link
                 startActivity(Intent.createChooser(i, "Share URL"));
             } else if (view.getId() == binding.goUpFloatingButton.getId()) {
                 binding.parentScrollView.smoothScrollTo(0, 0);
@@ -230,10 +233,6 @@ public class HomeFragment extends Fragment {
         if (mainActivityViewModel == null) {
             mainActivityViewModel = ViewModelProviders.of(getActivity()).get(MainActivityViewModel.class);
         }
-
-        if (!mainActivityViewModel.getUserInfoLiveData2().hasObservers()) {
-            mainActivityViewModel.getUserInfoLiveData2().observe(this, userInfoObserver);
-        }
     }
 
     @Override
@@ -255,6 +254,8 @@ public class HomeFragment extends Fragment {
             mainActivityViewModel.getListMutableLiveData().observe(this, sectionListObserver);
         }
 
+
+        mainActivityViewModel.getUserInfoLiveData2().observe(this, userInfoObserver);
 
         if (recom_course_2 == null) {
             recom_course_2 = new CourseListAdapter(Common.randomCourses2, "home_page");
