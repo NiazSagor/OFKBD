@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     package="com.ofk.bd">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-
-    <!-- TODO need to change the allow backup to true in production -->
 
     <application
         android:name=".HelperClass.MyApp"
@@ -17,15 +14,14 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme.Transparent">
         <activity
             android:name=".SearchResultActivity"
             android:launchMode="singleTop"
             android:theme="@style/AppTheme.Transparent" />
         <activity
             android:name=".SplashActivity"
-            android:launchMode="singleTop"
-            android:theme="@style/AppTheme.Transparent">
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -34,8 +30,7 @@
         </activity>
         <activity
             android:name=".DisplayCourseActivity"
-            android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme.Transparent" />
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".CourseActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
@@ -44,25 +39,17 @@
         <activity
             android:name=".InfoActivity"
             android:fitsSystemWindows="true"
-            android:theme="@style/AppTheme.Transparent"
-            android:windowSoftInputMode="adjustPan|adjustUnspecified">
-
-        </activity>
-
+            android:windowSoftInputMode="adjustPan|adjustUnspecified" />
         <activity
             android:name="com.thefinestartist.finestwebview.FinestWebViewActivity"
             android:configChanges="keyboardHidden|screenSize"
             android:screenOrientation="sensor"
             android:theme="@style/FinestWebViewTheme.Light" />
-
         <activity
             android:name=".MainActivity"
             android:fitsSystemWindows="true"
             android:largeHeap="true"
-            android:theme="@style/AppTheme.Transparent"
-            android:windowSoftInputMode="adjustPan|adjustUnspecified">
-
-        </activity>
+            android:windowSoftInputMode="adjustPan|adjustUnspecified" />
 
         <service
             android:name=".JobIntentService.UpdateVideoCountService"

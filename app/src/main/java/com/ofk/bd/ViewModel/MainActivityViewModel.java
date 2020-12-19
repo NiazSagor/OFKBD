@@ -38,24 +38,6 @@ public class MainActivityViewModel extends AndroidViewModel {
     //blogList
     MutableLiveData<List<Course>> blogListMutableLiveData = new MutableLiveData<>();
 
-    // activity pic
-    LiveData<DataSnapshot> activityPicLiveData;
-
-    // field work pic
-    LiveData<DataSnapshot> fieldWorkPicLiveData;
-
-    // activity videos
-    LiveData<DataSnapshot> activityVideoLiveData;
-
-    // random course to display 1
-    LiveData<DataSnapshot> randomCourseLiveData_1;
-
-    // random course to display 2
-    LiveData<DataSnapshot> randomCourseLiveData_2;
-
-    // get enrolled courses
-    LiveData<DataSnapshot> enrolledCourses;
-
     /*
      *
      * User info
@@ -72,8 +54,6 @@ public class MainActivityViewModel extends AndroidViewModel {
 
     MutableLiveData<Integer> currentIndexOnBadge = new MutableLiveData<>();
 
-    MutableLiveData<String> currentVideoURL = new MutableLiveData<>();
-
     public MainActivityViewModel(@NonNull Application application) {
         super(application);
 
@@ -88,28 +68,6 @@ public class MainActivityViewModel extends AndroidViewModel {
 
         createCourseList();
         createBlogList();
-        getFieldWorkPicFromDatabase();
-        getActivityVideoFromDatabase();
-    }
-
-    /*******************SERVER QUERY**********************/
-
-    // from server
-    private void getActivityVideoFromDatabase() {
-        DatabaseReference db = FirebaseDatabase.getInstance().getReference().child("Activity Videos");
-        db.keepSynced(true);
-        activityVideoLiveData = new FirebaseQueryLiveData(db);
-    }
-
-    // from server
-    private void getFieldWorkPicFromDatabase() {
-        DatabaseReference db_activity_pic = FirebaseDatabase.getInstance().getReference().child("Field Work Pics");
-        db_activity_pic.keepSynced(true);
-        fieldWorkPicLiveData = new FirebaseQueryLiveData(db_activity_pic);
-    }
-
-    public LiveData<DataSnapshot> getFieldWorkPicLiveData() {
-        return fieldWorkPicLiveData;
     }
 
     /*******************OFFLINE QUERY**********************/
@@ -172,10 +130,6 @@ public class MainActivityViewModel extends AndroidViewModel {
         return enrolledCoursesFromOfflineDb;
     }
 
-    public MutableLiveData<String> getCurrentVideoURL() {
-        return currentVideoURL;
-    }
-
     /*******************UPDATE VIDEO COUNT IN USER PROGRESS TABLE**********************/
 
     public void updateTotalVideoCourse(String courseName, int count) {
@@ -215,7 +169,27 @@ public class MainActivityViewModel extends AndroidViewModel {
         return currentIndexOnBadge;
     }
 
-    public void postData(UserInfo userInfo){
+    public void postData(UserInfo userInfo) {
         userInfoRepository.postData(userInfo);
+    }
+
+    public LiveData<DataSnapshot> getActivityPicLiveData() {
+        DatabaseReference db = FirebaseDatabase.getInstance().getReference("Activity Pics");
+        return new FirebaseQueryLiveData(db);
+    }
+
+    public LiveData<DataSnapshot> getFieldWorkLiveData() {
+        DatabaseReference db = FirebaseDatabase.getInstance().getReference("Field Work Pics");
+        return new FirebaseQueryLiveData(db);
+    }
+
+    public LiveData<DataSnapshot> getActivityVideoLiveData() {
+        DatabaseReference db = FirebaseDatabase.getInstance().getReference("Activity Videos");
+        return new FirebaseQueryLiveData(db);
+    }
+
+    public LiveData<DataSnapshot> getRandomCourseLiveData(String sectionName) {
+        DatabaseReference db = FirebaseDatabase.getInstance().getReference("Section").child(sectionName);
+        return new FirebaseQueryLiveData(db);
     }
 }

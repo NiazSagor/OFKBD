@@ -1,5 +1,6 @@
 package com.ofk.bd.Utility;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 
@@ -19,20 +20,6 @@ public class AlertDialogUtility {
                 pDialog.setTitleText("লোড হচ্ছে");
                 pDialog.setCancelable(true);
                 pDialog.show();
-                break;
-
-            case "done":
-                pDialog = new KAlertDialog(context, KAlertDialog.ERROR_TYPE);
-                pDialog.setCancelable(true);
-                pDialog.setTitleText(context.getResources().getString(R.string.notFoundVideo))
-                        .setConfirmText("OK")
-                        .setConfirmClickListener(new KAlertDialog.KAlertClickListener() {
-                            @Override
-                            public void onClick(KAlertDialog kAlertDialog) {
-                                pDialog.dismissWithAnimation();
-                            }
-                        })
-                        .show();
                 break;
 
             case "verifyDone":
@@ -85,7 +72,52 @@ public class AlertDialogUtility {
                         })
                         .show();
                 break;
+
+            case "videoNotFound":
+                pDialog = new KAlertDialog(context, KAlertDialog.CUSTOM_IMAGE_TYPE);
+                pDialog.setTitleText("Coming Soon!");
+                pDialog.setContentText("Thank you for your interest. Videos will be back real soon!");
+                pDialog.setCustomImage(R.drawable.ic_not_found, context);
+                pDialog.setConfirmText("OK");
+                pDialog.setConfirmClickListener(new KAlertDialog.KAlertClickListener() {
+                    @Override
+                    public void onClick(KAlertDialog kAlertDialog) {
+                        dismissAlertDialog();
+                    }
+                }).show();
+                break;
+
+            case "courseNotFound":
+                pDialog = new KAlertDialog(context, KAlertDialog.CUSTOM_IMAGE_TYPE);
+                pDialog.setTitleText("Coming Soon!");
+                pDialog.setContentText("Thank you for your interest. Courses will be back real soon!");
+                pDialog.setCustomImage(R.drawable.ic_not_found, context);
+                pDialog.setConfirmText("OK");
+                pDialog.setConfirmClickListener(new KAlertDialog.KAlertClickListener() {
+                    @Override
+                    public void onClick(KAlertDialog kAlertDialog) {
+                        dismissAlertDialog();
+                        Activity activity = (Activity) context;
+                        activity.finish();
+                    }
+                }).show();
+                break;
         }
+
+    }
+
+    public void showQuizCompletionDialog(Context context, int score, int totalQuizQuestions) {
+        pDialog = new KAlertDialog(context, KAlertDialog.CUSTOM_IMAGE_TYPE);
+        pDialog.setTitleText("You have finished the quiz");
+        pDialog.setContentText("You've scored " + score + " out of " + totalQuizQuestions);
+        pDialog.setCustomImage(R.drawable.ic_quiz, context);
+        pDialog.setConfirmText("OK");
+        pDialog.setConfirmClickListener(new KAlertDialog.KAlertClickListener() {
+            @Override
+            public void onClick(KAlertDialog kAlertDialog) {
+                dismissAlertDialog();
+            }
+        }).show();
 
     }
 

@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey;
 @Entity(tableName = "user_progress")//Table name
 public class UserProgressClass {
     @PrimaryKey(autoGenerate = true)//id is primary key
-    private int id;
+    private Integer id;
 
     private String sectionName;
     private String sectionNameBangla;
@@ -16,6 +16,9 @@ public class UserProgressClass {
     private String courseThumbnailURL;
     private long totalVideos;
     private long videoWatched;
+
+    public UserProgressClass() {
+    }
 
     public UserProgressClass(String courseEnrolled, String courseNameEnglish, String courseThumbnailURL, boolean isFinished, String sectionName, String sectionNameBangla, long totalVideos, long videoWatched) {
         this.sectionName = sectionName;
@@ -28,11 +31,11 @@ public class UserProgressClass {
         this.videoWatched = videoWatched;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

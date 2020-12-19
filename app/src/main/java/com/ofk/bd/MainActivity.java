@@ -1,10 +1,7 @@
 package com.ofk.bd;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -21,10 +18,11 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.ofk.bd.Adapter.MainActivityViewPager;
 import com.ofk.bd.Fragments.ProfileBottomSheet;
+import com.ofk.bd.HelperClass.MyApp;
 import com.ofk.bd.HelperClass.SectionCourseNameTuple;
 import com.ofk.bd.HelperClass.ServiceResultReceiver;
-import com.ofk.bd.HelperClass.UserInfo;
 import com.ofk.bd.JobIntentService.UpdateVideoCountService;
+import com.ofk.bd.Utility.AlertDialogUtility;
 import com.ofk.bd.ViewModel.MainActivityViewModel;
 import com.ofk.bd.databinding.ActivityMainBinding;
 
@@ -103,18 +101,16 @@ public class MainActivity extends AppCompatActivity implements ServiceResultRece
         super.onStart();
         setupViewPager();
 
-        if (!isConnected()) {
-            showAlertDialog("done");
+        if (!MyApp.IS_CONNECTED) {
+            new AlertDialogUtility().showAlertDialog(this, "noConnection");
             return;
         }
 
         if (remoteConfig.getBoolean(IS_COURSE_UPDATED)) {
             // if true then fetch the new count for videos of courses
-            setupService();
+            startService();
             Log.d(TAG, "onStart: " + remoteConfig.getBoolean(IS_COURSE_UPDATED));
         }
-
-        viewModel.getUserInfoLiveData().observe(this, userInfoObserver);
     }
 
     public void setupViewPager() {
@@ -140,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements ServiceResultRece
         binding.viewpager.setAdapter(adapter);
     }
 
-    private void setupService() {
+    private void startService() {
         ArrayList<String> sectionNameList = new ArrayList<>();
         ArrayList<String> courseNameList = new ArrayList<>();
 
@@ -192,30 +188,6 @@ public class MainActivity extends AppCompatActivity implements ServiceResultRece
         }
     }
 
-    private void showAlertDialog(String command) {
-        if ("done".equals(command)) {
-            pDialog = new KAlertDialog(this, KAlertDialog.ERROR_TYPE);
-            pDialog.setTitleText("ইন্টারনেট সংযোগ নেই")
-                    .setConfirmText("OK")
-                    .setConfirmClickListener(new KAlertDialog.KAlertClickListener() {
-                        @Override
-                        public void onClick(KAlertDialog kAlertDialog) {
-                            pDialog.dismissWithAnimation();
-                        }
-                    })
-                    .show();
-        }
-    }
-
-    private boolean isConnected() {
-        ConnectivityManager cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-
-        return activeNetwork != null &&
-                activeNetwork.isConnectedOrConnecting();
-    }
-
     @Override
     public void onButtonClicked(String text) {
 
@@ -232,13 +204,4 @@ public class MainActivity extends AppCompatActivity implements ServiceResultRece
             viewModel.updateUserInfo(text, "dob");
         }
     }
-
-    private final Observer<UserInfo> userInfoObserver = new Observer<UserInfo>() {
-        @Override
-        public void onChanged(UserInfo userInfo) {
-            if(userInfo != null){
-                Log.d(TAG, "onChanged: not null");
-            }
-        }
-    };
 }

@@ -41,9 +41,6 @@ public class FullScreenHelper {
         BottomNavigationView bottomNavigationView = context.findViewById(R.id.bottom_navigation);
         bottomNavigationView.setVisibility(View.GONE);
 
-        FloatingActionButton backButton = context.findViewById(R.id.backButton);
-        backButton.setVisibility(View.GONE);
-
         LinearLayout videoLayout = context.findViewById(R.id.videoLayout);
         videoLayout.setVisibility(View.GONE);
 
@@ -73,9 +70,6 @@ public class FullScreenHelper {
 
         BottomNavigationView bottomNavigationView = context.findViewById(R.id.bottom_navigation);
         bottomNavigationView.setVisibility(View.VISIBLE);
-
-        FloatingActionButton backButton = context.findViewById(R.id.backButton);
-        backButton.setVisibility(View.VISIBLE);
 
         LinearLayout videoLayout = context.findViewById(R.id.videoLayout);
         videoLayout.setVisibility(View.VISIBLE);

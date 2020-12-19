@@ -1,10 +1,7 @@
 package com.ofk.bd;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -19,13 +16,13 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
 
-import com.google.firebase.database.DataSnapshot;
 import com.ofk.bd.AsyncTasks.FirebaseQueryRandomCourse;
 import com.ofk.bd.AsyncTasks.FirebaseQuerySubSection;
 import com.ofk.bd.DisplayCourseActivityAdapter.CourseListAdapter;
 import com.ofk.bd.Fragments.BottomDialog;
 import com.ofk.bd.HelperClass.Common;
 import com.ofk.bd.HelperClass.DisplayCourse;
+import com.ofk.bd.HelperClass.MyApp;
 import com.ofk.bd.HelperClass.SectionVideo;
 import com.ofk.bd.HelperClass.UserProgressClass;
 import com.ofk.bd.Interface.DisplayCourseLoadCallback;
@@ -44,24 +41,17 @@ public class DisplayCourseActivity extends AppCompatActivity implements BottomDi
 
     private DisplayCourseActivityViewModel viewModel;
 
-    private static DisplayCourse selectedCourse;
+    private DisplayCourse selectedCourse;
 
-    private AlertDialogUtility alertDialogUtility = new AlertDialogUtility();
+    private final AlertDialogUtility alertDialogUtility = new AlertDialogUtility();
 
-    private BottomDialog bottomSheet = new BottomDialog();
+    private final BottomDialog bottomSheet = new BottomDialog();
 
     private final Handler handler = new Handler();
 
     private LiveData<List<String>> enrolledCourseLiveData = new LiveData<List<String>>() {
         @Override
         public void observe(@NonNull LifecycleOwner owner, @NonNull Observer<? super List<String>> observer) {
-            super.observe(owner, observer);
-        }
-    };
-
-    private LiveData<DataSnapshot> availableCourseLiveData = new LiveData<DataSnapshot>() {
-        @Override
-        public void observe(@NonNull LifecycleOwner owner, @NonNull Observer<? super DataSnapshot> observer) {
             super.observe(owner, observer);
         }
     };
@@ -74,10 +64,9 @@ public class DisplayCourseActivity extends AppCompatActivity implements BottomDi
 
         viewModel = ViewModelProviders.of(DisplayCourseActivity.this).get(DisplayCourseActivityViewModel.class);
 
-        String headline = getIntent().getStringExtra("section_name_bangla") + " কোর্স";
-        binding.sectionHeadline.setText(headline);
-
-        alertDialogUtility.showAlertDialog(this, "start");
+        binding.sectionHeadline.setText(new StringBuilder()
+                .append(getIntent().getStringExtra("section_name_bangla"))
+                .append(" কোর্স"));
     }
 
     private void setUpViews() {
@@ -128,7 +117,7 @@ public class DisplayCourseActivity extends AppCompatActivity implements BottomDi
         super.onStart();
         setUpViews();
 
-        if (!isConnected()) {
+        if (!MyApp.IS_CONNECTED) {
             alertDialogUtility.showAlertDialog(this, "noConnection");
             return;
         }
@@ -147,15 +136,6 @@ public class DisplayCourseActivity extends AppCompatActivity implements BottomDi
     @Override
     protected void onStop() {
         super.onStop();
-        if (availableCourseLiveData.hasObservers()) {
-            Log.d(TAG, "onStop: has observer");
-            availableCourseLiveData.removeObservers(this);
-        }
-        if (availableCourseLiveData.hasObservers()) {
-            Log.d(TAG, "onStop: has observer");
-            availableCourseLiveData.removeObservers(this);
-        }
-        Log.d(TAG, "onStop: ");
     }
 
     @Override
@@ -165,9 +145,6 @@ public class DisplayCourseActivity extends AppCompatActivity implements BottomDi
 
         if (enrolledCourseLiveData.hasObservers()) {
             enrolledCourseLiveData.removeObservers(this);
-        }
-        if (availableCourseLiveData.hasObservers()) {
-            availableCourseLiveData.removeObservers(this);
         }
     }
 
@@ -180,25 +157,27 @@ public class DisplayCourseActivity extends AppCompatActivity implements BottomDi
             @Override
             public void onLoadCallback(List<DisplayCourse> courses) {
 
+                binding.progressBar.setVisibility(View.GONE);
+
+                if (courses == null || courses.size() == 0) {
+                    alertDialogUtility.showAlertDialog(DisplayCourseActivity.this, "courseNotFound");
+                    return;
+                }
+
                 CourseListAdapter adapter = new CourseListAdapter(courses, "displayCourse");
 
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        alertDialogUtility.dismissAlertDialog();
-                        binding.courseRecyclerView.setAdapter(adapter);
-                        String count = adapter.getItemCount() + " টি কোর্স";
-                        binding.courseCount.setText(count);
-                    }
-                }, 1500);
+                binding.courseRecyclerView.setAdapter(adapter);
+                binding.courseCount.setText(
+                        new StringBuilder()
+                                .append(adapter.getItemCount())
+                                .append(" টি কোর্স")
+                );
 
                 adapter.setOnItemClickListener(new CourseListAdapter.OnItemClickListener() {
                     @Override
                     public void onItemClick(int position, View view) {
 
-
                         selectedCourse = courses.get(position);
-
 
                         String sectionName = getIntent().getStringExtra("section_name");
                         String courseName = courses.get(position).getCourseTitle();
@@ -233,8 +212,6 @@ public class DisplayCourseActivity extends AppCompatActivity implements BottomDi
 
     private void proceedNormally(String sectionName, String courseName, String courseNameEnglish) {
 
-        alertDialogUtility.showAlertDialog(this, "start");
-
         Intent intent = new Intent(DisplayCourseActivity.this, CourseActivity.class);
         intent.putExtra("section_name", sectionName);
         intent.putExtra("course_name", courseName);
@@ -245,35 +222,21 @@ public class DisplayCourseActivity extends AppCompatActivity implements BottomDi
             @Override
             public void onSectionVideoLoadCallback(List<SectionVideo> sectionVideoList, int totalVideos) {
 
+                if (sectionVideoList == null || sectionVideoList.size() == 0) {
+                    alertDialogUtility.showAlertDialog(DisplayCourseActivity.this, "videoNotFound");
+                    return;
+                }
+
                 Common.sectionVideoList = sectionVideoList;
 
-                Log.d(TAG, "onSectionVideoLoadCallback: " + totalVideos);
-
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        alertDialogUtility.dismissAlertDialog();
-                        startActivity(intent);
-                    }
-                }, 1000);
+                startActivity(intent);
             }
         }, sectionName + " Section", courseNameEnglish).execute();
-    }
-
-    private boolean isConnected() {
-        ConnectivityManager cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-
-        return activeNetwork != null &&
-                activeNetwork.isConnectedOrConnecting();
     }
 
     @Override
     public void onButtonClicked(int isInterested) {
         if (isInterested == 0) {
-
-            alertDialogUtility.showAlertDialog(this, "start");
 
             String sectionName = getIntent().getStringExtra("section_name");
             String sectionNameBangla = getIntent().getStringExtra("section_name_bangla");
@@ -283,7 +246,7 @@ public class DisplayCourseActivity extends AppCompatActivity implements BottomDi
             String thumbNailURL = selectedCourse.getThumbnailURL();
 
 
-            viewModel.insert(new UserProgressClass(courseName, courseNameEnglish, thumbNailURL, false, sectionName, sectionNameBangla, 0 ,0));
+            viewModel.insert(new UserProgressClass(courseName, courseNameEnglish, thumbNailURL, false, sectionName, sectionNameBangla, 0, 0));
 
 
             Intent intent = new Intent(DisplayCourseActivity.this, CourseActivity.class);
@@ -297,20 +260,18 @@ public class DisplayCourseActivity extends AppCompatActivity implements BottomDi
                 @Override
                 public void onSectionVideoLoadCallback(List<SectionVideo> sectionVideoList, int totalVideos) {
 
-                    Common.sectionVideoList = sectionVideoList;
+                    if (sectionVideoList == null || sectionVideoList.size() == 0) {
+                        alertDialogUtility.showAlertDialog(DisplayCourseActivity.this, "videoNotFound");
+                        return;
+                    }
 
-                    Log.d(TAG, "onSectionVideoLoadCallback: " + totalVideos);
+                    Common.sectionVideoList = sectionVideoList;
 
                     viewModel.updateTotalVideoCourse(courseNameEnglish, totalVideos);
 
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            bottomSheet.dismiss();
-                            alertDialogUtility.dismissAlertDialog();
-                            startActivity(intent);
-                        }
-                    }, 1000);
+                    bottomSheet.dismiss();
+                    startActivity(intent);
+
                 }
             }, sectionName + " Section", courseNameEnglish).execute();
 

@@ -2,17 +2,17 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "9687ffc3c79635f907b87a4588cc9d60",
+    "identityHash": "c63af9d8be1253ebc8a331ed7c55dd14",
     "entities": [
       {
         "tableName": "user_info",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `firebaseUid` TEXT, `userName` TEXT, `userPhoneNumber` TEXT, `userPassword` TEXT, `userEmail` TEXT, `userClass` TEXT, `userSchool` TEXT, `userDOB` TEXT, `userGender` TEXT, `videoCompleted` INTEGER NOT NULL, `courseCompleted` INTEGER NOT NULL, `quizCompleted` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `firebaseUid` TEXT, `userName` TEXT, `userPhoneNumber` TEXT, `userPassword` TEXT, `userEmail` TEXT, `userClass` TEXT, `userSchool` TEXT, `userDOB` TEXT, `userGender` TEXT, `videoCompleted` INTEGER NOT NULL, `courseCompleted` INTEGER NOT NULL, `quizCompleted` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
             "columnName": "id",
             "affinity": "INTEGER",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "firebaseUid",
@@ -100,7 +100,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9687ffc3c79635f907b87a4588cc9d60')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c63af9d8be1253ebc8a331ed7c55dd14')"
     ]
   }
 }

@@ -2,7 +2,6 @@ package com.ofk.bd.Repository;
 
 import android.app.Application;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -76,7 +75,7 @@ public class UserProgressRepository {
         private UserProgressDao dao;
         private String course;
         private int count;
-        private static final DatabaseReference USER_REF = FirebaseDatabase.getInstance().getReference("User Progress");
+        private static final DatabaseReference USER_PROGRESS = FirebaseDatabase.getInstance().getReference("User Progress");
 
         public UpdateVideoCountAsyncTask(UserProgressDao dao, String course, int count) {
             this.dao = dao;
@@ -87,7 +86,7 @@ public class UserProgressRepository {
         @Override
         protected Void doInBackground(Void... voids) {
             dao.upDateTotalVideo(course, count);
-            USER_REF.child(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber())
+            USER_PROGRESS.child(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber())
                     .child(course).child("totalVideos")
                     .setValue(count);
             return null;
@@ -134,7 +133,7 @@ public class UserProgressRepository {
 
                             @Override
                             public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
-                                Log.d(TAG, "onComplete: " + databaseError.getMessage());
+
                             }
                         });
             }
@@ -153,10 +152,12 @@ public class UserProgressRepository {
 
         @Override
         protected Void doInBackground(UserProgressClass... userProgressClasses) {
-            dao.insert(userProgressClasses[0]);
+            UserProgressClass userProgressClass = userProgressClasses[0];
+            dao.insert(userProgressClass);
+            userProgressClass.setId(null);
             USER_PROGRESS_REF.child(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber())
-                    .child(userProgressClasses[0].getCourseNameEnglish())
-                    .setValue(userProgressClasses[0]);
+                    .child(userProgressClass.getCourseNameEnglish())
+                    .setValue(userProgressClass);
             return null;
         }
     }

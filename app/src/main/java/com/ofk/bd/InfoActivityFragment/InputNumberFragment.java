@@ -3,6 +3,7 @@ package com.ofk.bd.InfoActivityFragment;
 import android.app.Service;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -25,16 +26,17 @@ import com.google.android.gms.tasks.TaskExecutors;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
-import com.ofk.bd.HelperClass.UserForFirebase;
+import com.ofk.bd.HelperClass.UserInfo;
+import com.ofk.bd.HelperClass.UserProgressClass;
 import com.ofk.bd.Interface.CheckUserCallback;
 import com.ofk.bd.R;
 import com.ofk.bd.Utility.CheckUserDatabase;
 import com.ofk.bd.ViewModel.InfoActivityViewModel;
 import com.ofk.bd.databinding.FragmentInputNumberBinding;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -80,6 +82,8 @@ public class InputNumberFragment extends Fragment {
     private InfoActivityViewModel activityViewModel;
     private FirebaseAuth mAuth;
     private KAlertDialog pDialog;
+
+    private Handler handler = new Handler();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -127,13 +131,13 @@ public class InputNumberFragment extends Fragment {
                     if (binding.phoneNumberEditText.getText().toString().trim().length() < 11) {
                         binding.phoneNumberEditText.setError("সঠিক নাম্বার দাও নি");
                     } else {
-                        userPhoneNumber = binding.phoneNumberEditText.getText().toString().trim();
+                        userPhoneNumber = "+88" + binding.phoneNumberEditText.getText().toString().trim();
 
                         hideKeyboardFrom();
 
                         showAlertDialog("start");
 
-                        sendVerificationCode("+88" + userPhoneNumber);
+                        sendVerificationCode(userPhoneNumber);
                     }
 
                 } else {
@@ -160,13 +164,6 @@ public class InputNumberFragment extends Fragment {
 
             }
         });
-
-        binding.alreadyAccountTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                viewPager2.setCurrentItem(3, true);
-            }
-        });
     }
 
     private void sendVerificationCode(String phone) {
@@ -184,7 +181,7 @@ public class InputNumberFragment extends Fragment {
             mCallback = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
         @Override
         public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
-            signInWithCredential(phoneAuthCredential);//TODO research
+            //signInWithCredential(phoneAuthCredential);//TODO research
             Log.d(TAG, "onVerificationCompleted: ");
         }
 
@@ -206,14 +203,44 @@ public class InputNumberFragment extends Fragment {
         }
     };
 
+    // auto verification
     private void signInWithCredential(PhoneAuthCredential credential) {
         mAuth.signInWithCredential(credential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
+
                     showAlertDialog("done");
-                    viewPager2.setCurrentItem(1, true);
-                    //Toast.makeText(getContext(), "Successful" + user.getPhoneNumber(), Toast.LENGTH_SHORT).show();
+
+                    new CheckUserDatabase(new CheckUserCallback() {
+                        @Override
+                        public void onUserCheckCallback(boolean isExist, String message) {
+
+                            if (isExist) {
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        showAlertDialog("end");
+                                        viewPager2.setCurrentItem(3, true);
+                                    }
+                                }, 1500);
+                            } else {
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        showAlertDialog("end");
+                                        viewPager2.setCurrentItem(2, true);
+                                    }
+                                }, 1500);
+                            }
+
+                        }
+
+                        @Override
+                        public void onUserFoundCallback(UserInfo userInfoCloud, List<UserProgressClass> userProgressClassList) {
+
+                        }
+                    }, userPhoneNumber, "");
                 } else {
                     Toast.makeText(getContext(), "Not successful " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                 }

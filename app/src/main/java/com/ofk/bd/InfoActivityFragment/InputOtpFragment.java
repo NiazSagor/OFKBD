@@ -27,12 +27,16 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.ofk.bd.HelperClass.UserForFirebase;
+import com.ofk.bd.HelperClass.UserInfo;
+import com.ofk.bd.HelperClass.UserProgressClass;
 import com.ofk.bd.Interface.CheckUserCallback;
 import com.ofk.bd.R;
 import com.ofk.bd.Utility.AlertDialogUtility;
 import com.ofk.bd.Utility.CheckUserDatabase;
 import com.ofk.bd.ViewModel.InfoActivityViewModel;
 import com.ofk.bd.databinding.FragmentInputOtpBinding;
+
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -133,6 +137,8 @@ public class InputOtpFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
+                Log.d(TAG, "onClick: ");
+
                 hideKeyboardFrom();
 
                 dialogUtility.showAlertDialog(getContext(), "start");
@@ -142,8 +148,6 @@ public class InputOtpFragment extends Fragment {
                 activityViewModel.getVerificationCode().observe(getActivity(), new Observer<String>() {
                     @Override
                     public void onChanged(String s) {
-                        Log.d(TAG, "onChanged: " + s);
-                        Log.d(TAG, "onChanged: " + otp);
                         verifyCode(s, otp);
                     }
                 });
@@ -164,8 +168,6 @@ public class InputOtpFragment extends Fragment {
 
                     dialogUtility.dismissAlertDialog();
 
-                    dialogUtility.showAlertDialog(getContext(), "verifyDone");
-
                     FirebaseUser user = mAuth.getCurrentUser();
                     assert user != null;
                     activityViewModel.getUserPhoneNumberLiveData().setValue(user.getPhoneNumber());
@@ -173,6 +175,7 @@ public class InputOtpFragment extends Fragment {
                     new CheckUserDatabase(new CheckUserCallback() {
                         @Override
                         public void onUserCheckCallback(boolean isExist, String message) {
+
                             if (isExist) {
                                 // user has already an account take to login fragment
                                 handler.postDelayed(new Runnable() {
@@ -195,7 +198,7 @@ public class InputOtpFragment extends Fragment {
                         }
 
                         @Override
-                        public void onUserFoundCallback(UserForFirebase user) {
+                        public void onUserFoundCallback(UserInfo user, List<UserProgressClass> userProgressClassList) {
                             //
                         }
                     }, user.getPhoneNumber(), "").execute();

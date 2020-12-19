@@ -5,7 +5,6 @@ import android.app.Application;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
@@ -37,12 +36,18 @@ public class DisplayCourseActivityViewModel extends AndroidViewModel {
 
 
     // updates total videos of a particular course
-    public void updateTotalVideoCourse(String courseName, int count){
+    public void updateTotalVideoCourse(String courseName, int count) {
         repository.updateVideoCount(count, courseName);
     }
 
     // sql lite enrolled courses
     public LiveData<List<String>> getCourseEnrolled() {
         return courseEnrolled;
+    }
+
+    // get available courses in a particular section
+    public LiveData<DataSnapshot> getCourses(String sectionName){
+        DatabaseReference AVAILABLE_COURSES_REF = FirebaseDatabase.getInstance().getReference("Section").child(sectionName);
+        return new FirebaseQueryLiveData(AVAILABLE_COURSES_REF);
     }
 }

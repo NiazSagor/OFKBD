@@ -17,7 +17,6 @@ import com.ofk.bd.Interface.SectionVideoLoadCallback;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 
 public class FirebaseQuerySubSection extends AsyncTask<Void, Void, Void> {
 
@@ -58,7 +57,7 @@ public class FirebaseQuerySubSection extends AsyncTask<Void, Void, Void> {
 
                         Section section = ds.getValue(Section.class);// single section
 
-                        // now we need to know how many videos per section have
+                        // now we need to know how many videos per section has
                         db.child(sectionName).child(courseName).child("Video").child(section.getSectionCode())
                                 .addValueEventListener(new ValueEventListener() {
                                     @Override
@@ -89,6 +88,8 @@ public class FirebaseQuerySubSection extends AsyncTask<Void, Void, Void> {
                                     }
                                 });
                     }
+                } else {
+                    callback.onSectionVideoLoadCallback(sectionVideoList, total);
                 }
             }
 

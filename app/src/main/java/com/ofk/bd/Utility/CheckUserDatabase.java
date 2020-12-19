@@ -1,9 +1,6 @@
 package com.ofk.bd.Utility;
 
 import android.os.AsyncTask;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -12,18 +9,24 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.ofk.bd.HelperClass.Common;
-import com.ofk.bd.HelperClass.UserForFirebase;
+import com.ofk.bd.HelperClass.UserInfo;
+import com.ofk.bd.HelperClass.UserProgressClass;
 import com.ofk.bd.Interface.CheckUserCallback;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CheckUserDatabase extends AsyncTask<Void, Void, Void> {
 
     private static final String TAG = "CheckUserDatabase";
-    
+
     private final CheckUserCallback callback;
     private final String userPhoneNumber;
     private final String userPassword;
-    public static final DatabaseReference db = FirebaseDatabase.getInstance().getReference("User");
+    private List<UserProgressClass> userProgressClassList;
+
+    public static final DatabaseReference USER_REF = FirebaseDatabase.getInstance().getReference("User");
+    public static final DatabaseReference USER_PROGRESS_REF = FirebaseDatabase.getInstance().getReference("User Progress");
 
     public CheckUserDatabase(CheckUserCallback callback, String userPhoneNumber, String userPassword) {
         this.callback = callback;
@@ -33,7 +36,10 @@ public class CheckUserDatabase extends AsyncTask<Void, Void, Void> {
 
     @Override
     protected Void doInBackground(Void... voids) {
-        db.addListenerForSingleValueEvent(new ValueEventListener() {
+
+        userProgressClassList = new ArrayList<>();
+
+        USER_REF.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
@@ -42,18 +48,40 @@ public class CheckUserDatabase extends AsyncTask<Void, Void, Void> {
 
                         String pass = dataSnapshot.child(userPhoneNumber).child("userPassword").getValue(String.class);
 
-                        UserForFirebase user = dataSnapshot.child(userPhoneNumber).getValue(UserForFirebase.class);
+                        UserInfo user = dataSnapshot.child(userPhoneNumber).getValue(UserInfo.class);
 
                         if (userPassword.equals(pass)) {
+
                             callback.onUserCheckCallback(true, "match");
-                            callback.onUserFoundCallback(user);
+
+                            USER_PROGRESS_REF.child(userPhoneNumber).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    if (dataSnapshot.exists()) {
+                                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                            UserProgressClass userProgress = snapshot.getValue(UserProgressClass.class);
+                                            userProgressClassList.add(userProgress);
+                                        }
+                                        callback.onUserFoundCallback(user, userProgressClassList);
+                                    } else {
+                                        callback.onUserFoundCallback(user, userProgressClassList);
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
+
                         } else {
                             callback.onUserCheckCallback(true, "misMatch");
                         }
                     } else {
                         callback.onUserCheckCallback(false, "null");
                     }
-
+                } else {
+                    callback.onUserCheckCallback(false, "null");
                 }
             }
 

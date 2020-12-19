@@ -20,8 +20,8 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
-import com.ofk.bd.HelperClass.UserForFirebase;
 import com.ofk.bd.HelperClass.UserInfo;
+import com.ofk.bd.HelperClass.UserProgressClass;
 import com.ofk.bd.Interface.CheckUserCallback;
 import com.ofk.bd.MainActivity;
 import com.ofk.bd.Utility.AlertDialogUtility;
@@ -29,6 +29,8 @@ import com.ofk.bd.Utility.CheckUserDatabase;
 import com.ofk.bd.ViewModel.InfoActivityViewModel;
 import com.ofk.bd.ViewModel.MainActivityViewModel;
 import com.ofk.bd.databinding.FragmentLogInBinding;
+
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -165,44 +167,44 @@ public class LogInFragment extends Fragment {
         new CheckUserDatabase(new CheckUserCallback() {
             @Override
             public void onUserCheckCallback(boolean isExist, String message) {
+
+                dialogUtility.dismissAlertDialog();
+
                 if (isExist && message.equals("match")) {
-                    dialogUtility.dismissAlertDialog();
 
                     sharedPreferences.edit().putBoolean("isVerified", true).apply();
 
                     getActivity().startActivity(new Intent(getActivity(), MainActivity.class)
                             .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP));
                     getActivity().finish();
+
                 } else if (isExist && message.equals("misMatch")) {
-                    dialogUtility.dismissAlertDialog();
                     Toast.makeText(getContext(), "পাসওয়ার্ড সঠিক হয় নি", Toast.LENGTH_SHORT).show();
                 } else {
-                    dialogUtility.dismissAlertDialog();
                     Toast.makeText(getContext(), "ইউজার একাউন্ট নেই", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
-            public void onUserFoundCallback(UserForFirebase user) {
+            public void onUserFoundCallback(UserInfo userInfoCloud, List<UserProgressClass> userProgressClassList) {
 
-                Toast.makeText(getActivity(), "Welcome Back!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Welcome Back!", Toast.LENGTH_SHORT).show();
 
-                if (user != null) {
+                activityViewModel.getUserInfoMutableLiveData().observe(getActivity(), new Observer<UserInfo>() {
+                    @Override
+                    public void onChanged(UserInfo userInfo) {
+                        if (userInfo == null) {
 
-                    activityViewModel.getUserInfoMutableLiveData().observe(getActivity(), new Observer<UserInfo>() {
-                        @Override
-                        public void onChanged(UserInfo userInfo) {
-                            if (userInfo != null) {
-                                // if local database is empty
-                                Log.d(TAG, "onChanged: null");
-                            } else {
-                                Log.d(TAG, "onChanged: not null");
+                            activityViewModel.insert(userInfoCloud);
+
+                            if (userProgressClassList != null && userProgressClassList.size() != 0) {
+                                for (UserProgressClass userProgressClass : userProgressClassList) {
+                                    activityViewModel.insertUserProgress(userProgressClass);
+                                }
                             }
                         }
-                    });
-
-                    //activityViewModel.updateUserInfo(new UserInfo(user.getUserName(), user.getUserPhoneNumber(), user.)user.getUserName(), user.getUserEmail(), user.getUserPhoneNumber());
-                }
+                    }
+                });
             }
         }, userPhoneNumber, userPassword).execute();
     }

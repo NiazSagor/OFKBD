@@ -8,7 +8,9 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.ofk.bd.HelperClass.UserInfo;
+import com.ofk.bd.HelperClass.UserProgressClass;
 import com.ofk.bd.Repository.UserInfoRepository;
+import com.ofk.bd.Repository.UserProgressRepository;
 
 public class InfoActivityViewModel extends AndroidViewModel {
 
@@ -16,12 +18,14 @@ public class InfoActivityViewModel extends AndroidViewModel {
     private final MutableLiveData<String> verificationCode = new MutableLiveData<>();
 
     private final UserInfoRepository repository;
+    private final UserProgressRepository userProgressRepository;
 
     private LiveData<UserInfo> userInfoMutableLiveData = new MutableLiveData<>();
 
     public InfoActivityViewModel(@NonNull Application application) {
         super(application);
         repository = new UserInfoRepository(application);
+        userProgressRepository = new UserProgressRepository(application);
         userInfoMutableLiveData = repository.getUserInfoLiveData();
     }
 
@@ -40,5 +44,9 @@ public class InfoActivityViewModel extends AndroidViewModel {
 
     public LiveData<UserInfo> getUserInfoMutableLiveData() {
         return userInfoMutableLiveData;
+    }
+
+    public void insertUserProgress(UserProgressClass userProgressClass){
+        userProgressRepository.insert(userProgressClass);
     }
 }

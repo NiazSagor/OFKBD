@@ -74,8 +74,10 @@ public class UserInfoRepository {
 
         @Override
         protected Void doInBackground(UserInfo... userInfos) {
-            dao.insert(userInfos[0]);
-            USER_REF.child(userInfos[0].getUserPhoneNumber()).setValue(userInfos[0]);
+            UserInfo userInfo = userInfos[0];
+            dao.insert(userInfo);
+            userInfo.setId(null);
+            USER_REF.child(userInfo.getUserPhoneNumber()).setValue(userInfo);
             return null;
         }
     }
@@ -270,7 +272,7 @@ public class UserInfoRepository {
 
                     @Override
                     public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
-                        Log.d(TAG, "onComplete: " + databaseError.getMessage());
+
                     }
                 });
     }

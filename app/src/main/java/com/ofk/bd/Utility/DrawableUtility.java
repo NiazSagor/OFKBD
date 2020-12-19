@@ -1,9 +1,12 @@
 package com.ofk.bd.Utility;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
 
 import com.ofk.bd.R;
 
@@ -49,12 +52,24 @@ public class DrawableUtility {
     }
 
     // get section icons
-    public static Drawable getSectionIcon(Context context, int index){
+    public static Drawable getSectionIcon(Context context, int index) {
         return ContextCompat.getDrawable(context, sectionIcons[index]);
     }
 
     // get section gradients
-    public static Drawable getGradient(Context context, int index){
+    public static Drawable getGradient(Context context, int index) {
         return ContextCompat.getDrawable(context, sectionGradients[index]);
+    }
+
+    public static Drawable getQuizOptionOutlineDrawable(Context context) {
+        return (GradientDrawable) ContextCompat.getDrawable(context, R.drawable.quiz_option_outline_bg);
+    }
+
+    public static Drawable getQuizOptionRightDrawable(Context context) {
+        return (GradientDrawable) ContextCompat.getDrawable(context, R.drawable.quiz_right_option_bg);
+    }
+
+    public static Drawable getQuizOptionWrongDrawable(Context context) {
+        return (GradientDrawable) ContextCompat.getDrawable(context, R.drawable.quiz_wrong_option_bg);
     }
 }

@@ -1,9 +1,12 @@
 package com.ofk.bd.Fragments;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +22,10 @@ import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.ui.PlayerView;
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.ofk.bd.CourseActivity;
 import com.ofk.bd.HelperClass.Common;
@@ -28,6 +34,10 @@ import com.ofk.bd.Utility.AnimationUtility;
 import com.ofk.bd.ViewModel.MainActivityViewModel;
 import com.ofk.bd.databinding.FragmentActivityVideoBinding;
 import com.squareup.picasso.Picasso;
+
+import at.huber.youtubeExtractor.VideoMeta;
+import at.huber.youtubeExtractor.YouTubeExtractor;
+import at.huber.youtubeExtractor.YtFile;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -83,18 +93,12 @@ public class ActivityVideoFragment extends Fragment {
         return fragment;
     }
 
-    private MainActivityViewModel viewModel;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-
-        if (viewModel == null) {
-            viewModel = ViewModelProviders.of(getActivity()).get(MainActivityViewModel.class);
         }
     }
 
@@ -108,13 +112,12 @@ public class ActivityVideoFragment extends Fragment {
         binding = FragmentActivityVideoBinding.inflate(getLayoutInflater());
 
         playerView = binding.getRoot().findViewById(R.id.video_player_view);
-        progressBar = binding.getRoot().findViewById(R.id.progress_circular);
-        playPause = binding.getRoot().findViewById(R.id.exo_play_pause);
-        AppCompatTextView headerTextView = binding.getRoot().findViewById(R.id.header_tv);
-        headerTextView.setVisibility(View.INVISIBLE);
-        ImageButton fullScreenButton = binding.getRoot().findViewById(R.id.exo_fullscreen);
-        fullScreenButton.setVisibility(View.INVISIBLE);
-        playPause.setOnClickListener(playButtonClickListener);
+        playerView.setShowRewindButton(false);
+        playerView.setShowFastForwardButton(false);
+        playerView.findViewById(R.id.header_tv).setVisibility(View.INVISIBLE);
+        playerView.findViewById(R.id.exo_fullscreen).setVisibility(View.INVISIBLE);
+        progressBar = playerView.findViewById(R.id.progress_circular);
+        playPause = playerView.findViewById(R.id.exo_play_pause);
 
         return binding.getRoot();
     }
@@ -122,6 +125,7 @@ public class ActivityVideoFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        playPause.setOnClickListener(playButtonClickListener);
         binding.playImage.setOnClickListener(listener);
         binding.videoTitle.setOnClickListener(listener);
     }
@@ -169,6 +173,7 @@ public class ActivityVideoFragment extends Fragment {
         if (Util.SDK_INT < 24) {
             releasePlayer();
         }
+        player.pause();
     }
 
     private void initializePlayer() {
@@ -251,7 +256,7 @@ public class ActivityVideoFragment extends Fragment {
             }
         }
     };
-
+    @SuppressLint("StaticFieldLeak")
 
     private final View.OnClickListener listener = new View.OnClickListener() {
         @Override
@@ -263,9 +268,25 @@ public class ActivityVideoFragment extends Fragment {
                 AnimationUtility.startAnimation(getContext(), binding.videoTitle);
                 AnimationUtility.startAnimation(getContext(), binding.gradientView);
 
-                Common.videoId = getArguments().getString("videoId");
+                new YouTubeExtractor(getContext()) {
+                    @Override
+                    protected void onExtractionComplete(SparseArray<YtFile> ytFiles, VideoMeta videoMeta) {
+                        if (ytFiles != null) {
+                            int itag = 22;
+                            String downloadUrl = ytFiles.get(itag).getUrl();
 
-                getActivity().startActivity(new Intent(getActivity(), CourseActivity.class).putExtra("from", "home"));
+                            DefaultDataSourceFactory dataSourceFactory = new DefaultDataSourceFactory(getActivity(), getResources().getString(R.string.app_name));
+                            MediaSource mediaSource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(downloadUrl));
+
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    player.prepare(mediaSource);
+                                }
+                            });
+                        }
+                    }
+                }.extract(getArguments().getString("videoId"), true, false);
             }
         }
     };

@@ -32,13 +32,11 @@ import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
-import com.google.android.exoplayer2.util.Util;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.ofk.bd.CourseActivityAdapter.CourseViewPager;
 import com.ofk.bd.HelperClass.Common;
 import com.ofk.bd.HelperClass.FullScreenHelper;
 import com.ofk.bd.ViewModel.CourseActivityViewModel;
-import com.ofk.bd.ViewModel.VideoFromListViewModel;
 import com.ofk.bd.databinding.ActivityCourseBinding;
 
 import at.huber.youtubeExtractor.VideoMeta;
@@ -49,9 +47,6 @@ public class CourseActivity extends AppCompatActivity {
 
     private static final String TAG = "VIDEO_PLAY_HOY_JEKHANE";
 
-
-    private AnimatedVectorDrawableCompat drawableCompat;
-    private AnimatedVectorDrawable animatedVectorDrawable;
 
     private SimpleExoPlayer player;
     private PlayerView playerView;
@@ -69,8 +64,6 @@ public class CourseActivity extends AppCompatActivity {
 
     private MenuItem prevMenuItem;
 
-    private VideoFromListViewModel videoFromListViewModel;
-
     private CourseActivityViewModel courseActivityViewModel;
 
     private FullScreenHelper fullScreenHelper;
@@ -84,47 +77,17 @@ public class CourseActivity extends AppCompatActivity {
 
         playerView = binding.getRoot().findViewById(R.id.video_player_view);
         playerView.setKeepContentOnPlayerReset(true);
-        progressBar = binding.getRoot().findViewById(R.id.progress_circular);
-        playPause = binding.getRoot().findViewById(R.id.exo_play_pause);
-        titleTextView = binding.getRoot().findViewById(R.id.header_tv);
-        playPause.setOnClickListener(playButtonClickListener);
+        progressBar = playerView.findViewById(R.id.progress_circular);
+        playPause = playerView.findViewById(R.id.exo_play_pause);
+        titleTextView = playerView.findViewById(R.id.header_tv);
 
         // This is the course we clicked in display course activity
         binding.courseName.setText(getIntent().getStringExtra("course_name"));
 
         courseActivityViewModel = ViewModelProviders.of(CourseActivity.this).get(CourseActivityViewModel.class);
 
-        // Calling view model to get the selected video from the fragment
-        videoFromListViewModel = ViewModelProviders.of(CourseActivity.this).get(VideoFromListViewModel.class);
-
-        ImageButton fullScreen = binding.getRoot().findViewById(R.id.exo_fullscreen);
-        fullScreen.setOnClickListener(onFullScreenButtonClickListener);
-
-        binding.backButton.setOnClickListener(backButtonClickListener);
-
         binding.bottomNavigation.setOnNavigationItemSelectedListener(mNavListener);
-
-        videoFromListViewModel.getMutableLiveData().observe(CourseActivity.this, observer);
     }
-
-    // Bottom navigation listener
-    private BottomNavigationView.OnNavigationItemSelectedListener mNavListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.nav_video:
-                    binding.videoRecourseViewPager.setCurrentItem(0);
-                    break;
-                case R.id.nav_quiz:
-                    binding.videoRecourseViewPager.setCurrentItem(1);
-                    break;
-                case R.id.nav_resources:
-                    binding.videoRecourseViewPager.setCurrentItem(2);
-                    break;
-            }
-            return false;
-        }
-    };
 
     @Override
     protected void onStart() {
@@ -132,9 +95,14 @@ public class CourseActivity extends AppCompatActivity {
 
         initializePlayer();
 
+        playPause.setOnClickListener(playButtonClickListener);
+        playerView.findViewById(R.id.exo_fullscreen).setOnClickListener(onFullScreenButtonClickListener);
+        binding.backButton.setOnClickListener(backButtonClickListener);
+
+        courseActivityViewModel.getCurrentVideoFromList().observe(CourseActivity.this, observer);
+
         // after the activity is visible to user
         setUpViewPager();
-        Log.d(TAG, "onStart: ");
     }
 
     @Override
@@ -153,10 +121,7 @@ public class CourseActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        if (Util.SDK_INT >= 24) {
-            releasePlayer();
-        }
-        Log.d(TAG, "onStop: ");
+        releasePlayer();
     }
 
     @Override
@@ -166,6 +131,7 @@ public class CourseActivity extends AppCompatActivity {
 
         Common.videoId = "";
         Common.sectionVideoList.clear();
+        Common.CORRECT_ANSWER_COUNT = 1;
     }
 
     private void releasePlayer() {
@@ -183,6 +149,8 @@ public class CourseActivity extends AppCompatActivity {
     private void setUpViewPager() {
 
         CourseViewPager adapter = new CourseViewPager(this);
+
+        binding.videoRecourseViewPager.setUserInputEnabled(false);
 
         binding.videoRecourseViewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
@@ -244,6 +212,8 @@ public class CourseActivity extends AppCompatActivity {
         @Override
         public void onPlaybackStateChanged(int state) {
 
+            playerView.showController();
+
             switch (state) {
                 case Player.STATE_BUFFERING:
                     progressBar.setVisibility(View.VISIBLE);
@@ -263,8 +233,6 @@ public class CourseActivity extends AppCompatActivity {
                     set.constrainHeight(R.id.videoFrameLayout, ConstraintSet.WRAP_CONTENT);
                     set.applyTo(parent);
 
-
-                    // ((MotionLayout) findViewById(R.id.parentLayout)).transitionToEnd();
                     break;
                 case Player.STATE_ENDED:
                     progressBar.setVisibility(View.GONE);
@@ -287,6 +255,8 @@ public class CourseActivity extends AppCompatActivity {
         @Override
         public void onClick(View view) {
 
+            AnimatedVectorDrawableCompat drawableCompat;
+            AnimatedVectorDrawable animatedVectorDrawable;
             if (switchNumber == 0) {
                 playPause.setImageDrawable(ContextCompat.getDrawable(CourseActivity.this, R.drawable.pause_to_play));
                 Drawable drawable = playPause.getDrawable();
@@ -346,6 +316,25 @@ public class CourseActivity extends AppCompatActivity {
                     }
                 }.extract(s, true, false);
             }
+        }
+    };
+
+    // Bottom navigation listener
+    private final BottomNavigationView.OnNavigationItemSelectedListener mNavListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.nav_video:
+                    binding.videoRecourseViewPager.setCurrentItem(0);
+                    break;
+                case R.id.nav_quiz:
+                    binding.videoRecourseViewPager.setCurrentItem(1);
+                    break;
+                case R.id.nav_resources:
+                    binding.videoRecourseViewPager.setCurrentItem(2);
+                    break;
+            }
+            return false;
         }
     };
 }

@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey;
 @Entity(tableName = "user_info")//Table name
 public class UserInfo {
     @PrimaryKey(autoGenerate = true)//id is primary key
-    private int id;
+    private Integer id;
 
     protected String firebaseUid;
 
@@ -24,6 +24,9 @@ public class UserInfo {
     long quizCompleted;
 
 
+    public UserInfo() {
+    }
+
     public UserInfo(long courseCompleted, long quizCompleted, String userClass, String userDOB, String userEmail, String userGender, String userName, String userPassword, String userPhoneNumber, String userSchool, long videoCompleted) {
         this.userName = userName;
         this.userPhoneNumber = userPhoneNumber;
@@ -38,11 +41,11 @@ public class UserInfo {
         this.quizCompleted = quizCompleted;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

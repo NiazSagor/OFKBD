@@ -1,11 +1,9 @@
 package com.ofk.bd.CourseActivityAdapter;
 
 import android.app.Activity;
-import android.graphics.drawable.AnimatedVectorDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -13,37 +11,26 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
 import com.ofk.bd.HelperClass.Section;
 import com.ofk.bd.HelperClass.SectionVideo;
 import com.ofk.bd.HelperClass.Video;
 import com.ofk.bd.R;
-import com.ofk.bd.ViewModel.VideoFromListViewModel;
+import com.ofk.bd.ViewModel.CourseActivityViewModel;
 
 import java.util.List;
 
 public class CourseSectionAdapter extends RecyclerView.Adapter<CourseSectionAdapter.CourseSectionListViewHolder> {
 
-    int switchNumber = 0;
-
-    private AnimatedVectorDrawableCompat drawableCompat;
-    private AnimatedVectorDrawable animatedVectorDrawable;
-
     private static final String TAG = "CourseSectionAdapter";
 
-    private final Activity courseActivity;
-
-    private SectionVideoAdapter adapter;
-
-    private VideoFromListViewModel videoFromListViewModel;
+    private final CourseActivityViewModel courseActivityViewModel;
 
     private final List<SectionVideo> sectionVideoList;
 
     public CourseSectionAdapter(Activity courseActivity, List<SectionVideo> sectionVideoList) {
-        this.courseActivity = courseActivity;
         this.sectionVideoList = sectionVideoList;
-        videoFromListViewModel = ViewModelProviders.of((FragmentActivity) courseActivity).get(VideoFromListViewModel.class);
+        courseActivityViewModel = ViewModelProviders.of((FragmentActivity) courseActivity).get(CourseActivityViewModel.class);
     }
 
     @NonNull
@@ -62,13 +49,13 @@ public class CourseSectionAdapter extends RecyclerView.Adapter<CourseSectionAdap
 
         if (isExpanded) {
             List<Video> videoList = sectionVideoList.get(position).getVideos();
-            adapter = new SectionVideoAdapter(videoList, "sectionVideo");
+            SectionVideoAdapter adapter = new SectionVideoAdapter(videoList, "sectionVideo");
             holder.sectionVideoListRecyclerView.setAdapter(adapter);
 
             adapter.setOnItemClickListener(new SectionVideoAdapter.OnItemClickListener() {
                 @Override
                 public void onItemClick(int position, View view) {
-                    videoFromListViewModel.getMutableLiveData().setValue(videoList.get(position).getVideoURL());
+                    courseActivityViewModel.getCurrentVideoFromList().setValue(videoList.get(position).getVideoURL());
                 }
             });
         }

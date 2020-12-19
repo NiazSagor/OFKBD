@@ -17,64 +17,78 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.google.firebase.database.DataSnapshot;
 import com.ofk.bd.Adapter.ActivitySliderAdapter;
 import com.ofk.bd.Adapter.CourseSliderListAdapter;
-import com.ofk.bd.HelperClass.Common;
+import com.ofk.bd.HelperClass.Activity;
 import com.ofk.bd.HelperClass.Course;
+import com.ofk.bd.HelperClass.MyApp;
 import com.ofk.bd.R;
 import com.ofk.bd.Utility.AlertDialogUtility;
 import com.ofk.bd.ViewModel.MainActivityViewModel;
 import com.ofk.bd.databinding.FragmentMoreBinding;
 import com.thefinestartist.finestwebview.FinestWebView;
 
+import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link MoreFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class MoreFragment extends Fragment {
 
     private static final String TAG = "MoreFragment";
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private MainActivityViewModel mainActivityViewModel;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private FragmentMoreBinding binding;
+
+    private int customPosition = 0;
+
+    private static final int[] indicator = {R.drawable.dot, R.drawable.inactivedot};
+
+    // activity pics adapter
+    private ActivitySliderAdapter activityAdapter;
 
     public MoreFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment MoreFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static MoreFragment newInstance(String param1, String param2) {
-        MoreFragment fragment = new MoreFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mainActivityViewModel = ViewModelProviders.of(getActivity()).get(MainActivityViewModel.class);
     }
 
-    private MainActivityViewModel mainActivityViewModel;
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        binding = FragmentMoreBinding.inflate(getLayoutInflater());
+
+        binding.activityViewPager.setClipToPadding(false);
+        binding.activityViewPager.setPageTransformer(new MarginPageTransformer(40));
+
+        binding.blogRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
+
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        if (!mainActivityViewModel.getBlogListMutableLiveData().hasObservers()) {
+            mainActivityViewModel.getBlogListMutableLiveData().observe(this, blogListObserver);
+        }
+
+        if (!mainActivityViewModel.getFieldWorkLiveData().hasObservers()) {
+            mainActivityViewModel.getFieldWorkLiveData().observe(this, activityFieldWorkObserver);
+        }
+    }
 
     private final CourseSliderListAdapter.OnItemClickListener onItemClickListener = new CourseSliderListAdapter.OnItemClickListener() {
         @Override
         public void onItemClick(int position, View view) {
-            if (!isConnected()) {
+            if (!MyApp.IS_CONNECTED) {
                 new AlertDialogUtility().showAlertDialog(getContext(), "noConnection");
                 return;
             }
@@ -94,6 +108,25 @@ public class MoreFragment extends Fragment {
             }
         }
     };
+
+    private final androidx.lifecycle.Observer<DataSnapshot> activityFieldWorkObserver = new Observer<DataSnapshot>() {
+        @Override
+        public void onChanged(DataSnapshot dataSnapshot) {
+            if (dataSnapshot.exists()) {
+
+                List<Activity> fieldWorkActivityList = new ArrayList<>();
+
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    fieldWorkActivityList.add(ds.getValue(Activity.class));
+                }
+
+                activityAdapter = new ActivitySliderAdapter(fieldWorkActivityList);
+                binding.activityViewPager.setAdapter(activityAdapter);
+                binding.activityViewPager.registerOnPageChangeCallback(onPageChangeCallback);
+            }
+        }
+    };
+
     private final Observer<List<Course>> blogListObserver = new Observer<List<Course>>() {
         @Override
         public void onChanged(List<Course> courses) {
@@ -105,50 +138,6 @@ public class MoreFragment extends Fragment {
         }
     };
 
-    private FragmentMoreBinding binding;
-
-    private int customPosition = 0;
-
-    private static final int[] indicator = {R.drawable.dot, R.drawable.inactivedot};
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        binding = FragmentMoreBinding.inflate(getLayoutInflater());
-
-        binding.activityViewPager.setClipToPadding(false);
-        binding.activityViewPager.setPageTransformer(new MarginPageTransformer(40));
-
-        binding.blogRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
-
-        return binding.getRoot();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        binding.activityViewPager.setAdapter(activityAdapter);
-        changeIndicator(0);
-
-        if (!mainActivityViewModel.getBlogListMutableLiveData().hasObservers()) {
-            mainActivityViewModel.getBlogListMutableLiveData().observe(this, blogListObserver);
-        }
-    }
-
-    // activity pics adapter
-    private ActivitySliderAdapter activityAdapter;
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
 
     private final ViewPager2.OnPageChangeCallback onPageChangeCallback = new ViewPager2.OnPageChangeCallback() {
         @Override
@@ -185,33 +174,5 @@ public class MoreFragment extends Fragment {
             layoutParams.setMargins(4, 0, 4, 0);
             binding.dotLayout.addView(dots[i], layoutParams);
         }
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-        mainActivityViewModel = ViewModelProviders.of(getActivity()).get(MainActivityViewModel.class);
-
-        activityAdapter = new ActivitySliderAdapter(Common.fieldActivityList);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        binding.activityViewPager.registerOnPageChangeCallback(onPageChangeCallback);
-    }
-
-    private boolean isConnected() {
-        ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-
-        return activeNetwork != null &&
-                activeNetwork.isConnectedOrConnecting();
     }
 }

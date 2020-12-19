@@ -112,6 +112,7 @@ public class SectionVideoAdapter extends RecyclerView.Adapter<SectionVideoAdapte
             videoThumbNail = itemView.findViewById(R.id.videoThumbNail);
             videoTitle = itemView.findViewById(R.id.videoTitle);
 
+
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
