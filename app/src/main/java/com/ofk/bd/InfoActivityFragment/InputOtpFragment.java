@@ -26,9 +26,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
-import com.ofk.bd.HelperClass.UserForFirebase;
-import com.ofk.bd.HelperClass.UserInfo;
-import com.ofk.bd.HelperClass.UserProgressClass;
+import com.ofk.bd.Model.UserInfo;
+import com.ofk.bd.Model.UserProgress;
 import com.ofk.bd.Interface.CheckUserCallback;
 import com.ofk.bd.R;
 import com.ofk.bd.Utility.AlertDialogUtility;
@@ -198,7 +197,7 @@ public class InputOtpFragment extends Fragment {
                         }
 
                         @Override
-                        public void onUserFoundCallback(UserInfo user, List<UserProgressClass> userProgressClassList) {
+                        public void onUserFoundCallback(UserInfo user, List<UserProgress> userProgressList) {
                             //
                         }
                     }, user.getPhoneNumber(), "").execute();

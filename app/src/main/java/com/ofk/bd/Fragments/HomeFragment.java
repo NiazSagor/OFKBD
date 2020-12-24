@@ -23,32 +23,27 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.google.firebase.database.DataSnapshot;
 import com.ofk.bd.Adapter.ActivitySliderAdapter;
 import com.ofk.bd.Adapter.CourseSliderListAdapter;
 import com.ofk.bd.Adapter.VideoSliderAdapter;
-import com.ofk.bd.AsyncTasks.FirebaseQuerySubSection;
 import com.ofk.bd.CourseActivity;
 import com.ofk.bd.DisplayCourseActivity;
 import com.ofk.bd.DisplayCourseActivityAdapter.CourseListAdapter;
-import com.ofk.bd.HelperClass.Activity;
+import com.ofk.bd.Model.Activity;
 import com.ofk.bd.HelperClass.Common;
-import com.ofk.bd.HelperClass.Course;
-import com.ofk.bd.HelperClass.DisplayCourse;
-import com.ofk.bd.HelperClass.SectionVideo;
-import com.ofk.bd.HelperClass.UserInfo;
-import com.ofk.bd.HelperClass.Video;
-import com.ofk.bd.Interface.SectionVideoLoadCallback;
+import com.ofk.bd.Model.Course;
+import com.ofk.bd.Model.DisplayCourse;
+import com.ofk.bd.Model.UserInfo;
+import com.ofk.bd.Model.Video;
 import com.ofk.bd.R;
 import com.ofk.bd.SearchResultActivity;
-import com.ofk.bd.Utility.AlertDialogUtility;
 import com.ofk.bd.Utility.StringUtility;
 import com.ofk.bd.ViewModel.MainActivityViewModel;
 import com.ofk.bd.databinding.FragmentHomeBinding;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Objects;
 
 public class HomeFragment extends Fragment {
 
@@ -66,8 +61,6 @@ public class HomeFragment extends Fragment {
 
     // activity pics adapter
     private ActivitySliderAdapter activityAdapter;
-
-    private VideoSliderAdapter videoSliderAdapter;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -87,8 +80,13 @@ public class HomeFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if (!mainActivityViewModel.getAllCategoriesLiveData().hasObservers()) {
+            mainActivityViewModel.getAllCategoriesLiveData().observe(this, sectionListObserver);
+            mainActivityViewModel.getUserInfoLiveData2().observe(this, userInfoObserver);
+        }
+
         if (!mainActivityViewModel.getRandomCourseLiveData(Common.courseToDisplay).hasObservers()) {
-            mainActivityViewModel.getRandomCourseLiveData(Common.courseToDisplay).observe(this, recommendedCourseObserver);
+            mainActivityViewModel.getRandomCourseLiveData(Common.courseToDisplay).observe(this, recommendedSectionObserver);
         }
 
         if (!mainActivityViewModel.getActivityVideoLiveData().hasObservers()) {
@@ -130,11 +128,6 @@ public class HomeFragment extends Fragment {
 
         // after view is created we are showing ui elements
         binding.recommendedCourseTextView2.setText(Common.courseHeadline);
-
-        if (!mainActivityViewModel.getListMutableLiveData().hasObservers()) {
-            mainActivityViewModel.getListMutableLiveData().observe(this, sectionListObserver);
-            mainActivityViewModel.getUserInfoLiveData2().observe(this, userInfoObserver);
-        }
     }
 
 
@@ -168,21 +161,20 @@ public class HomeFragment extends Fragment {
     private final Observer<List<Course>> sectionListObserver = new Observer<List<Course>>() {
         @Override
         public void onChanged(List<Course> courses) {
-            if (courses != null) {
-                CourseSliderListAdapter courseSliderListAdapter = new CourseSliderListAdapter(getContext(), courses, "viewpager0");
 
-                binding.courseRecyclerView.setAdapter(courseSliderListAdapter);
+            CourseSliderListAdapter courseSliderListAdapter = new CourseSliderListAdapter(getContext(), courses, "viewpager0");
 
-                courseSliderListAdapter.setOnItemClickListener(new CourseSliderListAdapter.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(int position, View view) {
-                        Intent intent = new Intent(getActivity(), DisplayCourseActivity.class);
-                        intent.putExtra("section_name", courses.get(position).getCourseTitle());
-                        intent.putExtra("section_name_bangla", courses.get(position).getCourseSubtitle());
-                        getActivity().startActivity(intent);
-                    }
-                });
-            }
+            binding.courseRecyclerView.setAdapter(courseSliderListAdapter);
+
+            courseSliderListAdapter.setOnItemClickListener(new CourseSliderListAdapter.OnItemClickListener() {
+                @Override
+                public void onItemClick(int position, View view) {
+                    Intent intent = new Intent(getActivity(), DisplayCourseActivity.class);
+                    intent.putExtra("section_name", courses.get(position).getCourseTitle());
+                    intent.putExtra("section_name_bangla", courses.get(position).getCourseSubtitle());
+                    Objects.requireNonNull(getActivity()).startActivity(intent);
+                }
+            });
         }
     };
 
@@ -195,55 +187,29 @@ public class HomeFragment extends Fragment {
         }
     };
 
-    private final androidx.lifecycle.Observer<DataSnapshot> activityVideoObserver = new Observer<DataSnapshot>() {
+    private final Observer<List<Video>> activityVideoObserver = new Observer<List<Video>>() {
         @Override
-        public void onChanged(DataSnapshot dataSnapshot) {
-            if (dataSnapshot.exists()) {
-
-                List<Video> activityVideoList = new ArrayList<>();
-
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    activityVideoList.add(ds.getValue(Video.class));
-                }
-
-                videoSliderAdapter = new VideoSliderAdapter(getChildFragmentManager(), getLifecycle(), activityVideoList);
-                binding.activityVideoViewPager.setAdapter(videoSliderAdapter);
-            }
+        public void onChanged(List<Video> videoList) {
+            VideoSliderAdapter videoSliderAdapter = new VideoSliderAdapter(getChildFragmentManager(), getLifecycle(), videoList);
+            binding.activityVideoViewPager.setAdapter(videoSliderAdapter);
         }
     };
 
-    private final androidx.lifecycle.Observer<DataSnapshot> activityPicObserver = new Observer<DataSnapshot>() {
+    private final Observer<List<Activity>> activityPicObserver = new Observer<List<Activity>>() {
         @Override
-        public void onChanged(DataSnapshot dataSnapshot) {
-            if (dataSnapshot.exists()) {
-
-                List<Activity> activityPicList = new ArrayList<>();
-
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    activityPicList.add(ds.getValue(Activity.class));
-                }
-
-                activityAdapter = new ActivitySliderAdapter(activityPicList);
-                binding.activityViewPager.setAdapter(activityAdapter);
-                binding.activityViewPager.registerOnPageChangeCallback(onPageChangeCallback);
-            }
+        public void onChanged(List<Activity> activities) {
+            activityAdapter = new ActivitySliderAdapter(activities);
+            binding.activityViewPager.setAdapter(activityAdapter);
+            binding.activityViewPager.registerOnPageChangeCallback(onPageChangeCallback);
         }
     };
 
-    private final androidx.lifecycle.Observer<DataSnapshot> recommendedCourseObserver = new Observer<DataSnapshot>() {
+    private final Observer<List<DisplayCourse>> recommendedSectionObserver = new Observer<List<DisplayCourse>>() {
         @Override
-        public void onChanged(DataSnapshot dataSnapshot) {
-            if (dataSnapshot.exists()) {
-
-                List<DisplayCourse> recommendedCourse = new ArrayList<>();
-
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    recommendedCourse.add(ds.getValue(DisplayCourse.class));
-                }
-                recommendedSectionCourseList = new CourseListAdapter(recommendedCourse, "home_page");
-                binding.randomCourseRecyclerView2.setAdapter(recommendedSectionCourseList);
-                recommendedSectionCourseList.setOnItemClickListener(onItemClickListener);
-            }
+        public void onChanged(List<DisplayCourse> displayCourses) {
+            recommendedSectionCourseList = new CourseListAdapter(displayCourses, "home_page");
+            binding.randomCourseRecyclerView2.setAdapter(recommendedSectionCourseList);
+            recommendedSectionCourseList.setOnItemClickListener(onItemClickListener);
         }
     };
 
@@ -251,31 +217,15 @@ public class HomeFragment extends Fragment {
         @Override
         public void onItemClick(int position, View view) {
 
-            AlertDialogUtility dialog = new AlertDialogUtility();
-
             Intent intent = new Intent(getActivity(), CourseActivity.class);
-
-            String courseName = recommendedSectionCourseList.getCurrentCourse(position).getCourseTitleEnglish();
 
             intent.putExtra("section_name", Common.courseToDisplay);
             intent.putExtra("course_name", recommendedSectionCourseList.getCurrentCourse(position).getCourseTitle());
             intent.putExtra("course_name_english", recommendedSectionCourseList.getCurrentCourse(position).getCourseTitleEnglish());
             intent.putExtra("from", "home");
+            intent.putExtra("isNewCourse", false);
 
-            new FirebaseQuerySubSection(new SectionVideoLoadCallback() {
-                @Override
-                public void onSectionVideoLoadCallback(List<SectionVideo> sectionVideoList, int totalVideos) {
-
-                    if (sectionVideoList == null || sectionVideoList.size() == 0) {
-                        dialog.showAlertDialog(getContext(), "videoNotFound");
-                        return;
-                    }
-
-                    Common.sectionVideoList = sectionVideoList;
-
-                    startActivity(intent);
-                }
-            }, Common.courseToDisplay, courseName).execute();
+            startActivity(intent);
         }
     };
 

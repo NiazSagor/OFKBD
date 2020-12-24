@@ -17,7 +17,7 @@ import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
 import com.ofk.bd.Dao.UserInfoDao;
 import com.ofk.bd.Database.UserInfoDatabase;
-import com.ofk.bd.HelperClass.UserInfo;
+import com.ofk.bd.Model.UserInfo;
 import com.ofk.bd.Interface.UserInfoApi;
 
 import java.util.HashMap;

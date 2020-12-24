@@ -12,7 +12,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
-import com.google.firebase.database.DataSnapshot;
 import com.ofk.bd.HelperClass.Common;
 import com.ofk.bd.R;
 import com.ofk.bd.Utility.DrawableUtility;
@@ -120,16 +119,12 @@ public class QuizQuestionFragment extends Fragment {
     };
 
 
-    private final androidx.lifecycle.Observer<DataSnapshot> quizOptionLiveData = new Observer<DataSnapshot>() {
+    private final Observer<List<String>> quizOptionLiveData = new Observer<List<String>>() {
         @Override
-        public void onChanged(DataSnapshot dataSnapshot) {
-            if (dataSnapshot.exists()) {
+        public void onChanged(List<String> strings) {
+            if (strings != null && strings.size() != 0) {
 
-                options = new ArrayList<>();
-
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    options.add(ds.getValue(String.class));
-                }
+                options = new ArrayList<>(strings);
 
                 for (int i = 0; i < 4; i++) {
                     if (options.get(4).equals(options.get(i))) {

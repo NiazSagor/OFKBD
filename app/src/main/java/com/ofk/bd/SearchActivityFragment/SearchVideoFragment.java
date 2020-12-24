@@ -20,7 +20,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.ofk.bd.CourseActivityAdapter.SectionVideoAdapter;
-import com.ofk.bd.HelperClass.Video;
+import com.ofk.bd.Model.Video;
 import com.ofk.bd.ViewModel.FirebaseSearchViewModel;
 import com.ofk.bd.databinding.FragmentSearchVideoBinding;
 

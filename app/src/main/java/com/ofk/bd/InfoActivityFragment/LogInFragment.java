@@ -20,8 +20,8 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
-import com.ofk.bd.HelperClass.UserInfo;
-import com.ofk.bd.HelperClass.UserProgressClass;
+import com.ofk.bd.Model.UserInfo;
+import com.ofk.bd.Model.UserProgress;
 import com.ofk.bd.Interface.CheckUserCallback;
 import com.ofk.bd.MainActivity;
 import com.ofk.bd.Utility.AlertDialogUtility;
@@ -186,7 +186,7 @@ public class LogInFragment extends Fragment {
             }
 
             @Override
-            public void onUserFoundCallback(UserInfo userInfoCloud, List<UserProgressClass> userProgressClassList) {
+            public void onUserFoundCallback(UserInfo userInfoCloud, List<UserProgress> userProgressList) {
 
                 Toast.makeText(getContext(), "Welcome Back!", Toast.LENGTH_SHORT).show();
 
@@ -197,9 +197,9 @@ public class LogInFragment extends Fragment {
 
                             activityViewModel.insert(userInfoCloud);
 
-                            if (userProgressClassList != null && userProgressClassList.size() != 0) {
-                                for (UserProgressClass userProgressClass : userProgressClassList) {
-                                    activityViewModel.insertUserProgress(userProgressClass);
+                            if (userProgressList != null && userProgressList.size() != 0) {
+                                for (UserProgress userProgress : userProgressList) {
+                                    activityViewModel.insertUserProgress(userProgress);
                                 }
                             }
                         }

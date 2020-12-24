@@ -9,7 +9,7 @@ import androidx.room.Update;
 
 import com.ofk.bd.HelperClass.SectionCourseNameTuple;
 import com.ofk.bd.HelperClass.SectionCourseTuple;
-import com.ofk.bd.HelperClass.UserProgressClass;
+import com.ofk.bd.Model.UserProgress;
 
 import java.util.List;
 
@@ -18,16 +18,16 @@ public interface UserProgressDao {
 
     /*********************User progress table**********************/
     @Insert
-    void insert(UserProgressClass userProgressClass);
+    void insert(UserProgress userProgress);
 
     @Update
-    void update(UserProgressClass userProgressClass);
+    void update(UserProgress userProgress);
 
     @Delete
-    void delete(UserProgressClass userProgressClass);
+    void delete(UserProgress userProgress);
 
     @Query("SELECT * FROM user_progress")
-    LiveData<List<UserProgressClass>> getAllProgress();
+    LiveData<List<UserProgress>> getAllProgress();
 
     @Query("SELECT sectionName, courseNameEnglish FROM user_progress")
     LiveData<List<SectionCourseNameTuple>> getAllEnrolledCourses();

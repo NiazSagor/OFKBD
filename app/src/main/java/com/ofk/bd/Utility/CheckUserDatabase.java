@@ -9,8 +9,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.ofk.bd.HelperClass.UserInfo;
-import com.ofk.bd.HelperClass.UserProgressClass;
+import com.ofk.bd.Model.UserInfo;
+import com.ofk.bd.Model.UserProgress;
 import com.ofk.bd.Interface.CheckUserCallback;
 
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ public class CheckUserDatabase extends AsyncTask<Void, Void, Void> {
     private final CheckUserCallback callback;
     private final String userPhoneNumber;
     private final String userPassword;
-    private List<UserProgressClass> userProgressClassList;
+    private List<UserProgress> userProgressList;
 
     public static final DatabaseReference USER_REF = FirebaseDatabase.getInstance().getReference("User");
     public static final DatabaseReference USER_PROGRESS_REF = FirebaseDatabase.getInstance().getReference("User Progress");
@@ -37,7 +37,7 @@ public class CheckUserDatabase extends AsyncTask<Void, Void, Void> {
     @Override
     protected Void doInBackground(Void... voids) {
 
-        userProgressClassList = new ArrayList<>();
+        userProgressList = new ArrayList<>();
 
         USER_REF.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -59,12 +59,12 @@ public class CheckUserDatabase extends AsyncTask<Void, Void, Void> {
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                     if (dataSnapshot.exists()) {
                                         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                                            UserProgressClass userProgress = snapshot.getValue(UserProgressClass.class);
-                                            userProgressClassList.add(userProgress);
+                                            UserProgress userProgress = snapshot.getValue(UserProgress.class);
+                                            userProgressList.add(userProgress);
                                         }
-                                        callback.onUserFoundCallback(user, userProgressClassList);
+                                        callback.onUserFoundCallback(user, userProgressList);
                                     } else {
-                                        callback.onUserFoundCallback(user, userProgressClassList);
+                                        callback.onUserFoundCallback(user, userProgressList);
                                     }
                                 }
 

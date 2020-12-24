@@ -12,11 +12,16 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 public class MyApp extends Application {
 
     private static final String TAG = "MyApp";
 
     public static boolean IS_CONNECTED = true;
+
+    public static ExecutorService executorService = Executors.newCachedThreadPool();
 
     @Override
     public void onCreate() {

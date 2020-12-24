@@ -20,7 +20,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.ofk.bd.Adapter.ProfileListAdapter;
-import com.ofk.bd.HelperClass.UserInfo;
+import com.ofk.bd.Model.UserInfo;
 import com.ofk.bd.InfoActivity;
 import com.ofk.bd.Utility.DrawableUtility;
 import com.ofk.bd.Utility.StringUtility;

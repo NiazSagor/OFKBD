@@ -24,7 +24,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.ofk.bd.Adapter.AvatarListAdapter;
-import com.ofk.bd.HelperClass.UserInfo;
+import com.ofk.bd.Model.UserInfo;
 import com.ofk.bd.MainActivity;
 import com.ofk.bd.R;
 import com.ofk.bd.Utility.AlertDialogUtility;

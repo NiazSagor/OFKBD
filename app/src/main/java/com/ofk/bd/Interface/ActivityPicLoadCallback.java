@@ -1,6 +1,6 @@
 package com.ofk.bd.Interface;
 
-import com.ofk.bd.HelperClass.Activity;
+import com.ofk.bd.Model.Activity;
 
 import java.util.List;
 

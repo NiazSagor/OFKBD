@@ -1,8 +1,5 @@
 package com.ofk.bd.Fragments;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,11 +14,10 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.google.firebase.database.DataSnapshot;
 import com.ofk.bd.Adapter.ActivitySliderAdapter;
 import com.ofk.bd.Adapter.CourseSliderListAdapter;
-import com.ofk.bd.HelperClass.Activity;
-import com.ofk.bd.HelperClass.Course;
+import com.ofk.bd.Model.Activity;
+import com.ofk.bd.Model.Course;
 import com.ofk.bd.HelperClass.MyApp;
 import com.ofk.bd.R;
 import com.ofk.bd.Utility.AlertDialogUtility;
@@ -29,7 +25,6 @@ import com.ofk.bd.ViewModel.MainActivityViewModel;
 import com.ofk.bd.databinding.FragmentMoreBinding;
 import com.thefinestartist.finestwebview.FinestWebView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MoreFragment extends Fragment {
@@ -76,8 +71,8 @@ public class MoreFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        if (!mainActivityViewModel.getBlogListMutableLiveData().hasObservers()) {
-            mainActivityViewModel.getBlogListMutableLiveData().observe(this, blogListObserver);
+        if (!mainActivityViewModel.getBlogCategoriesLiveData().hasObservers()) {
+            mainActivityViewModel.getBlogCategoriesLiveData().observe(this, blogListObserver);
         }
 
         if (!mainActivityViewModel.getFieldWorkLiveData().hasObservers()) {
@@ -109,21 +104,12 @@ public class MoreFragment extends Fragment {
         }
     };
 
-    private final androidx.lifecycle.Observer<DataSnapshot> activityFieldWorkObserver = new Observer<DataSnapshot>() {
+    private final Observer<List<Activity>> activityFieldWorkObserver = new Observer<List<Activity>>() {
         @Override
-        public void onChanged(DataSnapshot dataSnapshot) {
-            if (dataSnapshot.exists()) {
-
-                List<Activity> fieldWorkActivityList = new ArrayList<>();
-
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    fieldWorkActivityList.add(ds.getValue(Activity.class));
-                }
-
-                activityAdapter = new ActivitySliderAdapter(fieldWorkActivityList);
-                binding.activityViewPager.setAdapter(activityAdapter);
-                binding.activityViewPager.registerOnPageChangeCallback(onPageChangeCallback);
-            }
+        public void onChanged(List<Activity> activities) {
+            activityAdapter = new ActivitySliderAdapter(activities);
+            binding.activityViewPager.setAdapter(activityAdapter);
+            binding.activityViewPager.registerOnPageChangeCallback(onPageChangeCallback);
         }
     };
 

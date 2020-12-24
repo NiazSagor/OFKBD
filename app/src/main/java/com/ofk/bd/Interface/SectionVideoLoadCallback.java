@@ -1,6 +1,6 @@
 package com.ofk.bd.Interface;
 
-import com.ofk.bd.HelperClass.SectionVideo;
+import com.ofk.bd.Model.SectionVideo;
 
 import java.util.List;
 

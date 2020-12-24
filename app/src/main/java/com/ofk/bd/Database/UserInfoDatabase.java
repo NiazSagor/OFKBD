@@ -1,8 +1,6 @@
 package com.ofk.bd.Database;
 
 import android.content.Context;
-import android.os.AsyncTask;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.room.Database;
@@ -11,7 +9,7 @@ import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.ofk.bd.Dao.UserInfoDao;
-import com.ofk.bd.HelperClass.UserInfo;
+import com.ofk.bd.Model.UserInfo;
 
 @Database(entities = UserInfo.class, version = 1)
 

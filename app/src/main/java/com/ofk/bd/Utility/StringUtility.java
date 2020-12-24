@@ -2,7 +2,7 @@ package com.ofk.bd.Utility;
 
 import android.content.Context;
 
-import com.ofk.bd.HelperClass.UserInfo;
+import com.ofk.bd.Model.UserInfo;
 import com.ofk.bd.R;
 
 public class StringUtility {
@@ -28,23 +28,23 @@ public class StringUtility {
     public String getSectionHeadline(String section) {
 
         switch (section) {
-            case "Arts Section":
+            case "Arts":
                 return context.getResources().getString(R.string.artCourseHeadline);
-            case "Robotics Section":
+            case "Robotics":
                 return context.getResources().getString(R.string.roboticsCourseHeadline);
-            case "Calligraphy Section":
+            case "Calligraphy":
                 return context.getResources().getString(R.string.calligraphyCourseHeadline);
-            case "Case Solving Section":
+            case "Case Solving":
                 return context.getResources().getString(R.string.caseCourseHeadline);
-            case "Craft Section":
+            case "Craft":
                 return context.getResources().getString(R.string.craftCourseHeadline);
-            case "Critical Thinking Section":
+            case "Critical Thinking":
                 return context.getResources().getString(R.string.criticalCourseHeadline);
-            case "Digital Painting Section":
+            case "Digital Painting":
                 return context.getResources().getString(R.string.paintingCourseHeadline);
-            case "Guitar Section":
+            case "Guitar":
                 return context.getResources().getString(R.string.guitarCourseHeadline);
-            case "Programming Section":
+            case "Programming":
                 return context.getResources().getString(R.string.programmingCourseHeadline);
 
             default:

@@ -1,10 +1,11 @@
-package com.ofk.bd.HelperClass;
+package com.ofk.bd.Model;
 
 import java.util.List;
 
 public class SectionVideo {
     private Section sectionName;
-    private List<Video> videos;
+    private final List<Video> videos;
+    private int totalVideos;
 
     public SectionVideo(Section sectionName, List<Video> videos) {
         this.sectionName = sectionName;
@@ -21,5 +22,13 @@ public class SectionVideo {
 
     public List<Video> getVideos() {
         return videos;
+    }
+
+    public int getTotalVideos() {
+        return totalVideos;
+    }
+
+    public void setTotalVideos(int totalVideos) {
+        this.totalVideos = totalVideos;
     }
 }

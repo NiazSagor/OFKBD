@@ -18,7 +18,7 @@ import com.ofk.bd.Dao.UserProgressDao;
 import com.ofk.bd.Database.UserProgressDatabase;
 import com.ofk.bd.HelperClass.SectionCourseNameTuple;
 import com.ofk.bd.HelperClass.SectionCourseTuple;
-import com.ofk.bd.HelperClass.UserProgressClass;
+import com.ofk.bd.Model.UserProgress;
 
 import java.util.List;
 
@@ -59,7 +59,7 @@ public class UserProgressRepository {
     }
 
     // insert new course to local and cloud db
-    public void insert(UserProgressClass progressClass) {
+    public void insert(UserProgress progressClass) {
         new InsertUserProgressAsyncTask(userProgressDao).execute(progressClass);
     }
 
@@ -142,7 +142,7 @@ public class UserProgressRepository {
     }
 
     // insert
-    private static class InsertUserProgressAsyncTask extends AsyncTask<UserProgressClass, Void, Void> {
+    private static class InsertUserProgressAsyncTask extends AsyncTask<UserProgress, Void, Void> {
 
         private final UserProgressDao dao;
 
@@ -151,13 +151,13 @@ public class UserProgressRepository {
         }
 
         @Override
-        protected Void doInBackground(UserProgressClass... userProgressClasses) {
-            UserProgressClass userProgressClass = userProgressClasses[0];
-            dao.insert(userProgressClass);
-            userProgressClass.setId(null);
+        protected Void doInBackground(UserProgress... userProgresses) {
+            UserProgress userProgress = userProgresses[0];
+            dao.insert(userProgress);
+            userProgress.setId(null);
             USER_PROGRESS_REF.child(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber())
-                    .child(userProgressClass.getCourseNameEnglish())
-                    .setValue(userProgressClass);
+                    .child(userProgress.getCourseNameEnglish())
+                    .setValue(userProgress);
             return null;
         }
     }

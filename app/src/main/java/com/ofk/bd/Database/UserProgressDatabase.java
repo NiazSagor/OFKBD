@@ -1,8 +1,6 @@
 package com.ofk.bd.Database;
 
 import android.content.Context;
-import android.os.AsyncTask;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.room.Database;
@@ -11,9 +9,9 @@ import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.ofk.bd.Dao.UserProgressDao;
-import com.ofk.bd.HelperClass.UserProgressClass;
+import com.ofk.bd.Model.UserProgress;
 
-@Database(entities = UserProgressClass.class, version = 1)
+@Database(entities = UserProgress.class, version = 1)
 public abstract class UserProgressDatabase extends RoomDatabase {
     private static final String TAG = "UserProgressDatabase";
     private static UserProgressDatabase instance;

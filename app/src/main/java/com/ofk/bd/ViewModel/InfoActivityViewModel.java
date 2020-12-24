@@ -7,8 +7,8 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.ofk.bd.HelperClass.UserInfo;
-import com.ofk.bd.HelperClass.UserProgressClass;
+import com.ofk.bd.Model.UserInfo;
+import com.ofk.bd.Model.UserProgress;
 import com.ofk.bd.Repository.UserInfoRepository;
 import com.ofk.bd.Repository.UserProgressRepository;
 
@@ -46,7 +46,7 @@ public class InfoActivityViewModel extends AndroidViewModel {
         return userInfoMutableLiveData;
     }
 
-    public void insertUserProgress(UserProgressClass userProgressClass){
-        userProgressRepository.insert(userProgressClass);
+    public void insertUserProgress(UserProgress userProgress){
+        userProgressRepository.insert(userProgress);
     }
 }

@@ -5,49 +5,56 @@ import android.app.Application;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.ofk.bd.HelperClass.FirebaseQueryLiveData;
-import com.ofk.bd.HelperClass.UserProgressClass;
+import com.ofk.bd.Model.DisplayCourse;
+import com.ofk.bd.HelperClass.MyApp;
+import com.ofk.bd.Model.UserProgress;
+import com.ofk.bd.Interface.DisplayCourseLoadCallback;
+import com.ofk.bd.Repository.CommonRepository;
 import com.ofk.bd.Repository.UserProgressRepository;
 
 import java.util.List;
 
 public class DisplayCourseActivityViewModel extends AndroidViewModel {
 
+    private static final String TAG = "DisplayCourseActivityVi";
+    
     // sql lite
     private final UserProgressRepository repository;
+    private final CommonRepository commonRepository;
     private final LiveData<List<String>> courseEnrolled;
 
     public DisplayCourseActivityViewModel(@NonNull Application application) {
         super(application);
         repository = new UserProgressRepository(application);
+        commonRepository = new CommonRepository(MyApp.executorService);
         courseEnrolled = repository.getEnrolledCourseOnly();// all courses enrolled already
     }
 
-    /*******************************************************************************/
 
     // add new course to local db
-    public void insert(UserProgressClass userProgressClass) {
-        repository.insert(userProgressClass);
+    public void insert(UserProgress userProgress) {
+        repository.insert(userProgress);
     }
 
-
-    // updates total videos of a particular course
-    public void updateTotalVideoCourse(String courseName, int count) {
-        repository.updateVideoCount(count, courseName);
-    }
 
     // sql lite enrolled courses
     public LiveData<List<String>> getCourseEnrolled() {
         return courseEnrolled;
     }
 
-    // get available courses in a particular section
-    public LiveData<DataSnapshot> getCourses(String sectionName){
-        DatabaseReference AVAILABLE_COURSES_REF = FirebaseDatabase.getInstance().getReference("Section").child(sectionName);
-        return new FirebaseQueryLiveData(AVAILABLE_COURSES_REF);
+    private final MutableLiveData<List<DisplayCourse>> allCoursesLiveData = new MutableLiveData<>();
+
+    public MutableLiveData<List<DisplayCourse>> getCoursesLiveData(String sectionName) {
+
+        commonRepository.getAllCoursesFromSection(new DisplayCourseLoadCallback() {
+            @Override
+            public void onLoadCallback(List<DisplayCourse> courses) {
+                allCoursesLiveData.postValue(courses);
+            }
+        }, sectionName);
+
+        return allCoursesLiveData;
     }
 }

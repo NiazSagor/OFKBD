@@ -28,6 +28,7 @@ public class QuizFragmentViewPager extends FragmentStateAdapter {
         Bundle bundle = new Bundle();
         bundle.putString("question", questions.get(position));
         bundle.putInt("total_questions", questions.size());
+        bundle.putInt("currentPosition", position);
         Fragment quizFragment = new QuizQuestionFragment();
         quizFragment.setArguments(bundle);
         return quizFragment;

@@ -1,20 +1,26 @@
 package com.ofk.bd.ViewModel;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.ofk.bd.HelperClass.Course;
-import com.ofk.bd.HelperClass.FirebaseQueryLiveData;
+import com.ofk.bd.Model.Activity;
+import com.ofk.bd.Model.Course;
+import com.ofk.bd.Model.DisplayCourse;
+import com.ofk.bd.HelperClass.MyApp;
 import com.ofk.bd.HelperClass.SectionCourseNameTuple;
 import com.ofk.bd.HelperClass.SectionCourseTuple;
-import com.ofk.bd.HelperClass.UserInfo;
+import com.ofk.bd.Model.UserInfo;
+import com.ofk.bd.Model.Video;
+import com.ofk.bd.Interface.ActivityPicLoadCallback;
+import com.ofk.bd.Interface.CategoryCallback;
+import com.ofk.bd.Interface.DisplayCourseLoadCallback;
+import com.ofk.bd.Interface.VideoLoadCallback;
+import com.ofk.bd.Repository.CommonRepository;
 import com.ofk.bd.Repository.UserInfoRepository;
 import com.ofk.bd.Repository.UserProgressRepository;
 
@@ -25,7 +31,10 @@ public class MainActivityViewModel extends AndroidViewModel {
     private static final String TAG = "MainActivityViewModel";
 
     // sql lite repo
-    UserProgressRepository repository;
+    UserProgressRepository userProgressRepository;
+
+    //
+    CommonRepository commonRepository;
 
     // already enrolled courses in offline db
     LiveData<List<SectionCourseNameTuple>> enrolledCoursesFromOfflineDb;
@@ -33,10 +42,10 @@ public class MainActivityViewModel extends AndroidViewModel {
     LiveData<List<SectionCourseTuple>> combinedList;
 
     // course list
-    MutableLiveData<List<Course>> listMutableLiveData = new MutableLiveData<>();
+    MutableLiveData<List<Course>> allCategoriesLiveData = new MutableLiveData<>();
 
     //blogList
-    MutableLiveData<List<Course>> blogListMutableLiveData = new MutableLiveData<>();
+    MutableLiveData<List<Course>> blogCategoriesLiveData = new MutableLiveData<>();
 
     /*
      *
@@ -57,25 +66,21 @@ public class MainActivityViewModel extends AndroidViewModel {
     public MainActivityViewModel(@NonNull Application application) {
         super(application);
 
-        repository = new UserProgressRepository(application);
-        enrolledCoursesFromOfflineDb = repository.getCourseEnrolled();
-        combinedList = repository.getCombinedSectionCourseList();
+        userProgressRepository = new UserProgressRepository(application);
+        commonRepository = new CommonRepository(MyApp.executorService);
+        enrolledCoursesFromOfflineDb = userProgressRepository.getCourseEnrolled();
+        combinedList = userProgressRepository.getCombinedSectionCourseList();
 
         userInfoRepository = new UserInfoRepository(application);
         userInfoLiveData = userInfoRepository.getUserInfoLiveData();
         userInfoLiveData2 = userInfoRepository.getUserInfoLiveData();
         userCourseCompleted = userInfoRepository.getUserCurrentCourseCompleted();
 
-        createCourseList();
-        createBlogList();
+        doSomeWorks();
     }
 
-    /*******************OFFLINE QUERY**********************/
-
-    // not from server
-    private void createCourseList() {
+    private void doSomeWorks() {
         List<Course> list = new ArrayList<>();
-
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -90,35 +95,29 @@ public class MainActivityViewModel extends AndroidViewModel {
                 list.add(new Course("Robotics", "রোবোটিক্স"));
             }
         }).start();
-
-        listMutableLiveData.setValue(list);
+        allCategoriesLiveData.setValue(list);
     }
 
-    // get all the sections
-    public MutableLiveData<List<Course>> getListMutableLiveData() {
-        return listMutableLiveData;
+    /*
+     * get all categories generating at run time
+     * */
+
+    public MutableLiveData<List<Course>> getAllCategoriesLiveData() {
+        return allCategoriesLiveData;
     }
 
-    private void createBlogList() {
-        List<Course> blogList = new ArrayList<>();
+    /*
+     * get all blog categories generating at run time
+     * */
 
-        new Thread(new Runnable() {
+    public MutableLiveData<List<Course>> getBlogCategoriesLiveData() {
+        commonRepository.getBlogCategories(new CategoryCallback() {
             @Override
-            public void run() {
-                blogList.add(new Course("অনুপ্রেরণামূলক"));
-                blogList.add(new Course("গল্প"));
-                blogList.add(new Course("টিপস এন্ড ট্রিকস"));
-                blogList.add(new Course("দক্ষতা উন্নয়নমূলক"));
-                blogList.add(new Course("সচেতনতামূলক"));
-                blogList.add(new Course("ইংরেজি"));
+            public void onCategoryCallback(List<Course> categories) {
+                blogCategoriesLiveData.postValue(categories);
             }
-        }).start();
-
-        blogListMutableLiveData.setValue(blogList);
-    }
-
-    public MutableLiveData<List<Course>> getBlogListMutableLiveData() {
-        return blogListMutableLiveData;
+        });
+        return blogCategoriesLiveData;
     }
 
     // not from server
@@ -133,7 +132,7 @@ public class MainActivityViewModel extends AndroidViewModel {
     /*******************UPDATE VIDEO COUNT IN USER PROGRESS TABLE**********************/
 
     public void updateTotalVideoCourse(String courseName, int count) {
-        repository.updateVideoCount(count, courseName);
+        userProgressRepository.updateVideoCount(count, courseName);
     }
 
     /*
@@ -173,23 +172,80 @@ public class MainActivityViewModel extends AndroidViewModel {
         userInfoRepository.postData(userInfo);
     }
 
-    public LiveData<DataSnapshot> getActivityPicLiveData() {
-        DatabaseReference db = FirebaseDatabase.getInstance().getReference("Activity Pics");
-        return new FirebaseQueryLiveData(db);
+    /*
+     * Cloud operations
+     *
+     * */
+
+    /*
+     * get activity photos from cloud
+     * */
+
+
+    private final MutableLiveData<List<Activity>> activityPicLiveData = new MutableLiveData<>();
+
+    public MutableLiveData<List<Activity>> getActivityPicLiveData() {
+        commonRepository.getActivityPhotos(new ActivityPicLoadCallback() {
+            @Override
+            public void onPicLoadCallback(List<Activity> activityPics) {
+                activityPicLiveData.postValue(activityPics);
+            }
+        }, "Activity Pics");
+
+        return activityPicLiveData;
     }
 
-    public LiveData<DataSnapshot> getFieldWorkLiveData() {
-        DatabaseReference db = FirebaseDatabase.getInstance().getReference("Field Work Pics");
-        return new FirebaseQueryLiveData(db);
+    /*
+     * get field works photos from cloud
+     * */
+
+    private final MutableLiveData<List<Activity>> fieldWorkPicLiveData = new MutableLiveData<>();
+
+    public MutableLiveData<List<Activity>> getFieldWorkLiveData() {
+
+        commonRepository.getActivityPhotos(new ActivityPicLoadCallback() {
+            @Override
+            public void onPicLoadCallback(List<Activity> activityPics) {
+                fieldWorkPicLiveData.postValue(activityPics);
+            }
+        }, "Field Work Pics");
+
+        return fieldWorkPicLiveData;
     }
 
-    public LiveData<DataSnapshot> getActivityVideoLiveData() {
-        DatabaseReference db = FirebaseDatabase.getInstance().getReference("Activity Videos");
-        return new FirebaseQueryLiveData(db);
+    /*
+     * get activity videos from cloud
+     * */
+
+    private final MutableLiveData<List<Video>> activityVideoLiveData = new MutableLiveData<>();
+
+    public MutableLiveData<List<Video>> getActivityVideoLiveData() {
+
+        commonRepository.getActivityVideo(new VideoLoadCallback() {
+            @Override
+            public void onLoadCallback(List<Video> list) {
+                activityVideoLiveData.postValue(list);
+            }
+        });
+
+        return activityVideoLiveData;
     }
 
-    public LiveData<DataSnapshot> getRandomCourseLiveData(String sectionName) {
-        DatabaseReference db = FirebaseDatabase.getInstance().getReference("Section").child(sectionName);
-        return new FirebaseQueryLiveData(db);
+    /*
+     * get all the courses available in a category from cloud
+     * */
+
+    private final MutableLiveData<List<DisplayCourse>> randomCourseLiveData = new MutableLiveData<>();
+
+    public MutableLiveData<List<DisplayCourse>> getRandomCourseLiveData(String sectionName) {
+        commonRepository.getAllCoursesFromSection(new DisplayCourseLoadCallback() {
+            @Override
+            public void onLoadCallback(List<DisplayCourse> courses) {
+                Log.d(TAG, "onLoadCallback: " + courses.toString());
+                randomCourseLiveData.postValue(courses);
+            }
+        }, sectionName);
+
+        return randomCourseLiveData;
     }
 }

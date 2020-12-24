@@ -1,10 +1,10 @@
-package com.ofk.bd.HelperClass;
+package com.ofk.bd.Model;
 
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "user_progress")//Table name
-public class UserProgressClass {
+public class UserProgress {
     @PrimaryKey(autoGenerate = true)//id is primary key
     private Integer id;
 
@@ -17,10 +17,10 @@ public class UserProgressClass {
     private long totalVideos;
     private long videoWatched;
 
-    public UserProgressClass() {
+    public UserProgress() {
     }
 
-    public UserProgressClass(String courseEnrolled, String courseNameEnglish, String courseThumbnailURL, boolean isFinished, String sectionName, String sectionNameBangla, long totalVideos, long videoWatched) {
+    public UserProgress(String courseEnrolled, String courseNameEnglish, String courseThumbnailURL, boolean isFinished, String sectionName, String sectionNameBangla, long totalVideos, long videoWatched) {
         this.sectionName = sectionName;
         this.sectionNameBangla = sectionNameBangla;
         this.courseEnrolled = courseEnrolled;

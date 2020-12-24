@@ -12,9 +12,9 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.ofk.bd.HelperClass.Section;
-import com.ofk.bd.HelperClass.SectionVideo;
-import com.ofk.bd.HelperClass.Video;
+import com.ofk.bd.Model.Section;
+import com.ofk.bd.Model.SectionVideo;
+import com.ofk.bd.Model.Video;
 import com.ofk.bd.R;
 import com.ofk.bd.ViewModel.CourseActivityViewModel;
 

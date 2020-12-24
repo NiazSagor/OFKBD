@@ -1,6 +1,6 @@
 package com.ofk.bd.Interface;
 
-import com.ofk.bd.HelperClass.UserInfo;
+import com.ofk.bd.Model.UserInfo;
 
 import java.util.Map;
 

@@ -95,10 +95,6 @@ public class CourseActivity extends AppCompatActivity {
 
         initializePlayer();
 
-        playPause.setOnClickListener(playButtonClickListener);
-        playerView.findViewById(R.id.exo_fullscreen).setOnClickListener(onFullScreenButtonClickListener);
-        binding.backButton.setOnClickListener(backButtonClickListener);
-
         courseActivityViewModel.getCurrentVideoFromList().observe(CourseActivity.this, observer);
 
         // after the activity is visible to user
@@ -108,7 +104,9 @@ public class CourseActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d(TAG, "onResume: ");
+        playPause.setOnClickListener(playButtonClickListener);
+        playerView.findViewById(R.id.exo_fullscreen).setOnClickListener(onFullScreenButtonClickListener);
+        binding.backButton.setOnClickListener(backButtonClickListener);
     }
 
     @Override

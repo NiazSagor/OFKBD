@@ -1,4 +1,4 @@
-package com.ofk.bd.HelperClass;
+package com.ofk.bd.Model;
 
 public class Progress {
     String subjectTitle;

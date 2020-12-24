@@ -1,6 +1,6 @@
 package com.ofk.bd.Interface;
 
-import com.ofk.bd.HelperClass.DisplayCourse;
+import com.ofk.bd.Model.DisplayCourse;
 
 import java.util.List;
 

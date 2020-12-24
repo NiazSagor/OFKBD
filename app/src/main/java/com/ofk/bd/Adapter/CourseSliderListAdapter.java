@@ -10,7 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.ofk.bd.HelperClass.Course;
+import com.ofk.bd.Model.Course;
 import com.ofk.bd.R;
 import com.ofk.bd.Utility.DrawableUtility;
 

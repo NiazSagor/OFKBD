@@ -28,8 +28,8 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
-import com.ofk.bd.HelperClass.UserInfo;
-import com.ofk.bd.HelperClass.UserProgressClass;
+import com.ofk.bd.Model.UserInfo;
+import com.ofk.bd.Model.UserProgress;
 import com.ofk.bd.Interface.CheckUserCallback;
 import com.ofk.bd.R;
 import com.ofk.bd.Utility.CheckUserDatabase;
@@ -237,7 +237,7 @@ public class InputNumberFragment extends Fragment {
                         }
 
                         @Override
-                        public void onUserFoundCallback(UserInfo userInfoCloud, List<UserProgressClass> userProgressClassList) {
+                        public void onUserFoundCallback(UserInfo userInfoCloud, List<UserProgress> userProgressList) {
 
                         }
                     }, userPhoneNumber, "");

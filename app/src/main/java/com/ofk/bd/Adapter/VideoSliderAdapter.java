@@ -1,7 +1,6 @@
 package com.ofk.bd.Adapter;
 
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -10,7 +9,7 @@ import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.ofk.bd.Fragments.ActivityVideoFragment;
-import com.ofk.bd.HelperClass.Video;
+import com.ofk.bd.Model.Video;
 
 import java.util.List;
 

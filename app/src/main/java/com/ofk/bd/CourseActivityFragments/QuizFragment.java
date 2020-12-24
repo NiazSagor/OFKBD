@@ -13,13 +13,11 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.google.firebase.database.DataSnapshot;
 import com.ofk.bd.Adapter.QuizFragmentViewPager;
 import com.ofk.bd.Utility.AlertDialogUtility;
 import com.ofk.bd.ViewModel.CourseActivityViewModel;
 import com.ofk.bd.databinding.FragmentQuizBinding;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class QuizFragment extends Fragment {
@@ -33,8 +31,6 @@ public class QuizFragment extends Fragment {
     private FragmentQuizBinding binding;
 
     private CourseActivityViewModel courseActivityViewModel;
-
-    private static List<String> quizQuestionList;
 
     private int TOTAL_QUESTIONS = 0;
 
@@ -66,21 +62,13 @@ public class QuizFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
     }
 
-    private final Observer<DataSnapshot> quizQuestionsLiveData = new Observer<DataSnapshot>() {
+    private final Observer<List<String>> quizQuestionsLiveData = new Observer<List<String>>() {
         @Override
-        public void onChanged(DataSnapshot dataSnapshot) {
-            if (dataSnapshot.exists()) {
-
-                quizQuestionList = new ArrayList<>();
-
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    String question = ds.getKey();
-                    quizQuestionList.add(question);
-                }
-
+        public void onChanged(List<String> strings) {
+            if (strings != null && strings.size() != 0) {
                 binding.progressBar.setVisibility(View.GONE);
 
-                QuizFragmentViewPager adapter = new QuizFragmentViewPager(getChildFragmentManager(), getLifecycle(), quizQuestionList);
+                QuizFragmentViewPager adapter = new QuizFragmentViewPager(getChildFragmentManager(), getLifecycle(), strings);
                 binding.quizViewPager.setUserInputEnabled(true);
                 binding.quizViewPager.setOffscreenPageLimit(3);
                 binding.quizViewPager.setAdapter(adapter);

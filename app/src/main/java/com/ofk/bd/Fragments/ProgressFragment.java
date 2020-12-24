@@ -13,15 +13,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.ofk.bd.Adapter.AvatarListAdapter;
 import com.ofk.bd.Adapter.ProgressListAdapter;
 import com.ofk.bd.HelperClass.BadgeUtilityClass;
-import com.ofk.bd.HelperClass.EnrolledCourse;
 import com.ofk.bd.HelperClass.SectionCourseTuple;
-import com.ofk.bd.R;
 import com.ofk.bd.Utility.DrawableUtility;
 import com.ofk.bd.Utility.StringUtility;
 import com.ofk.bd.ViewModel.MainActivityViewModel;
 import com.ofk.bd.databinding.FragmentProgressBinding;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -65,7 +62,6 @@ public class ProgressFragment extends Fragment {
     }
 
     private MainActivityViewModel mainActivityViewModel;
-    private List<EnrolledCourse> enrolledCourses;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -74,9 +70,7 @@ public class ProgressFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-        if (enrolledCourses == null) {
-            enrolledCourses = new ArrayList<>();
-        }
+
         if (mainActivityViewModel == null) {
             mainActivityViewModel = ViewModelProviders.of(getActivity()).get(MainActivityViewModel.class);
         }
@@ -136,7 +130,7 @@ public class ProgressFragment extends Fragment {
 
                 binding.currentLevelTextViewTop.setText(currentLevel);
 
-                binding.currentBadge.setImageDrawable(DrawableUtility.getDrawable(getContext(),14));
+                binding.currentBadge.setImageDrawable(DrawableUtility.getDrawable(getContext(), 14));
 
                 binding.nextLevelTextViewBelow.setVisibility(View.GONE);
 

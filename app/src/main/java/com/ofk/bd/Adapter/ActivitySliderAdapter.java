@@ -8,7 +8,7 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.ofk.bd.HelperClass.Activity;
+import com.ofk.bd.Model.Activity;
 import com.ofk.bd.R;
 import com.squareup.picasso.Picasso;
 
@@ -16,7 +16,7 @@ import java.util.List;
 
 public class ActivitySliderAdapter extends RecyclerView.Adapter<ActivitySliderAdapter.ActivityViewHolder> {
 
-    private final List<com.ofk.bd.HelperClass.Activity> activityList;
+    private final List<Activity> activityList;
 
     private final Picasso picasso;
 

@@ -16,17 +16,11 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
 
-import com.ofk.bd.AsyncTasks.FirebaseQueryRandomCourse;
-import com.ofk.bd.AsyncTasks.FirebaseQuerySubSection;
 import com.ofk.bd.DisplayCourseActivityAdapter.CourseListAdapter;
 import com.ofk.bd.Fragments.BottomDialog;
-import com.ofk.bd.HelperClass.Common;
-import com.ofk.bd.HelperClass.DisplayCourse;
+import com.ofk.bd.Model.DisplayCourse;
 import com.ofk.bd.HelperClass.MyApp;
-import com.ofk.bd.HelperClass.SectionVideo;
-import com.ofk.bd.HelperClass.UserProgressClass;
-import com.ofk.bd.Interface.DisplayCourseLoadCallback;
-import com.ofk.bd.Interface.SectionVideoLoadCallback;
+import com.ofk.bd.Model.UserProgress;
 import com.ofk.bd.Utility.AlertDialogUtility;
 import com.ofk.bd.ViewModel.DisplayCourseActivityViewModel;
 import com.ofk.bd.databinding.ActivityDisplayCourseBinding;
@@ -62,7 +56,14 @@ public class DisplayCourseActivity extends AppCompatActivity implements BottomDi
         binding = ActivityDisplayCourseBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        viewModel = ViewModelProviders.of(DisplayCourseActivity.this).get(DisplayCourseActivityViewModel.class);
+        if (viewModel == null) {
+            viewModel = ViewModelProviders.of(DisplayCourseActivity.this).get(DisplayCourseActivityViewModel.class);
+        }
+
+
+        if (!viewModel.getCoursesLiveData(getIntent().getStringExtra("section_name") + " Section").hasObservers()) {
+            viewModel.getCoursesLiveData(getIntent().getStringExtra("section_name") + " Section").observe(this, allCoursesObserver);
+        }
 
         binding.sectionHeadline.setText(new StringBuilder()
                 .append(getIntent().getStringExtra("section_name_bangla"))
@@ -124,7 +125,6 @@ public class DisplayCourseActivity extends AppCompatActivity implements BottomDi
 
         binding.courseRecyclerView.setLayoutManager(new GridLayoutManager(DisplayCourseActivity.this, 2));
 
-        getData();
     }
 
     @Override
@@ -148,68 +148,6 @@ public class DisplayCourseActivity extends AppCompatActivity implements BottomDi
         }
     }
 
-
-    private void getData() {
-
-        String node = getIntent().getStringExtra("section_name") + " Section";
-
-        new FirebaseQueryRandomCourse(new DisplayCourseLoadCallback() {
-            @Override
-            public void onLoadCallback(List<DisplayCourse> courses) {
-
-                binding.progressBar.setVisibility(View.GONE);
-
-                if (courses == null || courses.size() == 0) {
-                    alertDialogUtility.showAlertDialog(DisplayCourseActivity.this, "courseNotFound");
-                    return;
-                }
-
-                CourseListAdapter adapter = new CourseListAdapter(courses, "displayCourse");
-
-                binding.courseRecyclerView.setAdapter(adapter);
-                binding.courseCount.setText(
-                        new StringBuilder()
-                                .append(adapter.getItemCount())
-                                .append(" টি কোর্স")
-                );
-
-                adapter.setOnItemClickListener(new CourseListAdapter.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(int position, View view) {
-
-                        selectedCourse = courses.get(position);
-
-                        String sectionName = getIntent().getStringExtra("section_name");
-                        String courseName = courses.get(position).getCourseTitle();
-                        String courseNameEnglish = courses.get(position).getCourseTitleEnglish();
-
-                        enrolledCourseLiveData = viewModel.getCourseEnrolled();
-
-                        if (!enrolledCourseLiveData.hasObservers()) {
-                            enrolledCourseLiveData.observe(DisplayCourseActivity.this, new Observer<List<String>>() {
-                                @Override
-                                public void onChanged(List<String> strings) {
-                                    if (!strings.contains(courseNameEnglish)) {
-                                        // if not in db from before
-                                        Log.d(TAG, "onChanged: course is not in db");
-                                        enrolledCourseLiveData.removeObservers(DisplayCourseActivity.this);
-
-                                        bottomSheet.show(getSupportFragmentManager(), "");
-                                    } else {
-                                        // if is in db from before
-                                        Log.d(TAG, "onChanged: course is in db");
-                                        enrolledCourseLiveData.removeObservers(DisplayCourseActivity.this);
-                                        proceedNormally(sectionName, courseName, courseNameEnglish);
-                                    }
-                                }
-                            });
-                        }
-                    }
-                });
-            }
-        }, node).execute();
-    }
-
     private void proceedNormally(String sectionName, String courseName, String courseNameEnglish) {
 
         Intent intent = new Intent(DisplayCourseActivity.this, CourseActivity.class);
@@ -217,21 +155,8 @@ public class DisplayCourseActivity extends AppCompatActivity implements BottomDi
         intent.putExtra("course_name", courseName);
         intent.putExtra("course_name_english", courseNameEnglish);
         intent.putExtra("from", "display");
-
-        new FirebaseQuerySubSection(new SectionVideoLoadCallback() {
-            @Override
-            public void onSectionVideoLoadCallback(List<SectionVideo> sectionVideoList, int totalVideos) {
-
-                if (sectionVideoList == null || sectionVideoList.size() == 0) {
-                    alertDialogUtility.showAlertDialog(DisplayCourseActivity.this, "videoNotFound");
-                    return;
-                }
-
-                Common.sectionVideoList = sectionVideoList;
-
-                startActivity(intent);
-            }
-        }, sectionName + " Section", courseNameEnglish).execute();
+        intent.putExtra("isNewCourse", false);
+        startActivity(intent);
     }
 
     @Override
@@ -246,7 +171,7 @@ public class DisplayCourseActivity extends AppCompatActivity implements BottomDi
             String thumbNailURL = selectedCourse.getThumbnailURL();
 
 
-            viewModel.insert(new UserProgressClass(courseName, courseNameEnglish, thumbNailURL, false, sectionName, sectionNameBangla, 0, 0));
+            viewModel.insert(new UserProgress(courseName, courseNameEnglish, thumbNailURL, false, sectionName, sectionNameBangla, 0, 0));
 
 
             Intent intent = new Intent(DisplayCourseActivity.this, CourseActivity.class);
@@ -254,26 +179,16 @@ public class DisplayCourseActivity extends AppCompatActivity implements BottomDi
             intent.putExtra("course_name", courseName);
             intent.putExtra("course_name_english", courseNameEnglish);
             intent.putExtra("from", "display");
+            intent.putExtra("isNewCourse", true);
 
+            bottomSheet.dismiss();
 
-            new FirebaseQuerySubSection(new SectionVideoLoadCallback() {
+            handler.postDelayed(new Runnable() {
                 @Override
-                public void onSectionVideoLoadCallback(List<SectionVideo> sectionVideoList, int totalVideos) {
-
-                    if (sectionVideoList == null || sectionVideoList.size() == 0) {
-                        alertDialogUtility.showAlertDialog(DisplayCourseActivity.this, "videoNotFound");
-                        return;
-                    }
-
-                    Common.sectionVideoList = sectionVideoList;
-
-                    viewModel.updateTotalVideoCourse(courseNameEnglish, totalVideos);
-
-                    bottomSheet.dismiss();
+                public void run() {
                     startActivity(intent);
-
                 }
-            }, sectionName + " Section", courseNameEnglish).execute();
+            }, 700);
 
         } else if (isInterested == 1) {
 
@@ -290,4 +205,61 @@ public class DisplayCourseActivity extends AppCompatActivity implements BottomDi
         dialog.setContentView(R.layout.age_layout);
         dialog.show();
     }
+
+    private final Observer<List<DisplayCourse>> allCoursesObserver = new Observer<List<DisplayCourse>>() {
+        @Override
+        public void onChanged(List<DisplayCourse> courses) {
+
+            binding.progressBar.setVisibility(View.GONE);
+
+            if (courses == null || courses.size() == 0) {
+                Log.d(TAG, "onChanged: " + courses.size());
+                alertDialogUtility.showAlertDialog(DisplayCourseActivity.this, "courseNotFound");
+                return;
+            }
+
+            CourseListAdapter adapter = new CourseListAdapter(courses, "displayCourse");
+
+            binding.courseRecyclerView.setAdapter(adapter);
+            binding.courseCount.setText(
+                    new StringBuilder()
+                            .append(adapter.getItemCount())
+                            .append(" টি কোর্স")
+            );
+
+            adapter.setOnItemClickListener(new CourseListAdapter.OnItemClickListener() {
+                @Override
+                public void onItemClick(int position, View view) {
+
+                    selectedCourse = courses.get(position);
+
+                    String sectionName = getIntent().getStringExtra("section_name");
+                    String courseName = courses.get(position).getCourseTitle();
+                    String courseNameEnglish = courses.get(position).getCourseTitleEnglish();
+
+                    enrolledCourseLiveData = viewModel.getCourseEnrolled();
+
+                    if (!enrolledCourseLiveData.hasObservers()) {
+                        enrolledCourseLiveData.observe(DisplayCourseActivity.this, new Observer<List<String>>() {
+                            @Override
+                            public void onChanged(List<String> strings) {
+                                if (!strings.contains(courseNameEnglish)) {
+                                    // if not in db from before
+                                    Log.d(TAG, "onChanged: course is not in db");
+                                    enrolledCourseLiveData.removeObservers(DisplayCourseActivity.this);
+
+                                    bottomSheet.show(getSupportFragmentManager(), "");
+                                } else {
+                                    // if is in db from before
+                                    Log.d(TAG, "onChanged: course is in db");
+                                    enrolledCourseLiveData.removeObservers(DisplayCourseActivity.this);
+                                    proceedNormally(sectionName, courseName, courseNameEnglish);
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+        }
+    };
 }

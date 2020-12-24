@@ -1,7 +1,4 @@
-package com.ofk.bd.AsyncTasks;
-
-import android.os.AsyncTask;
-import android.util.Log;
+package com.ofk.bd.Task;
 
 import androidx.annotation.NonNull;
 
@@ -10,43 +7,35 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.ofk.bd.HelperClass.Section;
-import com.ofk.bd.HelperClass.SectionVideo;
-import com.ofk.bd.HelperClass.Video;
+import com.ofk.bd.Model.Section;
+import com.ofk.bd.Model.SectionVideo;
+import com.ofk.bd.Model.Video;
 import com.ofk.bd.Interface.SectionVideoLoadCallback;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class FirebaseQuerySubSection extends AsyncTask<Void, Void, Void> {
+public class SectionVideoTask implements Runnable {
 
-    private static final String TAG = "FirebaseQuerySubSection";
-
-    private final DatabaseReference db = FirebaseDatabase.getInstance().getReference().child("Sub Section");
-
+    private final String sectionName;
+    private final String courseName;
     private int total = 0;
 
-    private final String sectionName, courseName;
-
+    private final List<SectionVideo> sectionWithVideos = new ArrayList<>();
+    private List<Video> videoList;
     private final SectionVideoLoadCallback callback;
 
-    private List<SectionVideo> sectionVideoList;
 
-    private List<Video> videoList;
-
-    public FirebaseQuerySubSection(SectionVideoLoadCallback callback, String sectionName, String courseName) {
-        Log.d(TAG, "FirebaseQuerySubSection: " + "constructor called");
-        this.callback = callback;
+    public SectionVideoTask(SectionVideoLoadCallback callback, String sectionName, String courseName) {
         this.sectionName = sectionName;
         this.courseName = courseName;
+        this.callback = callback;
     }
 
     @Override
-    protected Void doInBackground(Void... voids) {
+    public void run() {
+        DatabaseReference db = FirebaseDatabase.getInstance().getReference().child("Sub Section");
 
-        sectionVideoList = new ArrayList<>();
-
-        // parent node to child node then to section node
         db.child(sectionName).child(courseName).child("Section").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -76,9 +65,10 @@ public class FirebaseQuerySubSection extends AsyncTask<Void, Void, Void> {
 
                                             // making section video object combining section and videos
                                             SectionVideo sectionVideo = new SectionVideo(section, videoList);
-                                            sectionVideoList.add(sectionVideo);
+                                            sectionVideo.setTotalVideos(total);
+                                            sectionWithVideos.add(sectionVideo);
 
-                                            callback.onSectionVideoLoadCallback(sectionVideoList, total);
+                                            callback.onSectionVideoLoadCallback(sectionWithVideos, total);
                                         }
                                     }
 
@@ -88,8 +78,6 @@ public class FirebaseQuerySubSection extends AsyncTask<Void, Void, Void> {
                                     }
                                 });
                     }
-                } else {
-                    callback.onSectionVideoLoadCallback(sectionVideoList, total);
                 }
             }
 
@@ -98,7 +86,5 @@ public class FirebaseQuerySubSection extends AsyncTask<Void, Void, Void> {
 
             }
         });
-
-        return null;
     }
 }

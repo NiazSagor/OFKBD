@@ -20,7 +20,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.ofk.bd.DisplayCourseActivityAdapter.CourseListAdapter;
-import com.ofk.bd.HelperClass.DisplayCourse;
+import com.ofk.bd.Model.DisplayCourse;
 import com.ofk.bd.ViewModel.FirebaseSearchViewModel;
 import com.ofk.bd.databinding.FragmentCourseBinding;
 

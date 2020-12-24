@@ -1,4 +1,4 @@
-package com.ofk.bd.HelperClass;
+package com.ofk.bd.Model;
 
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;

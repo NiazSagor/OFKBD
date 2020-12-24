@@ -9,7 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.ofk.bd.HelperClass.Video;
+import com.ofk.bd.Model.Video;
 import com.ofk.bd.R;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
