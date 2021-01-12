@@ -59,7 +59,7 @@ public class CourseSliderListAdapter extends RecyclerView.Adapter<CourseSliderLi
                 return new CourseSliderListViewHolder(blogLayout, mListener);
 
             default:
-                View view = inflater.inflate(R.layout.age_layout, parent, false);
+                View view = inflater.inflate(R.layout.bottom_sheet_layout, parent, false);
                 return new CourseSliderListViewHolder(view, mListener);
         }
     }

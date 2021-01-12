@@ -8,18 +8,18 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.ofk.bd.Model.Activity;
-import com.ofk.bd.Model.Course;
-import com.ofk.bd.Model.DisplayCourse;
 import com.ofk.bd.HelperClass.MyApp;
 import com.ofk.bd.HelperClass.SectionCourseNameTuple;
 import com.ofk.bd.HelperClass.SectionCourseTuple;
-import com.ofk.bd.Model.UserInfo;
-import com.ofk.bd.Model.Video;
 import com.ofk.bd.Interface.ActivityPicLoadCallback;
 import com.ofk.bd.Interface.CategoryCallback;
 import com.ofk.bd.Interface.DisplayCourseLoadCallback;
 import com.ofk.bd.Interface.VideoLoadCallback;
+import com.ofk.bd.Model.Activity;
+import com.ofk.bd.Model.Course;
+import com.ofk.bd.Model.DisplayCourse;
+import com.ofk.bd.Model.UserInfo;
+import com.ofk.bd.Model.Video;
 import com.ofk.bd.Repository.CommonRepository;
 import com.ofk.bd.Repository.UserInfoRepository;
 import com.ofk.bd.Repository.UserProgressRepository;
@@ -135,6 +135,10 @@ public class MainActivityViewModel extends AndroidViewModel {
         userProgressRepository.updateVideoCount(count, courseName);
     }
 
+    public LiveData<Boolean> isFirstCourseCompleted(){
+        return userProgressRepository.getIsFirstCourseCompleted();
+    }
+
     /*
      *
      *
@@ -241,7 +245,6 @@ public class MainActivityViewModel extends AndroidViewModel {
         commonRepository.getAllCoursesFromSection(new DisplayCourseLoadCallback() {
             @Override
             public void onLoadCallback(List<DisplayCourse> courses) {
-                Log.d(TAG, "onLoadCallback: " + courses.toString());
                 randomCourseLiveData.postValue(courses);
             }
         }, sectionName);

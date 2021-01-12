@@ -37,7 +37,6 @@ public class UserProgressRepository {
     private LiveData<List<SectionCourseNameTuple>> courseEnrolled;// already enrolled courses
     private LiveData<List<SectionCourseTuple>> combinedSectionCourseList;//section name and course name combined list
 
-
     public UserProgressRepository(Application application) {
         UserProgressDatabase database = UserProgressDatabase.getInstance(application);
         userProgressDao = database.userProgressDao();
@@ -67,6 +66,11 @@ public class UserProgressRepository {
     // update total video of a course method
     public void updateVideoCount(int videoCount, String courseName) {
         new UpdateVideoCountAsyncTask(userProgressDao, courseName, videoCount).execute();
+    }
+
+    // if the enrolled first course if completed or not
+    public LiveData<Boolean> getIsFirstCourseCompleted() {
+        return userProgressDao.isFirstCourseCompleted();
     }
 
     // update total video count of a course
@@ -112,18 +116,23 @@ public class UserProgressRepository {
         @Override
         protected Void doInBackground(Void... voids) {
 
+            DatabaseReference db = USER_PROGRESS_REF.child(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber())
+                    .child(course);
+
             if (dao.getTotalVideoCountForCurrentCourse(course) != dao.getCurrentVideoWatchCountForCurrentCourse(course)) {
                 // if total videos and currently watched videos are not equal then increase the video watch count
                 dao.upDateVideoWatched(course);
 
-                USER_PROGRESS_REF.child(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber())
-                        .child(course)
-                        .child("videoWatched")
+                if (dao.getTotalVideoCountForCurrentCourse(course) == dao.getCurrentVideoWatchCountForCurrentCourse(course)) {
+                    dao.updateCourseStatus(course);
+                    db.child("isFinished").setValue(true);
+                }
+
+                db.child("video Watched")
                         .runTransaction(new Transaction.Handler() {
                             @NonNull
                             @Override
                             public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
-
                                 long currentCount = (long) mutableData.getValue();
                                 currentCount++;
                                 mutableData.setValue(currentCount);

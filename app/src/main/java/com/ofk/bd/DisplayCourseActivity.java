@@ -1,11 +1,15 @@
 package com.ofk.bd;
 
-import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,10 +20,10 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
 
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.ofk.bd.DisplayCourseActivityAdapter.CourseListAdapter;
-import com.ofk.bd.Fragments.BottomDialog;
-import com.ofk.bd.Model.DisplayCourse;
 import com.ofk.bd.HelperClass.MyApp;
+import com.ofk.bd.Model.DisplayCourse;
 import com.ofk.bd.Model.UserProgress;
 import com.ofk.bd.Utility.AlertDialogUtility;
 import com.ofk.bd.ViewModel.DisplayCourseActivityViewModel;
@@ -27,7 +31,7 @@ import com.ofk.bd.databinding.ActivityDisplayCourseBinding;
 
 import java.util.List;
 
-public class DisplayCourseActivity extends AppCompatActivity implements BottomDialog.BottomSheetListener {
+public class DisplayCourseActivity extends AppCompatActivity {
 
     private static final String TAG = "DisplayCourseActivity";
 
@@ -39,7 +43,9 @@ public class DisplayCourseActivity extends AppCompatActivity implements BottomDi
 
     private final AlertDialogUtility alertDialogUtility = new AlertDialogUtility();
 
-    private final BottomDialog bottomSheet = new BottomDialog();
+    private BottomSheetBehavior bottomSheetBehavior;
+
+    private LinearLayout bottomSheetCo;
 
     private final Handler handler = new Handler();
 
@@ -68,6 +74,11 @@ public class DisplayCourseActivity extends AppCompatActivity implements BottomDi
         binding.sectionHeadline.setText(new StringBuilder()
                 .append(getIntent().getStringExtra("section_name_bangla"))
                 .append(" কোর্স"));
+
+
+        bottomSheetCo = findViewById(R.id.bottomSheet);
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetCo);
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
     }
 
     private void setUpViews() {
@@ -118,13 +129,24 @@ public class DisplayCourseActivity extends AppCompatActivity implements BottomDi
         super.onStart();
         setUpViews();
 
+        Button notInterestedButton = findViewById(R.id.notInterestedButton);
+        notInterestedButton.setOnClickListener(notInterestedButtonClickListener);
+
+        Button interestedButton = findViewById(R.id.interestedButton);
+        interestedButton.setOnClickListener(interestedButtonClickListener);
+
+        TextView dialogTop = findViewById(R.id.dialogTextViewTop);
+        dialogTop.setOnClickListener(dialogTopClickListener);
+
+        ImageView closeBottomSheet = findViewById(R.id.closeBottomSheet);
+        closeBottomSheet.setOnClickListener(closeBottomSheetClickListener);
+
         if (!MyApp.IS_CONNECTED) {
             alertDialogUtility.showAlertDialog(this, "noConnection");
             return;
         }
 
         binding.courseRecyclerView.setLayoutManager(new GridLayoutManager(DisplayCourseActivity.this, 2));
-
     }
 
     @Override
@@ -159,53 +181,6 @@ public class DisplayCourseActivity extends AppCompatActivity implements BottomDi
         startActivity(intent);
     }
 
-    @Override
-    public void onButtonClicked(int isInterested) {
-        if (isInterested == 0) {
-
-            String sectionName = getIntent().getStringExtra("section_name");
-            String sectionNameBangla = getIntent().getStringExtra("section_name_bangla");
-
-            String courseName = selectedCourse.getCourseTitle();
-            String courseNameEnglish = selectedCourse.getCourseTitleEnglish();
-            String thumbNailURL = selectedCourse.getThumbnailURL();
-
-
-            viewModel.insert(new UserProgress(courseName, courseNameEnglish, thumbNailURL, false, sectionName, sectionNameBangla, 0, 0));
-
-
-            Intent intent = new Intent(DisplayCourseActivity.this, CourseActivity.class);
-            intent.putExtra("section_name", sectionName);
-            intent.putExtra("course_name", courseName);
-            intent.putExtra("course_name_english", courseNameEnglish);
-            intent.putExtra("from", "display");
-            intent.putExtra("isNewCourse", true);
-
-            bottomSheet.dismiss();
-
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    startActivity(intent);
-                }
-            }, 700);
-
-        } else if (isInterested == 1) {
-
-            // if user wants to buy
-
-        } else {
-            showDialog();
-        }
-    }
-
-    public void showDialog() {
-        final Dialog dialog = new Dialog(this);
-        dialog.setCancelable(true);
-        dialog.setContentView(R.layout.age_layout);
-        dialog.show();
-    }
-
     private final Observer<List<DisplayCourse>> allCoursesObserver = new Observer<List<DisplayCourse>>() {
         @Override
         public void onChanged(List<DisplayCourse> courses) {
@@ -213,10 +188,12 @@ public class DisplayCourseActivity extends AppCompatActivity implements BottomDi
             binding.progressBar.setVisibility(View.GONE);
 
             if (courses == null || courses.size() == 0) {
-                Log.d(TAG, "onChanged: " + courses.size());
+                Log.d(TAG, "onChanged: null");
                 alertDialogUtility.showAlertDialog(DisplayCourseActivity.this, "courseNotFound");
                 return;
             }
+
+            Log.d(TAG, "onChanged: " + courses.toString());
 
             CourseListAdapter adapter = new CourseListAdapter(courses, "displayCourse");
 
@@ -247,8 +224,7 @@ public class DisplayCourseActivity extends AppCompatActivity implements BottomDi
                                     // if not in db from before
                                     Log.d(TAG, "onChanged: course is not in db");
                                     enrolledCourseLiveData.removeObservers(DisplayCourseActivity.this);
-
-                                    bottomSheet.show(getSupportFragmentManager(), "");
+                                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                                 } else {
                                     // if is in db from before
                                     Log.d(TAG, "onChanged: course is in db");
@@ -260,6 +236,56 @@ public class DisplayCourseActivity extends AppCompatActivity implements BottomDi
                     }
                 }
             });
+        }
+    };
+
+    private final View.OnClickListener closeBottomSheetClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            LinearLayout ofkCertification = findViewById(R.id.ofkCertification);
+            ofkCertification.setVisibility(View.GONE);
+        }
+    };
+    private final View.OnClickListener dialogTopClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            LinearLayout ofkCertification = findViewById(R.id.ofkCertification);
+            ofkCertification.setVisibility(View.VISIBLE);
+        }
+    };
+    private final View.OnClickListener interestedButtonClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Toast.makeText(DisplayCourseActivity.this, "Thank you for your interest", Toast.LENGTH_SHORT).show();
+        }
+    };
+
+    private final View.OnClickListener notInterestedButtonClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            String sectionName = getIntent().getStringExtra("section_name");
+            String sectionNameBangla = getIntent().getStringExtra("section_name_bangla");
+
+            String courseName = selectedCourse.getCourseTitle();
+            String courseNameEnglish = selectedCourse.getCourseTitleEnglish();
+            String thumbNailURL = selectedCourse.getThumbnailURL();
+
+            viewModel.insert(new UserProgress(courseName, courseNameEnglish, thumbNailURL, false, sectionName, sectionNameBangla, 0, 0));
+
+            Intent intent = new Intent(DisplayCourseActivity.this, CourseActivity.class);
+            intent.putExtra("section_name", sectionName);
+            intent.putExtra("course_name", courseName);
+            intent.putExtra("course_name_english", courseNameEnglish);
+            intent.putExtra("from", "display");
+            intent.putExtra("isNewCourse", true);
+
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    startActivity(intent);
+                }
+            }, 700);
         }
     };
 }

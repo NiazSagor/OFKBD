@@ -15,6 +15,11 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.developer.kalert.KAlertDialog;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.play.core.review.ReviewInfo;
+import com.google.android.play.core.review.ReviewManager;
+import com.google.android.play.core.review.ReviewManagerFactory;
+import com.google.android.play.core.tasks.OnCompleteListener;
+import com.google.android.play.core.tasks.Task;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.ofk.bd.Adapter.MainActivityViewPager;
 import com.ofk.bd.Fragments.ProfileBottomSheet;
@@ -111,6 +116,8 @@ public class MainActivity extends AppCompatActivity implements ServiceResultRece
             startService();
             Log.d(TAG, "onStart: " + remoteConfig.getBoolean(IS_COURSE_UPDATED));
         }
+
+        viewModel.isFirstCourseCompleted().observe(this, isFirstCourseCompletedObserver);
     }
 
     public void setupViewPager() {
@@ -191,10 +198,10 @@ public class MainActivity extends AppCompatActivity implements ServiceResultRece
     @Override
     public void onButtonClicked(String text) {
 
-        if (text.length() == 7 || text.length() == 8) {
+        if (text.length() == 1 || text.length() == 2) {
 
             //class
-            viewModel.updateUserInfo(text, "class");
+            viewModel.updateUserInfo("Class " + text, "class");
         } else if (text.length() == 4 || text.length() == 6) {
 
             // gender
@@ -204,4 +211,34 @@ public class MainActivity extends AppCompatActivity implements ServiceResultRece
             viewModel.updateUserInfo(text, "dob");
         }
     }
+
+    private final Observer<Boolean> isFirstCourseCompletedObserver = new Observer<Boolean>() {
+        @Override
+        public void onChanged(Boolean aBoolean) {
+            if (aBoolean != null && aBoolean) {
+                ReviewManager manager = ReviewManagerFactory.create(MainActivity.this);
+                Task<ReviewInfo> request = manager.requestReviewFlow();
+                request.addOnCompleteListener(new OnCompleteListener<ReviewInfo>() {
+                    @Override
+                    public void onComplete(@NonNull Task<ReviewInfo> task) {
+                        if (task.isSuccessful()) {
+
+                            ReviewInfo reviewInfo = task.getResult();
+
+                            Task<Void> flow = manager.launchReviewFlow(MainActivity.this, reviewInfo);
+
+                            flow.addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    Log.d(TAG, "onComplete: ");
+                                }
+                            });
+                        }
+                    }
+                });
+            } else {
+                Log.d(TAG, "onChanged: course is not completed");
+            }
+        }
+    };
 }

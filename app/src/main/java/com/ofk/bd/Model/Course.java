@@ -1,8 +1,8 @@
 package com.ofk.bd.Model;
 
 public class Course {
-    String courseTitle;
-    String courseSubtitle;
+    private String courseTitle;
+    private String courseSubtitle;
     //String courseImage;
 
     public Course() {

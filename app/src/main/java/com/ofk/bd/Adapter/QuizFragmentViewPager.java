@@ -8,7 +8,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.ofk.bd.QuizActivityFragment.QuizQuestionFragment;
+import com.ofk.bd.QuizFragmentFragment.QuizQuestionFragment;
 
 import java.util.List;
 

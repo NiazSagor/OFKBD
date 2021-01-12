@@ -35,6 +35,12 @@ public interface UserProgressDao {
     @Query("SELECT courseNameEnglish FROM user_progress")
     LiveData<List<String>> getAllEnrolledCoursesOnly();
 
+    @Query("SELECT isFinished FROM user_progress WHERE id = 1")
+    LiveData<Boolean> isFirstCourseCompleted();
+
+    @Query("UPDATE user_progress SET isFinished = 1 WHERE courseNameEnglish = :courseName")
+    void updateCourseStatus(String courseName);
+
     @Query("SELECT videoWatched FROM user_progress WHERE courseNameEnglish = :courseName")
     int getCurrentVideoWatchCountForCurrentCourse(String courseName);
 

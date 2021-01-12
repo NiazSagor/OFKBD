@@ -61,6 +61,10 @@ public class DrawableUtility {
         return ContextCompat.getDrawable(context, sectionGradients[index]);
     }
 
+    public static Drawable getSampleDrawable(Context context) {
+        return (GradientDrawable) ContextCompat.getDrawable(context, R.drawable.background1);
+    }
+
     public static Drawable getQuizOptionOutlineDrawable(Context context) {
         return (GradientDrawable) ContextCompat.getDrawable(context, R.drawable.quiz_option_outline_bg);
     }

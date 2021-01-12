@@ -7,8 +7,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.ofk.bd.Model.DisplayCourse;
 import com.ofk.bd.Interface.DisplayCourseLoadCallback;
+import com.ofk.bd.Model.DisplayCourse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,8 +36,8 @@ public class CourseTask implements Runnable {
                     for (DataSnapshot ds : dataSnapshot.getChildren()) {
                         recommendedCourse.add(ds.getValue(DisplayCourse.class));
                     }
-                    callback.onLoadCallback(recommendedCourse);
                 }
+                callback.onLoadCallback(recommendedCourse);
             }
 
             @Override

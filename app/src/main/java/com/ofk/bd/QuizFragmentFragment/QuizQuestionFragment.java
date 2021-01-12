@@ -1,4 +1,4 @@
-package com.ofk.bd.QuizActivityFragment;
+package com.ofk.bd.QuizFragmentFragment;
 
 import android.annotation.SuppressLint;
 import android.graphics.Color;
@@ -42,9 +42,7 @@ public class QuizQuestionFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         courseActivityViewModel = ViewModelProviders.of(getActivity()).get(CourseActivityViewModel.class);
-        courseActivityViewModel.currentOptionPosition().observe(getActivity(), currentPositionObserver);
     }
 
     @Override
@@ -59,6 +57,8 @@ public class QuizQuestionFragment extends Fragment {
         textViews[1] = binding.choice2;
         textViews[2] = binding.choice3;
         textViews[3] = binding.choice4;
+
+        courseActivityViewModel.currentOptionPosition().observe(getActivity(), currentPositionObserver);
 
         return binding.getRoot();
     }
@@ -106,7 +106,7 @@ public class QuizQuestionFragment extends Fragment {
             }
 
             if (integer == totalQuestions) {
-                stringBuilder.append("You've completed the quiz ");
+                stringBuilder.append("Last question of the quiz ");
             }
 
             if (integer == totalQuestions) {

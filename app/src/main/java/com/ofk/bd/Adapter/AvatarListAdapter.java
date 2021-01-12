@@ -55,7 +55,7 @@ public class AvatarListAdapter extends RecyclerView.Adapter<AvatarListAdapter.Av
 
             default:
                 // not needed
-                View view3 = inflater.inflate(R.layout.age_layout, parent, false);
+                View view3 = inflater.inflate(R.layout.bottom_sheet_layout, parent, false);
                 return new AvatarListViewHolder(view3, mListener, mSender);
         }
     }

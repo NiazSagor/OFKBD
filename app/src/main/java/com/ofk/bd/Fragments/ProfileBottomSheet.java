@@ -5,24 +5,25 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.ofk.bd.Adapter.ProfileClassGridAdapter;
+import com.ofk.bd.Interface.DisplayCourseLoadCallback;
 import com.ofk.bd.R;
 import com.ofk.bd.Utility.StringUtility;
 
 import java.util.Calendar;
 
 public class ProfileBottomSheet extends BottomSheetDialogFragment {
+
+    private static final String TAG = "ProfileBottomSheet";
 
     private BottomSheetListener mListener;
 
@@ -73,62 +74,51 @@ public class ProfileBottomSheet extends BottomSheetDialogFragment {
                 });
                 break;
             case "gender": {
-                Spinner classSpinner = view.findViewById(R.id.spinner);
 
-                RelativeLayout layout = view.findViewById(R.id.spinnerLayout);
-                layout.setVisibility(View.VISIBLE);
+                GridView genderGridView = view.findViewById(R.id.classGridView);
 
-                ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(), R.array.gender, android.R.layout.simple_spinner_item);
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                classSpinner.setAdapter(adapter);
+                genderGridView.setVisibility(View.VISIBLE);
 
-                classSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                ProfileClassGridAdapter adapter = new ProfileClassGridAdapter(
+                        getContext(), StringUtility.getGender(), "gender"
+                );
+
+                genderGridView.setAdapter(adapter);
+
+                adapter.setOnItemClickListener(new ProfileClassGridAdapter.OnItemClickListener() {
                     @Override
-                    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-
+                    public void onClickListener(int position) {
                         setButton.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                mListener.onButtonClicked(adapter.getItem(i).toString());
+                                mListener.onButtonClicked(StringUtility.getGender()[position]);
                                 dismiss();
                             }
                         });
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> adapterView) {
-
                     }
                 });
 
                 break;
             }
             case "class": {
-                Spinner classSpinner = view.findViewById(R.id.spinner);
+                GridView classGridView = view.findViewById(R.id.classGridView);
 
-                RelativeLayout layout = view.findViewById(R.id.spinnerLayout);
-                layout.setVisibility(View.VISIBLE);
+                classGridView.setVisibility(View.VISIBLE);
 
-                ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(), R.array.classes, android.R.layout.simple_spinner_item);
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                classSpinner.setAdapter(adapter);
+                ProfileClassGridAdapter adapter = new ProfileClassGridAdapter(getContext(), StringUtility.getClasses(), "class");
 
-                classSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                classGridView.setAdapter(adapter);
+
+                adapter.setOnItemClickListener(new ProfileClassGridAdapter.OnItemClickListener() {
                     @Override
-                    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-
+                    public void onClickListener(int position) {
                         setButton.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                mListener.onButtonClicked(adapter.getItem(i).toString());
+                                mListener.onButtonClicked(StringUtility.getClasses()[position]);
                                 dismiss();
                             }
                         });
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> adapterView) {
-
                     }
                 });
                 break;

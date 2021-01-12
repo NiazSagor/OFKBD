@@ -16,7 +16,8 @@ public class StringUtility {
             "Super Kids 1", "Super Kids 2", "Super Kids 3"};
 
     private static final String[] months = {"Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"};
-
+    private static final String[] classes = {"6", "7", "8", "9", "10"};
+    private static final String[] gender = {"Male", "Female"};
     public StringUtility(Context context) {
         this.context = context;
     }
@@ -55,6 +56,14 @@ public class StringUtility {
 
     public static String getCurrentLevelName(int index) {
         return level_names[index];
+    }
+
+    public static String[] getClasses() {
+        return classes;
+    }
+
+    public static String[] getGender() {
+        return gender;
     }
 
     public static String getGreetingMessage(int timeOfDay) {

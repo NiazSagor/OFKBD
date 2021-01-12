@@ -310,6 +310,8 @@ public class CourseActivity extends AppCompatActivity {
                                     player.prepare(mediaSource);
                                 }
                             });
+                        } else {
+                            Log.d(TAG, "onExtractionComplete: ytfiles is null" + s);
                         }
                     }
                 }.extract(s, true, false);

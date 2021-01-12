@@ -1,9 +1,7 @@
 package com.ofk.bd.Fragments;
 
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,8 +26,8 @@ import com.ofk.bd.Adapter.VideoSliderAdapter;
 import com.ofk.bd.CourseActivity;
 import com.ofk.bd.DisplayCourseActivity;
 import com.ofk.bd.DisplayCourseActivityAdapter.CourseListAdapter;
-import com.ofk.bd.Model.Activity;
 import com.ofk.bd.HelperClass.Common;
+import com.ofk.bd.Model.Activity;
 import com.ofk.bd.Model.Course;
 import com.ofk.bd.Model.DisplayCourse;
 import com.ofk.bd.Model.UserInfo;
@@ -85,8 +82,8 @@ public class HomeFragment extends Fragment {
             mainActivityViewModel.getUserInfoLiveData2().observe(this, userInfoObserver);
         }
 
-        if (!mainActivityViewModel.getRandomCourseLiveData(Common.courseToDisplay).hasObservers()) {
-            mainActivityViewModel.getRandomCourseLiveData(Common.courseToDisplay).observe(this, recommendedSectionObserver);
+        if (!mainActivityViewModel.getRandomCourseLiveData(Common.courseToDisplay + " Section").hasObservers()) {
+            mainActivityViewModel.getRandomCourseLiveData(Common.courseToDisplay + " Section").observe(this, recommendedSectionObserver);
         }
 
         if (!mainActivityViewModel.getActivityVideoLiveData().hasObservers()) {
@@ -135,8 +132,8 @@ public class HomeFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        binding.rateOFKView.setOnClickListener(listener);
-        binding.shareOKFView.setOnClickListener(listener);
+        //binding.rateOFKView.setOnClickListener(listener);
+        //binding.shareOKFView.setOnClickListener(listener);
         binding.goUpFloatingButton.setOnClickListener(listener);
         binding.searchButtonCardView.setOnClickListener(listener);
     }
@@ -232,24 +229,7 @@ public class HomeFragment extends Fragment {
     private final View.OnClickListener listener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            if (view.getId() == binding.rateOFKView.getId()) {
-                Uri uri = Uri.parse("market://details?id=com.ofk.bd");
-                Intent goToMarket = new Intent(Intent.ACTION_VIEW, uri);
-                goToMarket.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
-                        .addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT)
-                        .addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-                try {
-                    startActivity(goToMarket);
-                } catch (ActivityNotFoundException e) {
-                    Toast.makeText(getContext(), "" + e.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            } else if (view.getId() == binding.shareOKFView.getId()) {
-                Intent i = new Intent(Intent.ACTION_SEND);
-                i.setType("text/plain");
-                i.putExtra(Intent.EXTRA_SUBJECT, "Share OFK");
-                i.putExtra(Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=com.ofk.bd");// TODO ofk play store link
-                startActivity(Intent.createChooser(i, "Share URL"));
-            } else if (view.getId() == binding.goUpFloatingButton.getId()) {
+            if (view.getId() == binding.goUpFloatingButton.getId()) {
                 binding.parentScrollView.smoothScrollTo(0, 0);
             } else if (view.getId() == binding.searchButtonCardView.getId()) {
                 if (!binding.searchEditText.getText().toString().equals("")) {

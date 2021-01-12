@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager2.widget.ViewPager2;
@@ -30,6 +31,8 @@ public class QuizFragment extends Fragment {
 
     private FragmentQuizBinding binding;
 
+    private FragmentManager fragmentManager;
+
     private CourseActivityViewModel courseActivityViewModel;
 
     private int TOTAL_QUESTIONS = 0;
@@ -49,11 +52,14 @@ public class QuizFragment extends Fragment {
         // Inflate the layout for this fragment
         binding = FragmentQuizBinding.inflate(getLayoutInflater());
 
+        fragmentManager = getChildFragmentManager();
+
         String courseName = getActivity().getIntent().getStringExtra("course_name_english");
         String sectionName = getActivity().getIntent().getStringExtra("section_name");
 
         courseActivityViewModel.getQuizQuestions(courseName, sectionName).observe(getActivity(), quizQuestionsLiveData);
         courseActivityViewModel.getIsLastQuestion().observe(getActivity(), isLastQuestionLiveData);
+
         return binding.getRoot();
     }
 
@@ -68,7 +74,7 @@ public class QuizFragment extends Fragment {
             if (strings != null && strings.size() != 0) {
                 binding.progressBar.setVisibility(View.GONE);
 
-                QuizFragmentViewPager adapter = new QuizFragmentViewPager(getChildFragmentManager(), getLifecycle(), strings);
+                QuizFragmentViewPager adapter = new QuizFragmentViewPager(fragmentManager, getLifecycle(), strings);
                 binding.quizViewPager.setUserInputEnabled(true);
                 binding.quizViewPager.setOffscreenPageLimit(3);
                 binding.quizViewPager.setAdapter(adapter);

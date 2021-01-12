@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/background_light"
+    android:fillViewport="true"
     android:scrollbars="none"
     tools:context=".Fragments.HomeFragment">
 
@@ -47,8 +48,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:text="TextView"
-            android:textSize="32sp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/geetingMessage" />
 
@@ -268,44 +268,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/randomCourseRecyclerView_2" />
 
-        <TextView
-            android:id="@+id/rateAppTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:fontFamily="@font/solaimanlipi"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:text="@string/rate"
-            android:textColor="@color/textColorGrey"
-            android:textSize="@dimen/section_text_size"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/line5" />
-
-        <View
-            android:id="@+id/rateOFKView"
-            android:layout_width="250dp"
-            android:layout_height="110dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/ic_rate_ofk"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/rateAppTextView" />
-
-        <View
-            android:id="@+id/line8"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:background="@color/lightgrey"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/rateOFKView" />
-
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/activityVideoViewPager"
             android:layout_width="match_parent"
@@ -316,42 +278,8 @@
             android:paddingBottom="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/line8" />
+            app:layout_constraintTop_toBottomOf="@id/line5" />
 
-        <View
-            android:id="@+id/line7"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginStart="16dp"
-            android:background="@color/lightgrey"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/activityVideoViewPager" />
-
-        <TextView
-            android:id="@+id/shareAppTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/solaimanlipi"
-            android:paddingStart="16dp"
-            android:paddingTop="16dp"
-            android:paddingEnd="16dp"
-            android:text="@string/share"
-            android:textColor="@color/textColorGrey"
-            android:textSize="@dimen/section_text_size"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/line7" />
-
-        <View
-            android:id="@+id/shareOKFView"
-            android:layout_width="250dp"
-            android:layout_height="110dp"
-            android:layout_gravity="center_horizontal"
-            android:background="@drawable/ic_share_ofk"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/shareAppTextView" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/goUpFloatingButton"
@@ -363,7 +291,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/shareOKFView" />
+            app:layout_constraintTop_toBottomOf="@id/activityVideoViewPager" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
