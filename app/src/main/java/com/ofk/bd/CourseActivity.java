@@ -9,11 +9,11 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.SparseArray;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -38,10 +38,13 @@ import com.ofk.bd.HelperClass.Common;
 import com.ofk.bd.HelperClass.FullScreenHelper;
 import com.ofk.bd.ViewModel.CourseActivityViewModel;
 import com.ofk.bd.databinding.ActivityCourseBinding;
+import com.ofk.bd.extractorlibrary.ExtractorException;
+import com.ofk.bd.extractorlibrary.YoutubeStreamExtractor;
+import com.ofk.bd.extractorlibrary.model.YTMedia;
+import com.ofk.bd.extractorlibrary.model.YTSubtitles;
+import com.ofk.bd.extractorlibrary.model.YoutubeMeta;
 
-import at.huber.youtubeExtractor.VideoMeta;
-import at.huber.youtubeExtractor.YouTubeExtractor;
-import at.huber.youtubeExtractor.YtFile;
+import java.util.List;
 
 public class CourseActivity extends AppCompatActivity {
 
@@ -291,18 +294,15 @@ public class CourseActivity extends AppCompatActivity {
         @Override
         public void onChanged(String s) {
             if (s != null) {
-
-                new YouTubeExtractor(CourseActivity.this) {
+                new YoutubeStreamExtractor(new YoutubeStreamExtractor.ExtractorListner() {
                     @Override
-                    protected void onExtractionComplete(SparseArray<YtFile> ytFiles, VideoMeta videoMeta) {
-                        if (ytFiles != null) {
-                            int itag = 22;
-                            String downloadUrl = ytFiles.get(itag).getUrl();
+                    public void onExtractionDone(List<YTMedia> adativeStream, final List<YTMedia> muxedStream, List<YTSubtitles> subtitles, YoutubeMeta meta) {
+                        if (meta != null) {
 
-                            titleTextView.setText(videoMeta.getTitle());
+                            titleTextView.setText(meta.getTitle());
 
                             DefaultDataSourceFactory dataSourceFactory = new DefaultDataSourceFactory(CourseActivity.this, getResources().getString(R.string.app_name));
-                            MediaSource mediaSource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(downloadUrl));
+                            MediaSource mediaSource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(muxedStream.get(0).getUrl()));
 
                             runOnUiThread(new Runnable() {
                                 @Override
@@ -310,11 +310,14 @@ public class CourseActivity extends AppCompatActivity {
                                     player.prepare(mediaSource);
                                 }
                             });
-                        } else {
-                            Log.d(TAG, "onExtractionComplete: ytfiles is null" + s);
                         }
                     }
-                }.extract(s, true, false);
+
+                    @Override
+                    public void onExtractionGoesWrong(final ExtractorException e) {
+                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                }).useDefaultLogin().Extract(s);
             }
         }
     };

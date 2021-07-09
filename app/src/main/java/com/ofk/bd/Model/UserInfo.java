@@ -1,6 +1,7 @@
 package com.ofk.bd.Model;
 
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "user_info")//Table name
@@ -23,7 +24,7 @@ public class UserInfo {
     long courseCompleted;
     long quizCompleted;
 
-
+    @Ignore
     public UserInfo() {
     }
 

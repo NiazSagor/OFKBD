@@ -35,9 +35,6 @@ import com.ofk.bd.ViewModel.MainActivityViewModel;
 import com.ofk.bd.databinding.FragmentActivityVideoBinding;
 import com.squareup.picasso.Picasso;
 
-import at.huber.youtubeExtractor.VideoMeta;
-import at.huber.youtubeExtractor.YouTubeExtractor;
-import at.huber.youtubeExtractor.YtFile;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -268,25 +265,7 @@ public class ActivityVideoFragment extends Fragment {
                 AnimationUtility.startAnimation(getContext(), binding.videoTitle);
                 AnimationUtility.startAnimation(getContext(), binding.gradientView);
 
-                new YouTubeExtractor(getContext()) {
-                    @Override
-                    protected void onExtractionComplete(SparseArray<YtFile> ytFiles, VideoMeta videoMeta) {
-                        if (ytFiles != null) {
-                            int itag = 22;
-                            String downloadUrl = ytFiles.get(itag).getUrl();
-
-                            DefaultDataSourceFactory dataSourceFactory = new DefaultDataSourceFactory(getActivity(), getResources().getString(R.string.app_name));
-                            MediaSource mediaSource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(downloadUrl));
-
-                            getActivity().runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    player.prepare(mediaSource);
-                                }
-                            });
-                        }
-                    }
-                }.extract(getArguments().getString("videoId"), true, false);
+                // TODO: 03/07/2021 extract from yt 
             }
         }
     };

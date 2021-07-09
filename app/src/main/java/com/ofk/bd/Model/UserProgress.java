@@ -1,6 +1,7 @@
 package com.ofk.bd.Model;
 
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "user_progress")//Table name
@@ -17,6 +18,7 @@ public class UserProgress {
     private long totalVideos;
     private long videoWatched;
 
+    @Ignore
     public UserProgress() {
     }
 

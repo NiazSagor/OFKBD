@@ -1,6 +1,7 @@
 package com.ofk.bd.CourseActivityFragments;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +26,8 @@ public class QuizFragment extends Fragment {
 
     private static final String TAG = "QuizFragment";
 
+    private Handler handler;
+
     public QuizFragment() {
         // Required empty public constructor
     }
@@ -36,15 +39,30 @@ public class QuizFragment extends Fragment {
     private CourseActivityViewModel courseActivityViewModel;
 
     private int TOTAL_QUESTIONS = 0;
+    private final ViewPager2.OnPageChangeCallback callback = new ViewPager2.OnPageChangeCallback() {
+        @Override
+        public void onPageSelected(int position) {
+            super.onPageSelected(position);
+            Log.d(TAG, "onPageSelected: ");
+            if (position == TOTAL_QUESTIONS - 1) {
+                Log.d(TAG, "onPageSelected: last question");
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        courseActivityViewModel.getRightAnswerCount().observe(getActivity(), new Observer<Integer>() {
+                            @Override
+                            public void onChanged(Integer integer) {
+                                Log.d(TAG, "onChanged: dialog");
+                                new AlertDialogUtility().showQuizCompletionDialog(getContext(), integer, TOTAL_QUESTIONS);
+                            }
+                        });
+                    }
+                }, 3000);
+            }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        if (courseActivityViewModel == null) {
-            courseActivityViewModel = ViewModelProviders.of(getActivity()).get(CourseActivityViewModel.class);
+            courseActivityViewModel.currentOptionPosition().setValue(position + 1);
         }
-    }
+    };
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -58,7 +76,6 @@ public class QuizFragment extends Fragment {
         String sectionName = getActivity().getIntent().getStringExtra("section_name");
 
         courseActivityViewModel.getQuizQuestions(courseName, sectionName).observe(getActivity(), quizQuestionsLiveData);
-        courseActivityViewModel.getIsLastQuestion().observe(getActivity(), isLastQuestionLiveData);
 
         return binding.getRoot();
     }
@@ -76,7 +93,6 @@ public class QuizFragment extends Fragment {
 
                 QuizFragmentViewPager adapter = new QuizFragmentViewPager(fragmentManager, getLifecycle(), strings);
                 binding.quizViewPager.setUserInputEnabled(true);
-                binding.quizViewPager.setOffscreenPageLimit(3);
                 binding.quizViewPager.setAdapter(adapter);
                 binding.quizViewPager.registerOnPageChangeCallback(callback);
                 TOTAL_QUESTIONS = adapter.getItemCount();
@@ -88,31 +104,14 @@ public class QuizFragment extends Fragment {
         }
     };
 
-    private final ViewPager2.OnPageChangeCallback callback = new ViewPager2.OnPageChangeCallback() {
-        @Override
-        public void onPageSelected(int position) {
-            super.onPageSelected(position);
-            courseActivityViewModel.currentOptionPosition().setValue(position + 1);
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        handler = new Handler();
+
+        if (courseActivityViewModel == null) {
+            courseActivityViewModel = ViewModelProviders.of(getActivity()).get(CourseActivityViewModel.class);
         }
-    };
-
-    private final Observer<Boolean> isLastQuestionLiveData = new Observer<Boolean>() {
-        @Override
-        public void onChanged(Boolean aBoolean) {
-
-            Log.d(TAG, "onChanged: " + aBoolean);
-
-            AlertDialogUtility dialogUtility = new AlertDialogUtility();
-
-            // if last question
-            if (aBoolean) {
-                courseActivityViewModel.getRightAnswerCount().observe(getActivity(), new Observer<Integer>() {
-                    @Override
-                    public void onChanged(Integer integer) {
-                        dialogUtility.showQuizCompletionDialog(getContext(), integer, TOTAL_QUESTIONS);
-                    }
-                });
-            }
-        }
-    };
+    }
 }

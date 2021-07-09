@@ -28,9 +28,7 @@ public class VideoSliderAdapter extends FragmentStateAdapter {
     @Override
     public Fragment createFragment(int position) {
         Bundle bundle = new Bundle();
-        bundle.putString("videoId", videos.get(position).getVideoURL());
-        bundle.putString("videoThumb", videos.get(position).getVideoThumbNail());
-        bundle.putString("videoTitle", videos.get(position).getVideoTitle());
+        bundle.putString("videoId", videos.get(position).getUrl());
         ActivityVideoFragment fragment = new ActivityVideoFragment();
         fragment.setArguments(bundle);
         return fragment;

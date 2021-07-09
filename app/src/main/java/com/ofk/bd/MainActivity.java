@@ -1,11 +1,15 @@
 package com.ofk.bd;
 
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,10 +19,16 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.developer.kalert.KAlertDialog;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.play.core.appupdate.AppUpdateInfo;
+import com.google.android.play.core.appupdate.AppUpdateManager;
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
+import com.google.android.play.core.install.model.AppUpdateType;
+import com.google.android.play.core.install.model.UpdateAvailability;
 import com.google.android.play.core.review.ReviewInfo;
 import com.google.android.play.core.review.ReviewManager;
 import com.google.android.play.core.review.ReviewManagerFactory;
 import com.google.android.play.core.tasks.OnCompleteListener;
+import com.google.android.play.core.tasks.OnSuccessListener;
 import com.google.android.play.core.tasks.Task;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.ofk.bd.Adapter.MainActivityViewPager;
@@ -42,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements ServiceResultRece
     private ServiceResultReceiver mReceiver;
     // for result receiver
     private static final int SHOW_RESULT = 123;
+    public static final int MY_UPDATE_SUCCESS_CODE = 100;
 
     public static final String IS_COURSE_UPDATED = "is_course_updated";
 
@@ -50,8 +61,6 @@ public class MainActivity extends AppCompatActivity implements ServiceResultRece
     private ActivityMainBinding binding;
     private MenuItem prevMenuItem;
     private MainActivityViewModel viewModel;
-    private KAlertDialog pDialog;
-
     private FirebaseRemoteConfig remoteConfig;
 
     private SharedPreferences sharedPreferences;
@@ -65,13 +74,16 @@ public class MainActivity extends AppCompatActivity implements ServiceResultRece
         remoteConfig = FirebaseRemoteConfig.getInstance();
 
         if (viewModel == null) {
-            viewModel = ViewModelProviders.of(MainActivity.this).get(MainActivityViewModel.class);
+            viewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
         }
+
 
         sharedPreferences = getSharedPreferences("intent", MODE_PRIVATE);
         // initialize receiver
         mReceiver = new ServiceResultReceiver(new Handler());
         mReceiver.setReceiver(this);
+
+        setupAppUpdateFlow();
 
         binding.bottomNavigation.setOnNavigationItemSelectedListener(mNavListener);
     }
@@ -114,13 +126,12 @@ public class MainActivity extends AppCompatActivity implements ServiceResultRece
         if (remoteConfig.getBoolean(IS_COURSE_UPDATED)) {
             // if true then fetch the new count for videos of courses
             startService();
-            Log.d(TAG, "onStart: " + remoteConfig.getBoolean(IS_COURSE_UPDATED));
         }
 
         viewModel.isFirstCourseCompleted().observe(this, isFirstCourseCompletedObserver);
     }
 
-    public void setupViewPager() {
+    private void setupViewPager() {
         MainActivityViewPager adapter = new MainActivityViewPager(getSupportFragmentManager(), getLifecycle());
 
         binding.viewpager.setUserInputEnabled(false);
@@ -181,6 +192,7 @@ public class MainActivity extends AppCompatActivity implements ServiceResultRece
     @Override
     public void onReceiveResult(int resultCode, Bundle resultData) {
         if (resultCode == SHOW_RESULT) {
+
             if (resultData != null) {
 
                 ArrayList<String> courseName = resultData.getStringArrayList("courseName");
@@ -192,7 +204,20 @@ public class MainActivity extends AppCompatActivity implements ServiceResultRece
                     viewModel.updateTotalVideoCourse(course, count);
                 }
             }
+        } else if (resultCode == MY_UPDATE_SUCCESS_CODE) {
+
+            if (resultCode != RESULT_OK) {
+                Toast.makeText(this, "Please try to update the app later", Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(this, "Thank you for updating the app", Toast.LENGTH_SHORT).show();
+            }
+
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     @Override
@@ -241,4 +266,30 @@ public class MainActivity extends AppCompatActivity implements ServiceResultRece
             }
         }
     };
+
+    private void setupAppUpdateFlow() {
+        AppUpdateManager appUpdateManager = AppUpdateManagerFactory.create(this);
+
+        Task<AppUpdateInfo> appUpdateInfoTask = appUpdateManager.getAppUpdateInfo();
+
+        appUpdateInfoTask.addOnSuccessListener(new OnSuccessListener<AppUpdateInfo>() {
+            @Override
+            public void onSuccess(AppUpdateInfo result) {
+                if (result.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
+                        // For a flexible update, use AppUpdateType.FLEXIBLE
+                        && result.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)) {
+                    // Request the update.
+                    try {
+                        appUpdateManager.startUpdateFlowForResult(
+                                result,
+                                AppUpdateType.IMMEDIATE,
+                                MainActivity.this,
+                                MY_UPDATE_SUCCESS_CODE);
+                    } catch (IntentSender.SendIntentException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
 }

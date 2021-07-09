@@ -1,41 +1,23 @@
 package com.ofk.bd.Model;
 
 public class Video {
-    String videoThumbNail;
-    String videoTitle;
-    String videoURL;
+
+    String title;
+    String url;
 
     public Video() {
     }
 
-
-    public Video(String videoThumbNail, String videoTitle, String videoURL) {
-        this.videoThumbNail = videoThumbNail;
-        this.videoTitle = videoTitle;
-        this.videoURL = videoURL;
+    public Video(String title, String url) {
+        this.title = title;
+        this.url = url;
     }
 
-    public String getVideoThumbNail() {
-        return videoThumbNail;
+    public String getTitle() {
+        return title;
     }
 
-    public void setVideoThumbNail(String videoThumbNail) {
-        this.videoThumbNail = videoThumbNail;
-    }
-
-    public String getVideoTitle() {
-        return videoTitle;
-    }
-
-    public void setVideoTitle(String videoTitle) {
-        this.videoTitle = videoTitle;
-    }
-
-    public String getVideoURL() {
-        return videoURL;
-    }
-
-    public void setVideoURL(String videoURL) {
-        this.videoURL = videoURL;
+    public String getUrl() {
+        return url;
     }
 }

@@ -30,7 +30,6 @@ public class QuizQuestionFragment extends Fragment {
     private static final String TAG = "QuizQuestionFragment";
 
     public boolean CLICKABLE = true;
-    public boolean IS_LAST_QUESTION = false;
     public int CORRECT_INDEX = 0;
 
 
@@ -77,6 +76,12 @@ public class QuizQuestionFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+
+        courseActivityViewModel.getQuizOptions(
+                getActivity().getIntent().getStringExtra("course_name_english"),
+                getActivity().getIntent().getStringExtra("section_name"),
+                getArguments().getString("question")
+        ).observe(getActivity(), quizOptionLiveData);
     }
 
     @Override
@@ -107,10 +112,6 @@ public class QuizQuestionFragment extends Fragment {
 
             if (integer == totalQuestions) {
                 stringBuilder.append("Last question of the quiz ");
-            }
-
-            if (integer == totalQuestions) {
-                IS_LAST_QUESTION = true;
             }
 
             stringBuilder.append(integer).append("/").append(totalQuestions);
@@ -161,10 +162,6 @@ public class QuizQuestionFragment extends Fragment {
                             textViews[CORRECT_INDEX].setTextColor(Color.WHITE);
                         }
 
-                        if (IS_LAST_QUESTION) {
-                            courseActivityViewModel.getIsLastQuestion().setValue(true);
-                        }
-
                         CLICKABLE = false;
                     }
                     break;
@@ -180,10 +177,6 @@ public class QuizQuestionFragment extends Fragment {
                             textViews[1].setBackground(DrawableUtility.getQuizOptionWrongDrawable(getContext()));
                             textViews[CORRECT_INDEX].setBackground(DrawableUtility.getQuizOptionRightDrawable(getContext()));
                             textViews[CORRECT_INDEX].setTextColor(Color.WHITE);
-                        }
-
-                        if (IS_LAST_QUESTION) {
-                            courseActivityViewModel.getIsLastQuestion().setValue(true);
                         }
 
                         CLICKABLE = false;
@@ -203,10 +196,6 @@ public class QuizQuestionFragment extends Fragment {
                             textViews[CORRECT_INDEX].setTextColor(Color.WHITE);
                         }
 
-                        if (IS_LAST_QUESTION) {
-                            courseActivityViewModel.getIsLastQuestion().setValue(true);
-                        }
-
                         CLICKABLE = false;
                     }
                     break;
@@ -223,11 +212,6 @@ public class QuizQuestionFragment extends Fragment {
                             textViews[CORRECT_INDEX].setBackground(DrawableUtility.getQuizOptionRightDrawable(getContext()));
                             textViews[CORRECT_INDEX].setTextColor(Color.WHITE);
                         }
-
-                        if (IS_LAST_QUESTION) {
-                            courseActivityViewModel.getIsLastQuestion().setValue(true);
-                        }
-
 
                         CLICKABLE = false;
                     }
