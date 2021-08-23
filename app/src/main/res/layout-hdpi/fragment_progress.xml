@@ -279,6 +279,7 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/subjectProgressRecyclerView"
                 android:layout_width="match_parent"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 android:layout_height="wrap_content"
                 android:paddingStart="16dp"
                 android:paddingTop="8dp"

@@ -160,7 +160,7 @@ public class ProgressFragment extends Fragment {
             if (sectionCourseTuples.size() >= 1) {
                 binding.courseProgressTextView.setVisibility(View.VISIBLE);
                 binding.subjectProgressRecyclerView.setVisibility(View.VISIBLE);
-                binding.subjectProgressRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+                binding.subjectProgressRecyclerView.setHasFixedSize(true);
                 binding.subjectProgressRecyclerView.setAdapter(new ProgressListAdapter(sectionCourseTuples));
             } else {
                 binding.courseProgressTextView.setVisibility(View.GONE);
