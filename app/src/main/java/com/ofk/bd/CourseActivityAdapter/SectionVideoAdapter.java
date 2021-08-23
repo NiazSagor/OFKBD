@@ -65,10 +65,10 @@ public class SectionVideoAdapter extends RecyclerView.Adapter<SectionVideoAdapte
     @Override
     public void onBindViewHolder(@NonNull SectionVideoAdapter.SectionVideoListViewHolder holder, int position) {
 
-        holder.videoTitle.setText(videoList.get(position).getVideoTitle());
+        holder.videoTitle.setText(videoList.get(position).getTitle());
 
         if (mSender.equals("videoSearch")) {
-            mPicasso.load(videoList.get(position).getVideoThumbNail())
+            mPicasso.load(videoList.get(position).getUrl())
                     .networkPolicy(NetworkPolicy.OFFLINE)
                     .into(holder.videoThumbNail, new Callback() {
                         @Override
@@ -78,7 +78,7 @@ public class SectionVideoAdapter extends RecyclerView.Adapter<SectionVideoAdapte
 
                         @Override
                         public void onError(Exception e) {
-                            mPicasso.load(videoList.get(position).getVideoThumbNail())
+                            mPicasso.load(videoList.get(position).getUrl())
                                     .error(R.drawable.ofklogo)
                                     .into(holder.videoThumbNail, new Callback() {
                                         @Override

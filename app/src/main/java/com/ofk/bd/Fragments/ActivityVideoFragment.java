@@ -1,12 +1,11 @@
 package com.ofk.bd.Fragments;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.SparseArray;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,9 +14,7 @@ import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.AppCompatTextView;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
 import com.google.android.exoplayer2.Player;
@@ -27,32 +24,23 @@ import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
-import com.ofk.bd.CourseActivity;
-import com.ofk.bd.HelperClass.Common;
+import com.ofk.bd.Interface.YtExtractorCallback;
 import com.ofk.bd.R;
 import com.ofk.bd.Utility.AnimationUtility;
-import com.ofk.bd.ViewModel.MainActivityViewModel;
 import com.ofk.bd.databinding.FragmentActivityVideoBinding;
+import com.ofk.bd.extractorlibrary.ExtractorException;
+import com.ofk.bd.extractorlibrary.YoutubeStreamExtractor;
+import com.ofk.bd.extractorlibrary.model.YTMedia;
+import com.ofk.bd.extractorlibrary.model.YTSubtitles;
+import com.ofk.bd.extractorlibrary.model.YoutubeMeta;
 import com.squareup.picasso.Picasso;
 
+import java.util.List;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link ActivityVideoFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class ActivityVideoFragment extends Fragment {
+
+public class ActivityVideoFragment extends Fragment implements YtExtractorCallback {
 
     private static final String TAG = "ActivityVideoFragment";
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     private AnimatedVectorDrawableCompat drawableCompat;
     private AnimatedVectorDrawable animatedVectorDrawable;
@@ -67,37 +55,31 @@ public class ActivityVideoFragment extends Fragment {
 
     private ProgressBar progressBar;
     private ImageButton playPause;
+    private YtExtractorCallback callback;
+    private MediaSource mediaSource;
+    @SuppressLint("StaticFieldLeak")
 
-    public ActivityVideoFragment() {
-        // Required empty public constructor
-    }
+    private final View.OnClickListener listener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if (view.getId() == binding.playImage.getId() || view.getId() == binding.videoTitle.getId()) {
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment BlankFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static ActivityVideoFragment newInstance(String param1, String param2) {
-        ActivityVideoFragment fragment = new ActivityVideoFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
+                AnimationUtility.startAnimation(getContext(), binding.playImage);
+                AnimationUtility.startAnimation(getContext(), binding.videoThumbNail);
+                AnimationUtility.startAnimation(getContext(), binding.videoTitle);
+                AnimationUtility.startAnimation(getContext(), binding.gradientView);
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+                requireActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        player.prepare(mediaSource);
+                        player.play();
+                    }
+                });
+
+            }
         }
-    }
+    };
 
     private FragmentActivityVideoBinding binding;
 
@@ -135,7 +117,6 @@ public class ActivityVideoFragment extends Fragment {
             initializePlayer();
         }
 
-        Picasso.get().load(getArguments().getString("videoThumb")).into(binding.videoThumbNail);
         binding.videoTitle.setText(getArguments().getString("videoTitle"));
     }
 
@@ -253,20 +234,45 @@ public class ActivityVideoFragment extends Fragment {
             }
         }
     };
-    @SuppressLint("StaticFieldLeak")
 
-    private final View.OnClickListener listener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            if (view.getId() == binding.playImage.getId() || view.getId() == binding.videoTitle.getId()) {
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-                AnimationUtility.startAnimation(getContext(), binding.playImage);
-                AnimationUtility.startAnimation(getContext(), binding.videoThumbNail);
-                AnimationUtility.startAnimation(getContext(), binding.videoTitle);
-                AnimationUtility.startAnimation(getContext(), binding.gradientView);
-
-                // TODO: 03/07/2021 extract from yt 
-            }
+        if (getArguments() != null) {
+            extractVideo(getArguments().getString("videoId"));
         }
-    };
+
+        callback = this;
+    }
+
+    @Override
+    public void onVideoThumbnail(String url) {
+        Picasso.get().load(url).into(binding.videoThumbNail);
+    }
+
+    @Override
+    public void onVideoStream(YTMedia ytMedia) {
+        DefaultDataSourceFactory dataSourceFactory = new DefaultDataSourceFactory(requireActivity(), getResources().getString(R.string.app_name));
+        mediaSource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(ytMedia.getUrl()));
+    }
+
+    private void extractVideo(String videoId) {
+        new YoutubeStreamExtractor(new YoutubeStreamExtractor.ExtractorListner() {
+            @Override
+            public void onExtractionDone(List<YTMedia> adativeStream, final List<YTMedia> muxedStream, List<YTSubtitles> subtitles, YoutubeMeta meta) {
+                if (meta != null) {
+
+                    callback.onVideoThumbnail(meta.getThumbnail().getThumbnails().get(0).getUrl());
+
+                    callback.onVideoStream(muxedStream.get(0));
+                }
+            }
+
+            @Override
+            public void onExtractionGoesWrong(final ExtractorException e) {
+                Log.d(TAG, "onExtractionGoesWrong: " + e.getMessage());
+            }
+        }).useDefaultLogin().Extract(videoId);
+    }
 }

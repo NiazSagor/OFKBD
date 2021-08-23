@@ -11,7 +11,7 @@
         android:layout_width="220dp"
         android:layout_height="220dp"
         android:layout_centerInParent="true"
-        android:src="@drawable/ofklogo"
+        android:src="@drawable/ofk_logo_updated"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -70,7 +70,7 @@ public class VideoFragment extends Fragment {
         @Override
         public void onChanged(List<SectionVideo> sectionVideoList) {
             if (sectionVideoList != null && sectionVideoList.size() != 0) {
-                courseActivityViewModel.getCurrentVideoFromList().setValue(sectionVideoList.get(0).getVideos().get(0).getVideoURL());
+                courseActivityViewModel.getCurrentVideoFromList().setValue(sectionVideoList.get(0).getVideos().get(0).getUrl());
                 binding.sectionListRecyclerView.setAdapter(
                         new CourseSectionAdapter(getActivity(), sectionVideoList)
                 );

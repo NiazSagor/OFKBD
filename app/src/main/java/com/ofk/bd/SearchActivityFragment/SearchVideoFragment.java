@@ -129,7 +129,7 @@ public class SearchVideoFragment extends Fragment {
         @Override
         public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
             Video video = dataSnapshot.getValue(Video.class);
-            if (video.getVideoTitle().toLowerCase().contains(searchQuery.toLowerCase())) {
+            if (video.getTitle().toLowerCase().contains(searchQuery.toLowerCase())) {
                 videoList.add(video);
                 adapter = new SectionVideoAdapter(videoList, "videoSearch");
                 searchVideoRecyclerView.setAdapter(adapter);

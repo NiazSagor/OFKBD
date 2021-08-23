@@ -55,7 +55,7 @@ public class CourseSectionAdapter extends RecyclerView.Adapter<CourseSectionAdap
             adapter.setOnItemClickListener(new SectionVideoAdapter.OnItemClickListener() {
                 @Override
                 public void onItemClick(int position, View view) {
-                    courseActivityViewModel.getCurrentVideoFromList().setValue(videoList.get(position).getVideoURL());
+                    courseActivityViewModel.getCurrentVideoFromList().setValue(videoList.get(position).getUrl());
                 }
             });
         }
