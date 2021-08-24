@@ -23,6 +23,8 @@ import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.FirebaseMessagingService;
 import com.ofk.bd.Adapter.AvatarListAdapter;
 import com.ofk.bd.Model.UserInfo;
 import com.ofk.bd.MainActivity;
@@ -225,6 +227,7 @@ public class UserInfoFragment extends Fragment implements View.OnFocusChangeList
 
         UserInfo userInfo = new UserInfo(0, 0, "", "", userEmail, "", userName, userPassword, firebaseUser.getPhoneNumber(), "", 0);
         activityViewModel.insert(userInfo);
+        FirebaseMessaging.getInstance().subscribeToTopic("All Students");
     }
 
     public void hideKeyboardFrom() {

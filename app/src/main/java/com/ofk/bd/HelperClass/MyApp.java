@@ -1,11 +1,14 @@
 package com.ofk.bd.HelperClass;
 
 import android.app.Application;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
+import android.os.Build;
 import android.util.Log;
 
 import com.google.firebase.database.FirebaseDatabase;
@@ -26,6 +29,8 @@ public class MyApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        createNotificationChannel();
 
         this.registerReceiver(new BroadcastReceiver() {
             @Override
@@ -49,5 +54,23 @@ public class MyApp extends Application {
         built.setIndicatorsEnabled(false);
         built.setLoggingEnabled(true);
         Picasso.setSingletonInstance(built);
+    }
+
+    private void createNotificationChannel() {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+            CharSequence name = "OFK Notification Channel";
+
+            String description = "For general Push Notification";
+
+            NotificationChannel channel = new NotificationChannel("push-notification-channel-id", name, NotificationManager.IMPORTANCE_HIGH);
+
+            channel.setDescription(description);
+
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 }
