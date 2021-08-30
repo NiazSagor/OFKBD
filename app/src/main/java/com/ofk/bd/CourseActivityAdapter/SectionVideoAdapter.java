@@ -11,8 +11,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.ofk.bd.Model.Video;
 import com.ofk.bd.R;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.NetworkPolicy;
+import com.ofk.bd.extractorlibrary.ExtractorException;
+import com.ofk.bd.extractorlibrary.YoutubeStreamExtractor;
+import com.ofk.bd.extractorlibrary.model.YTMedia;
+import com.ofk.bd.extractorlibrary.model.YTSubtitles;
+import com.ofk.bd.extractorlibrary.model.YoutubeMeta;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -68,31 +71,21 @@ public class SectionVideoAdapter extends RecyclerView.Adapter<SectionVideoAdapte
         holder.videoTitle.setText(videoList.get(position).getTitle());
 
         if (mSender.equals("videoSearch")) {
-            mPicasso.load(videoList.get(position).getUrl())
-                    .networkPolicy(NetworkPolicy.OFFLINE)
-                    .into(holder.videoThumbNail, new Callback() {
-                        @Override
-                        public void onSuccess() {
 
-                        }
+            new YoutubeStreamExtractor(new YoutubeStreamExtractor.ExtractorListner() {
+                @Override
+                public void onExtractionDone(List<YTMedia> adativeStream, final List<YTMedia> muxedStream, List<YTSubtitles> subtitles, YoutubeMeta meta) {
+                    if (meta != null) {
+                        mPicasso.load(meta.getThumbnail().getThumbnails().get(0).getUrl())
+                                .into(holder.videoThumbNail);
+                    }
+                }
 
-                        @Override
-                        public void onError(Exception e) {
-                            mPicasso.load(videoList.get(position).getUrl())
-                                    .error(R.drawable.ofklogo)
-                                    .into(holder.videoThumbNail, new Callback() {
-                                        @Override
-                                        public void onSuccess() {
+                @Override
+                public void onExtractionGoesWrong(final ExtractorException e) {
+                }
+            }).Extract(videoList.get(position).getUrl());
 
-                                        }
-
-                                        @Override
-                                        public void onError(Exception e) {
-
-                                        }
-                                    });
-                        }
-                    });
         }
     }
 

@@ -189,11 +189,14 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/courseRecyclerView" />
 
-        <androidx.viewpager2.widget.ViewPager2
+        <com.denzcoskun.imageslider.ImageSlider
             android:id="@+id/activityViewPager"
             android:layout_width="0dp"
             android:layout_height="150dp"
+            app:iss_auto_cycle="false"
+            app:iss_placeholder="@android:color/transparent"
             android:layout_marginStart="@dimen/default_gap"
+            app:iss_title_background="@android:color/transparent"
             android:layout_marginTop="@dimen/default_gap"
             android:layout_marginEnd="@dimen/default_gap"
             app:layout_constraintEnd_toEndOf="parent"

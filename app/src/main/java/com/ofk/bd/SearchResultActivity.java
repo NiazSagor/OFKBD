@@ -2,6 +2,7 @@ package com.ofk.bd;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 
 import androidx.fragment.app.FragmentActivity;
@@ -33,9 +34,20 @@ public class SearchResultActivity extends FragmentActivity {
         viewModel = ViewModelProviders.of(this).get(FirebaseSearchViewModel.class);
         viewModel.getMutableLiveData().setValue(intent.getStringExtra("searchQuery"));
 
-        setSearchResult();
-
         setUpTabLayoutWithViewpager();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        viewModel.getCourseResult();
+        viewModel.getVideoResult();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                setSearchResult();
+            }
+        }, 1500);
     }
 
     private void setSearchResult() {

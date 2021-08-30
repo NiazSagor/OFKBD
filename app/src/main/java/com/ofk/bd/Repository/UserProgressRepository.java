@@ -128,7 +128,7 @@ public class UserProgressRepository {
                     db.child("isFinished").setValue(true);
                 }
 
-                db.child("video Watched")
+                db.child("videoWatched")
                         .runTransaction(new Transaction.Handler() {
                             @NonNull
                             @Override

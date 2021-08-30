@@ -317,7 +317,7 @@ public class CourseActivity extends AppCompatActivity {
                     public void onExtractionGoesWrong(final ExtractorException e) {
                         Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
                     }
-                }).useDefaultLogin().Extract(s);
+                }).Extract(s);
             }
         }
     };

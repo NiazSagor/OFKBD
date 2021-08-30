@@ -11,20 +11,22 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.denzcoskun.imageslider.constants.ScaleTypes;
+import com.denzcoskun.imageslider.models.SlideModel;
 import com.ofk.bd.Adapter.ActivitySliderAdapter;
 import com.ofk.bd.Adapter.CourseSliderListAdapter;
+import com.ofk.bd.HelperClass.MyApp;
 import com.ofk.bd.Model.Activity;
 import com.ofk.bd.Model.Course;
-import com.ofk.bd.HelperClass.MyApp;
 import com.ofk.bd.R;
 import com.ofk.bd.Utility.AlertDialogUtility;
 import com.ofk.bd.ViewModel.MainActivityViewModel;
 import com.ofk.bd.databinding.FragmentMoreBinding;
 import com.thefinestartist.finestwebview.FinestWebView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MoreFragment extends Fragment {
@@ -60,7 +62,6 @@ public class MoreFragment extends Fragment {
         binding = FragmentMoreBinding.inflate(getLayoutInflater());
 
         binding.activityViewPager.setClipToPadding(false);
-        binding.activityViewPager.setPageTransformer(new MarginPageTransformer(40));
 
         binding.blogRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
 
@@ -107,9 +108,13 @@ public class MoreFragment extends Fragment {
     private final Observer<List<Activity>> activityFieldWorkObserver = new Observer<List<Activity>>() {
         @Override
         public void onChanged(List<Activity> activities) {
-            activityAdapter = new ActivitySliderAdapter(activities);
-            binding.activityViewPager.setAdapter(activityAdapter);
-            binding.activityViewPager.registerOnPageChangeCallback(onPageChangeCallback);
+            List<SlideModel> images = new ArrayList<>();
+
+            for (Activity activity : activities) {
+                images.add(new SlideModel(activity.getUrl(), "", ScaleTypes.FIT));
+            }
+
+            binding.activityViewPager.setImageList(images);
         }
     };
 

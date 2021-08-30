@@ -20,6 +20,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.denzcoskun.imageslider.constants.ScaleTypes;
+import com.denzcoskun.imageslider.models.SlideModel;
 import com.ofk.bd.Adapter.ActivitySliderAdapter;
 import com.ofk.bd.Adapter.CourseSliderListAdapter;
 import com.ofk.bd.Adapter.VideoSliderAdapter;
@@ -38,6 +40,7 @@ import com.ofk.bd.Utility.StringUtility;
 import com.ofk.bd.ViewModel.MainActivityViewModel;
 import com.ofk.bd.databinding.FragmentHomeBinding;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
@@ -102,7 +105,6 @@ public class HomeFragment extends Fragment {
 
         // This is activity view pager where some pictures are loaded
         binding.activityViewPager.setClipToPadding(false);
-        binding.activityViewPager.setPageTransformer(new MarginPageTransformer(40));
 
         LinearLayoutManager manager2 = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
         manager2.setItemPrefetchEnabled(true);
@@ -195,9 +197,15 @@ public class HomeFragment extends Fragment {
     private final Observer<List<Activity>> activityPicObserver = new Observer<List<Activity>>() {
         @Override
         public void onChanged(List<Activity> activities) {
-            activityAdapter = new ActivitySliderAdapter(activities);
-            binding.activityViewPager.setAdapter(activityAdapter);
-            binding.activityViewPager.registerOnPageChangeCallback(onPageChangeCallback);
+
+            List<SlideModel> images = new ArrayList<>();
+
+            for (Activity activity : activities) {
+                images.add(new SlideModel(activity.getUrl(), "", ScaleTypes.FIT));
+            }
+
+            binding.activityViewPager.setImageList(images);
+
         }
     };
 
