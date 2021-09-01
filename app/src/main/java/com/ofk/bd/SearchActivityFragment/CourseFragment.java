@@ -52,11 +52,11 @@ public class CourseFragment extends Fragment {
         viewModel.getSearchCourseResult().observe(this, new Observer<List<DisplayCourse>>() {
             @Override
             public void onChanged(List<DisplayCourse> displayCourses) {
-                adapter = new CourseListAdapter(displayCourses, "displayCourse");
-                courseRecyclerView.setAdapter(adapter);
-                if (displayCourses.size() > 0) {
-                    binding.notMatchTextView.setVisibility(View.GONE);
-                }
+//                adapter = new CourseListAdapter(displayCourses, "displayCourse");
+//                courseRecyclerView.setAdapter(adapter);
+//                if (displayCourses.size() > 0) {
+//                    binding.notMatchTextView.setVisibility(View.GONE);
+//                }
             }
         });
     }

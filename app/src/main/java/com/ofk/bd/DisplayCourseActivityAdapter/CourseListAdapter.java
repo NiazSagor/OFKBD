@@ -9,27 +9,39 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.ofk.bd.Model.DisplayCourse;
 import com.ofk.bd.R;
 import com.squareup.picasso.Picasso;
 
-import java.util.List;
-
-public class CourseListAdapter extends RecyclerView.Adapter<CourseListAdapter.CourseListViewHolder> {
+public class CourseListAdapter extends FirebaseRecyclerAdapter<DisplayCourse, CourseListAdapter.CourseListViewHolder> {
 
     public static final int HOME_PAGE = 1;
     public static final int DISPLAY_COURSE = 2;
 
     private Picasso mPicasso;
 
-    private List<DisplayCourse> courseList;
-
     private static final String TAG = "CourseListAdapter";
 
     private OnItemClickListener mListener;
 
-    public interface OnItemClickListener {
-        void onItemClick(int position, View view);
+    public CourseListAdapter(@NonNull FirebaseRecyclerOptions<DisplayCourse> options, String mSender) {
+        super(options);
+        this.mSender = mSender;
+        this.mPicasso = Picasso.get();
+    }
+
+    @Override
+    protected void onBindViewHolder(@NonNull CourseListViewHolder holder, int position, @NonNull DisplayCourse model) {
+        holder.title.setText(model.getCourseTitle());
+        mPicasso.load(model.getThumbnailURL()).into(holder.thumbnail);
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListener.onCourseItemClick(model);
+            }
+        });
     }
 
     private String mSender;
@@ -38,11 +50,6 @@ public class CourseListAdapter extends RecyclerView.Adapter<CourseListAdapter.Co
         mListener = listener;
     }
 
-    public CourseListAdapter(List<DisplayCourse> courseList, String sender) {
-        this.courseList = courseList;
-        this.mSender = sender;
-        mPicasso = Picasso.get();
-    }
 
     @NonNull
     @Override
@@ -64,43 +71,12 @@ public class CourseListAdapter extends RecyclerView.Adapter<CourseListAdapter.Co
     }
 
     @Override
-    public void onBindViewHolder(@NonNull CourseListViewHolder holder, int position) {
-
-        holder.title.setText(courseList.get(position).getCourseTitle());
-        mPicasso.load(courseList.get(position).getThumbnailURL()).into(holder.thumbnail);
-        /*mPicasso.setIndicatorsEnabled(false);
-        mPicasso.load(courseList.get(position).getThumbnailURL())
-                .networkPolicy(NetworkPolicy.OFFLINE)
-                .into(holder.thumbnail, new Callback() {
-                    @Override
-                    public void onSuccess() {
-
-                    }
-
-                    @Override
-                    public void onError(Exception e) {
-                        mPicasso.load(courseList.get(position).getThumbnailURL())
-                                .error(R.drawable.ofklogo)
-                                .into(holder.thumbnail, new Callback() {
-                                    @Override
-                                    public void onSuccess() {
-
-                                    }
-
-                                    @Override
-                                    public void onError(Exception e) {
-
-                                    }
-                                });
-                    }
-                });
-
-         */
+    public int getItemCount() {
+        return super.getItemCount();
     }
 
-    @Override
-    public int getItemCount() {
-        return courseList.size();
+    public interface OnItemClickListener {
+        void onCourseItemClick(DisplayCourse course);
     }
 
     public static class CourseListViewHolder extends RecyclerView.ViewHolder {
@@ -113,19 +89,6 @@ public class CourseListAdapter extends RecyclerView.Adapter<CourseListAdapter.Co
 
             title = itemView.findViewById(R.id.courseTitle);
             thumbnail = itemView.findViewById(R.id.courseThumbNailImageView);
-
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    int position = getAdapterPosition();
-
-                    if (listener != null) {
-                        if (position != RecyclerView.NO_POSITION) {
-                            listener.onItemClick(position, view);
-                        }
-                    }
-                }
-            });
         }
     }
 
@@ -142,9 +105,5 @@ public class CourseListAdapter extends RecyclerView.Adapter<CourseListAdapter.Co
     @Override
     public long getItemId(int position) {
         return super.getItemId(position);
-    }
-
-    public DisplayCourse getCurrentCourse(int position) {
-        return courseList.get(position);
     }
 }

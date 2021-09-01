@@ -36,6 +36,7 @@ import com.ofk.bd.Model.UserInfo;
 import com.ofk.bd.Model.Video;
 import com.ofk.bd.R;
 import com.ofk.bd.SearchResultActivity;
+import com.ofk.bd.Utility.DatabaseUtility;
 import com.ofk.bd.Utility.StringUtility;
 import com.ofk.bd.ViewModel.MainActivityViewModel;
 import com.ofk.bd.databinding.FragmentHomeBinding;
@@ -85,10 +86,6 @@ public class HomeFragment extends Fragment {
             mainActivityViewModel.getUserInfoLiveData2().observe(this, userInfoObserver);
         }
 
-        if (!mainActivityViewModel.getRandomCourseLiveData(Common.courseToDisplay + " Section").hasObservers()) {
-            mainActivityViewModel.getRandomCourseLiveData(Common.courseToDisplay + " Section").observe(this, recommendedSectionObserver);
-        }
-
         if (!mainActivityViewModel.getActivityVideoLiveData().hasObservers()) {
             mainActivityViewModel.getActivityVideoLiveData().observe(this, activityVideoObserver);
         }
@@ -121,13 +118,21 @@ public class HomeFragment extends Fragment {
         return binding.getRoot();
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    private final CourseListAdapter.OnItemClickListener onItemClickListener = new CourseListAdapter.OnItemClickListener() {
 
-        // after view is created we are showing ui elements
-        binding.recommendedCourseTextView2.setText(Common.courseHeadline);
-    }
+        @Override
+        public void onCourseItemClick(DisplayCourse course) {
+            Intent intent = new Intent(getActivity(), CourseActivity.class);
+
+            intent.putExtra("section_name", Common.courseToDisplay);
+            intent.putExtra("course_name", course.getCourseTitle());
+            intent.putExtra("course_name_english", course.getCourseTitleEnglish());
+            intent.putExtra("from", "home");
+            intent.putExtra("isNewCourse", false);
+
+            startActivity(intent);
+        }
+    };
 
 
     @Override
@@ -140,6 +145,18 @@ public class HomeFragment extends Fragment {
         binding.searchButtonCardView.setOnClickListener(listener);
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // after view is created we are showing ui elements
+        binding.recommendedCourseTextView2.setText(Common.courseHeadline);
+
+        recommendedSectionCourseList = new CourseListAdapter(DatabaseUtility.getRecommendedCourseQuery(Common.courseToDisplay + " Section"), "home_page");
+        binding.randomCourseRecyclerView2.setAdapter(recommendedSectionCourseList);
+        recommendedSectionCourseList.setOnItemClickListener(onItemClickListener);
+    }
+
     // when fragment is visible
     @Override
     public void onStart() {
@@ -150,6 +167,8 @@ public class HomeFragment extends Fragment {
         if (!mainActivityViewModel.getActivityPicLiveData().hasObservers()) {
             mainActivityViewModel.getActivityPicLiveData().observe(this, activityPicObserver);
         }
+
+        recommendedSectionCourseList.startListening();
     }
 
     @Override
@@ -209,30 +228,10 @@ public class HomeFragment extends Fragment {
         }
     };
 
-    private final Observer<List<DisplayCourse>> recommendedSectionObserver = new Observer<List<DisplayCourse>>() {
-        @Override
-        public void onChanged(List<DisplayCourse> displayCourses) {
-            recommendedSectionCourseList = new CourseListAdapter(displayCourses, "home_page");
-            binding.randomCourseRecyclerView2.setAdapter(recommendedSectionCourseList);
-            recommendedSectionCourseList.setOnItemClickListener(onItemClickListener);
-        }
-    };
-
-    private final CourseListAdapter.OnItemClickListener onItemClickListener = new CourseListAdapter.OnItemClickListener() {
-        @Override
-        public void onItemClick(int position, View view) {
-
-            Intent intent = new Intent(getActivity(), CourseActivity.class);
-
-            intent.putExtra("section_name", Common.courseToDisplay);
-            intent.putExtra("course_name", recommendedSectionCourseList.getCurrentCourse(position).getCourseTitle());
-            intent.putExtra("course_name_english", recommendedSectionCourseList.getCurrentCourse(position).getCourseTitleEnglish());
-            intent.putExtra("from", "home");
-            intent.putExtra("isNewCourse", false);
-
-            startActivity(intent);
-        }
-    };
+    @Override
+    public void onStop() {
+        super.onStop();
+    }
 
     private final View.OnClickListener listener = new View.OnClickListener() {
         @Override

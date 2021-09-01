@@ -19,6 +19,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.ofk.bd.DisplayCourseActivityAdapter.CourseListAdapter;
@@ -26,12 +27,13 @@ import com.ofk.bd.HelperClass.MyApp;
 import com.ofk.bd.Model.DisplayCourse;
 import com.ofk.bd.Model.UserProgress;
 import com.ofk.bd.Utility.AlertDialogUtility;
+import com.ofk.bd.Utility.DatabaseUtility;
 import com.ofk.bd.ViewModel.DisplayCourseActivityViewModel;
 import com.ofk.bd.databinding.ActivityDisplayCourseBinding;
 
 import java.util.List;
 
-public class DisplayCourseActivity extends AppCompatActivity {
+public class DisplayCourseActivity extends AppCompatActivity implements CourseListAdapter.OnItemClickListener {
 
     private static final String TAG = "DisplayCourseActivity";
 
@@ -46,6 +48,8 @@ public class DisplayCourseActivity extends AppCompatActivity {
     private BottomSheetBehavior bottomSheetBehavior;
 
     private LinearLayout bottomSheetCo;
+
+    private CourseListAdapter adapter;
 
     private final Handler handler = new Handler();
 
@@ -66,10 +70,10 @@ public class DisplayCourseActivity extends AppCompatActivity {
             viewModel = ViewModelProviders.of(DisplayCourseActivity.this).get(DisplayCourseActivityViewModel.class);
         }
 
-
-        if (!viewModel.getCoursesLiveData(getIntent().getStringExtra("section_name") + " Section").hasObservers()) {
-            viewModel.getCoursesLiveData(getIntent().getStringExtra("section_name") + " Section").observe(this, allCoursesObserver);
-        }
+        adapter = new CourseListAdapter(DatabaseUtility.getRecommendedCourseQuery(getIntent().getStringExtra("section_name") + " Section"), "displayCourse");
+        binding.courseRecyclerView.setLayoutManager(new GridLayoutManager(DisplayCourseActivity.this, 2));
+        binding.courseRecyclerView.setAdapter(adapter);
+        adapter.setOnItemClickListener(this);
 
         binding.sectionHeadline.setText(new StringBuilder()
                 .append(getIntent().getStringExtra("section_name_bangla"))
@@ -127,6 +131,7 @@ public class DisplayCourseActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+
         setUpViews();
 
         Button notInterestedButton = findViewById(R.id.notInterestedButton);
@@ -146,7 +151,21 @@ public class DisplayCourseActivity extends AppCompatActivity {
             return;
         }
 
-        binding.courseRecyclerView.setLayoutManager(new GridLayoutManager(DisplayCourseActivity.this, 2));
+        adapter.startListening();
+
+        adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onChanged() {
+                super.onChanged();
+            }
+        });
+
+        binding.courseCount.setText(
+                new StringBuilder()
+                        .append(adapter.getSnapshots().size())
+                        .append(" টি কোর্স")
+        );
+
     }
 
     @Override
@@ -158,6 +177,7 @@ public class DisplayCourseActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        adapter.stopListening();
     }
 
     @Override
@@ -180,64 +200,6 @@ public class DisplayCourseActivity extends AppCompatActivity {
         intent.putExtra("isNewCourse", false);
         startActivity(intent);
     }
-
-    private final Observer<List<DisplayCourse>> allCoursesObserver = new Observer<List<DisplayCourse>>() {
-        @Override
-        public void onChanged(List<DisplayCourse> courses) {
-
-            binding.progressBar.setVisibility(View.GONE);
-
-            if (courses == null || courses.size() == 0) {
-                Log.d(TAG, "onChanged: null");
-                alertDialogUtility.showAlertDialog(DisplayCourseActivity.this, "courseNotFound");
-                return;
-            }
-
-            Log.d(TAG, "onChanged: " + courses.toString());
-
-            CourseListAdapter adapter = new CourseListAdapter(courses, "displayCourse");
-
-            binding.courseRecyclerView.setAdapter(adapter);
-            binding.courseCount.setText(
-                    new StringBuilder()
-                            .append(adapter.getItemCount())
-                            .append(" টি কোর্স")
-            );
-
-            adapter.setOnItemClickListener(new CourseListAdapter.OnItemClickListener() {
-                @Override
-                public void onItemClick(int position, View view) {
-
-                    selectedCourse = courses.get(position);
-
-                    String sectionName = getIntent().getStringExtra("section_name");
-                    String courseName = courses.get(position).getCourseTitle();
-                    String courseNameEnglish = courses.get(position).getCourseTitleEnglish();
-
-                    enrolledCourseLiveData = viewModel.getCourseEnrolled();
-
-                    if (!enrolledCourseLiveData.hasObservers()) {
-                        enrolledCourseLiveData.observe(DisplayCourseActivity.this, new Observer<List<String>>() {
-                            @Override
-                            public void onChanged(List<String> strings) {
-                                if (!strings.contains(courseNameEnglish)) {
-                                    // if not in db from before
-                                    Log.d(TAG, "onChanged: course is not in db");
-                                    enrolledCourseLiveData.removeObservers(DisplayCourseActivity.this);
-                                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-                                } else {
-                                    // if is in db from before
-                                    Log.d(TAG, "onChanged: course is in db");
-                                    enrolledCourseLiveData.removeObservers(DisplayCourseActivity.this);
-                                    proceedNormally(sectionName, courseName, courseNameEnglish);
-                                }
-                            }
-                        });
-                    }
-                }
-            });
-        }
-    };
 
     private final View.OnClickListener closeBottomSheetClickListener = new View.OnClickListener() {
         @Override
@@ -288,4 +250,34 @@ public class DisplayCourseActivity extends AppCompatActivity {
             }, 700);
         }
     };
+
+    @Override
+    public void onCourseItemClick(DisplayCourse course) {
+        selectedCourse = course;
+
+        String sectionName = getIntent().getStringExtra("section_name");
+        String courseName = course.getCourseTitle();
+        String courseNameEnglish = course.getCourseTitleEnglish();
+
+        enrolledCourseLiveData = viewModel.getCourseEnrolled();
+
+        if (!enrolledCourseLiveData.hasObservers()) {
+            enrolledCourseLiveData.observe(DisplayCourseActivity.this, new Observer<List<String>>() {
+                @Override
+                public void onChanged(List<String> strings) {
+                    if (!strings.contains(courseNameEnglish)) {
+                        // if not in db from before
+                        Log.d(TAG, "onChanged: course is not in db");
+                        enrolledCourseLiveData.removeObservers(DisplayCourseActivity.this);
+                        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                    } else {
+                        // if is in db from before
+                        Log.d(TAG, "onChanged: course is in db");
+                        enrolledCourseLiveData.removeObservers(DisplayCourseActivity.this);
+                        proceedNormally(sectionName, courseName, courseNameEnglish);
+                    }
+                }
+            });
+        }
+    }
 }
