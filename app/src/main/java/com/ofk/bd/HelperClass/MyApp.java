@@ -11,7 +11,6 @@ import android.net.ConnectivityManager;
 import android.os.Build;
 import android.util.Log;
 
-import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
 
@@ -46,7 +45,6 @@ public class MyApp extends Application {
             }
         }, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         Log.d(TAG, "onCreate: ");
         Picasso.Builder builder = new Picasso.Builder(this);
         builder.downloader(new OkHttp3Downloader(this, Integer.MAX_VALUE));

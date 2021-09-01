@@ -13,7 +13,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -315,7 +314,7 @@ public class CourseActivity extends AppCompatActivity {
 
                     @Override
                     public void onExtractionGoesWrong(final ExtractorException e) {
-                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                        Log.d(TAG, "onExtractionGoesWrong: " + e.getMessage());
                     }
                 }).Extract(s);
             }

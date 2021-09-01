@@ -22,15 +22,15 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.developer.kalert.KAlertDialog;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.TaskExecutors;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.PhoneAuthCredential;
+import com.google.firebase.auth.PhoneAuthOptions;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.ofk.bd.Interface.CheckUserCallback;
 import com.ofk.bd.Model.UserInfo;
 import com.ofk.bd.Model.UserProgress;
-import com.ofk.bd.Interface.CheckUserCallback;
 import com.ofk.bd.R;
 import com.ofk.bd.Utility.CheckUserDatabase;
 import com.ofk.bd.ViewModel.InfoActivityViewModel;
@@ -168,13 +168,15 @@ public class InputNumberFragment extends Fragment {
 
     private void sendVerificationCode(String phone) {
         Log.d(TAG, "sendVerificationCode: ");
-        PhoneAuthProvider.getInstance().verifyPhoneNumber(
-                phone,
-                60,
-                TimeUnit.SECONDS,
-                TaskExecutors.MAIN_THREAD,
-                mCallback
-        );
+        PhoneAuthOptions options =
+                PhoneAuthOptions.newBuilder(mAuth)
+                        .setPhoneNumber(phone)       // Phone number to verify
+                        .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
+                        .setActivity(requireActivity())                 // Activity (for callback binding)
+                        .setCallbacks(mCallback)          // OnVerificationStateChangedCallbacks
+                        .build();
+
+        PhoneAuthProvider.verifyPhoneNumber(options);
     }
 
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks
